@@ -1,0 +1,68 @@
+\newenvironment{changemargin}[2]{%
+\begin{list}{}{%
+\setlength{\topsep}{0pt}%
+\setlength{\leftmargin}{1cm}%
+\setlength{\rightmargin}{1cm}%
+\setlength{\listparindent}{\parindent}%
+\setlength{\itemindent}{\parindent}%
+\setlength{\parsep}{\parskip}%
+}%
+\item[]}{\end{list}}
+
+\newgeometry{left=2.25cm,right=2.25cm,top=1cm,bottom=1cm,a4paper}
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[line width = 1pt] ($(current page.north west) + (1cm,-1cm)$) rectangle ($(current page.south east) + (-1cm,1cm)$);
+\end{tikzpicture}
+\begin{center}
+\vspace{1cm}
+{{\Huge{\textsc{Università degli Studi di Camerino\\}}}}
+\vspace{3mm}
+\huge{\bf Scuola di Scienze e Tecnologie\\}
+\vspace{3mm}
+\LARGE{\textsl{ \textbf{Corso di Laurea in Informatica}}}
+\end{center}
+\vspace{14mm}
+\begin{center}
+\includegraphics[width=3.5cm]{img/unicam_logo.pdf}\\
+\vspace{1.5cm}
+{\Huge{\bf Big Data}}\\
+\vspace{5mm}
+{\huge{\bf Tecniche e tool di analisi}}\\
+\vspace{15mm} {\huge{Elaborato Finale}}
+\end{center}
+\vspace{25mm}
+\par
+\noindent
+\begin{minipage}[t]{0.47\textwidth}
+    \begin{center}
+    {\LARGE{\textsl{Laureando}
+    \vspace{0.2cm}\\
+    \textbf{Emanuele Gentiletti}\\
+    \vspace{1.7cm}
+    Matricola: \textbf{090150}
+    }}
+
+    \end{center}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.47\textwidth}
+    \begin{center}
+    {\LARGE{\textsl{Relatore}
+    \vspace{0.2cm}\\
+    \bf Prof. Diletta Romana Cacciagrano\\
+    }}
+
+    \end{center}
+\end{minipage}
+\vspace{35mm}
+\begin{center}
+\rule[0.1cm]{14cm}{0.1mm}\\
+\vspace{2mm}
+{\Large{\textsl{Anno Accademico 2016/2017}}}
+\end{center}
+\end{titlepage}
+\restoregeometry
+\clearpage
+\cleardoublepage
+
