@@ -1,0 +1,8 @@
+---
+mainfont: Palatino Linotype
+monofont: InconsolataForPowerline Nerd Font
+documentclass: report 
+classoption: a4paper 
+geometry: a4paper, left=3.5cm, right=3cm, top=2.5cm, bottom=3cm
+lang: it
+---
