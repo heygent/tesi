@@ -1,7 +1,13 @@
-OUT=out
+SRCDIR = src
+OUTDIR = out
+SRC = $(sort $(wildcard $(SRCDIR)/*.md))
+HEADER = $(SRCDIR)/header.tex
+TITLEPAGE = $(SRCDIR)/frontespizio.tex
+METADATA = $(SRCDIR)/metadata.yaml
+BIBLIOGRAPHY = $(SRCDIR)/references.yaml
 
-default:
-	pandoc -t latex --toc --latex-engine=xelatex -H src/header.tex -B src/frontespizio.tex src/00-intro.md src/01-hadoop.md src/metadata.yaml -o $(OUT)/tesi.pdf 
-tex:
-	pandoc -t latex --toc --standalone --latex-engine=xelatex src/00-intro.md -o $(OUT)/tesi.tex
+FLAGS = -t latex --toc --latex-engine=xelatex -F pandoc-citeproc
+
+$(OUTDIR)/tesi.pdf $(OUTDIR)/tesi.tex: $(SRC) $(HEADER) $(TITLEPAGE) $(METADATA) $(BIBLIOGRAPHY)
+	pandoc $(FLAGS) -H $(HEADER) -B $(TITLEPAGE) $(SRC) $(METADATA) -o $@ --csl=ferrara.csl
 	

@@ -1,0 +1,8 @@
+- id: hadoop-market-analysis
+  type: webpage
+  title: Hadoop Market Forecast 2017-2022
+  URL: https://www.marketanalysis.com/?p=279
+  container-title: Market Analysis
+  issued:
+    raw: 2017-5-4
+

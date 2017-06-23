@@ -5,4 +5,22 @@ documentclass: report
 classoption: a4paper 
 geometry: a4paper, left=3.5cm, right=3cm, top=2.5cm, bottom=3cm
 lang: it
+link-citations: true
+references: 
+  - id: hadoop-market-analysis
+    type: webpage
+    title: Hadoop Market Forecast 2017-2022
+    URL: https://www.marketanalysis.com/?p=279
+    publisher: Market Analysis
+    container-title: Market Analysis
+    issued:
+        raw: 2017-5-4
+  - id: hadoop-adoption-survey
+    type: webpage
+    title: Gartner Survey Highlights Challenges to Hadoop Adoption
+    URL: http://www.gartner.com/newsroom/id/3051717
+    container-title: Gartner
+    issued:
+        raw: 2015-5-13
+urlcolor: NavyBlue
 ---

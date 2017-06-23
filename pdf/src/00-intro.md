@@ -3,7 +3,47 @@
 # Introduzione
 
 Negli ultimi anni, i Big Data hanno preso piede in modo impetuoso in una grande
-varietà di ambiti. 
+varietà di ambiti. In parte per questa ragione, il fenomeno ha avuto un enorme
+impatto: settori come medicina, finanza, business analytics, istruzione e ...
+possono sfruttare le capacità analitiche avanzate nei Big Data per guidare lo
+sviluppo e l'innovazione in modi semplicemente non possibili prima.
+
+La ragione per cui 
+
+L'innovazione che ha reso possibili questi risultati è guidata dal software
+molto più che dall'hardware. Ci sono stati dei grandi cambiamenti nel
+modo di pensare alla computazione e all'organizzazione dei suoi processi, che
+hanno portato a risultati notevoli primariamente nell'efficienza di
+elaborazione di grandi quantità di dati.
+
+Il cambiamento è dovuto principalmente ad Hadoop, un framework open source il
+cui design è orientato alla computazione batch di dataset di grandi dimensioni.
+Utilizzando un'architettura ben congeniata, Hadoop ha permesso 
+
+Una delle conseguenze più importanti di Hadoop è stata una democratizzazione
+delle possibilità di analisi dei dati:
+
+* Hadoop è sotto licenza Apache, permettendo a chiunque di utilizzarlo a scopi
+  commerciali e non;
+* Hadoop non richiede hardware costoso ad alta affidabilità, e incoraggia
+  l'adozione di macchine più generiche e prone al fallimento per il suo uso,
+  che possono essere ottenute a costi inferiori;
+* Il design di Hadoop permette la sua esecuzione in cluster di macchine
+  eterogenee nel software e nell'hardware, che possono essere acquisite da
+  diversi rivenditori, un altro fattore che permette l'abbattimento dei costi;
+* I vari modelli di programmazione in Hadoop hanno in comune l'astrazione della
+  computazione distribuita e dei problemi intricati che questa comporta,
+  abbassando la barriere di entrata in termini di conoscenze e lavoro richiesti
+  per creare programmi che necessitano di un altro grado di parallelismo.
+
+Questi fattori hanno spinto a una vasta adozione di Hadoop e dell'ecosistema
+software che lo circonda, in ambito aziendale e scientifico. 
+L'adozione di Hadoop, secondo un sondaggio fatto a maggio
+2015[@hadoop-adoption-survey], si aggira al
+26% delle imprese, e si prevede che il mercato di Hadoop attorno ad Hadoop
+sorpasserà i 16 miliardi di dollari nel 2020 [@hadoop-market-analysis].
+
+http://www.techrepublic.com/article/the-secret-ingredients-for-making-hadoop-an-enterprise-tool/
 
 ## Definizione di Big Data
 
