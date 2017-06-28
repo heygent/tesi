@@ -2,12 +2,13 @@
 mainfont: Palatino Linotype
 monofont: InconsolataForPowerline Nerd Font
 documentclass: report 
-classoption: a4paper, twoside 
+classoption: a4paper 
 geometry: a4paper, left=3.5cm, right=3cm, top=2.5cm, bottom=3cm
 lang: it
 link-citations: true
-thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
+  - id: hadoop-adoption-article
+    URL: http://www.techrepublic.com/article/the-secret-ingredients-for-making-hadoop-an-enterprise-tool/
   - id: hadoop-market-analysis
     type: webpage
     title: Hadoop Market Forecast 2017-2022
@@ -24,13 +25,9 @@ references:
     issued:
         raw: 2015-5-13
   - id: digital-univ
-    title: "The Digital Universe of Opportunities: Rich Data and the Increasing Value of the Internet of Things"
-    URL: https://www.emc.com/leadership/digital-universe/2014iview/executive-summary.htm
+    title: The Digital Universe of Opportunities: Rich Data and the Increasing Value of the Internet of Things
+    URL: "https://www.emc.com/"
     issued:
         raw: 2014-4-2
-  - id: hadoop-doc-main
-    type: webpage
-    title: Apache Hadoop Documentation
-    URL: https://hadoop.apache.org/
 urlcolor: NavyBlue
 ---

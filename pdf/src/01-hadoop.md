@@ -1,6 +1,11 @@
 # Hadoop
 
-La documentazione ufficiale di Hadoop lo descrive come:
+Nell'ambito dei Big Data, Hadoop è il perno centrale su cui è basato un
+*ecosistema* di tool e tecnologie, tant'è che spesso il termine Hadoop viene
+utilizzato per riferirsi all'intero ecosistema di tool e tecnologie construiti
+attorno a questo.
+
+La documentazione ufficiale[@hadoop-doc-main] lo descrive come:
 
 > ...un framework che abilita l'elaborazione distribuita di grandi dataset
 in cluster di computer utilizzando semplici modelli di programmazione.
@@ -75,17 +80,26 @@ Hadoop è composto da diversi moduli:
 
 ## HDFS
 
-Come accennato, HDFS è un filesystem distribuito, che permette l'accesso ad
-alto throughput ai dati. HDFS è scritto in Java, e viene eseguito nello
-userspace. Lo storage dei dati passa per il filesystem del sistema che lo
-esegue. 
+HDFS è un filesystem distribuito che permette l'accesso ad alto throughput ai
+dati. HDFS è scritto in Java, e viene eseguito nello userspace. Lo storage dei
+dati passa per il filesystem del sistema che lo esegue. 
 
 I dati contenuti in HDFS sono organizzati in unità logiche chiamate *blocchi*,
-come è comune nei filesystem. Rispetto a questi, tuttavia, la loro
-dimensione è molto più grande, 128 MB di default. La ragione per cui HDFS
-utilizza blocchi così grandi è minimizzare il costo delle operazioni di seek,
-dato il fatto che se i file sono composti da meno blocchi, si rende necessario
-trovare l'inizio di un blocco un minor numero di volte.
+come è comune nei filesystem. I blocchi di un singolo file possono essere
+distribuiti all'interno di più macchine all'interno del cluster, permettendo di
+avere file più grandi della capacità di storage di ogni singola macchina nel
+cluster. Rispetto ai filesystem comuni la dimensione di un blocco è molto più
+grande, 128 MB di default. La ragione per cui HDFS utilizza blocchi così grandi
+è minimizzare il costo delle operazioni di seek, dato il fatto che se i file
+sono composti da meno blocchi, si rende necessario trovare l'inizio di un
+blocco un minor numero di volte. Questo approccio riduce anche la
+frammentazione dei dati, rendendo più probabile che questi vengano scritti
+contiguamente all'interno della macchina[^1].
+
+[^1]: Non è possibile essere certi della contiguità dei dati, perché HDFS non è
+un'astrazione diretta sulla scrittura del disco, ma sul filesystem del sistema
+operativo che lo esegue. Per cui la frammentazione effettiva dipende da come i
+dati vengono organizzati dal filesystem sottostante.
 
 Il blocco, inoltre, è un'astrazione che si presta bene alla replicazione dei
 dati nel filesystem all'interno del cluster: per replicare i dati, come si
@@ -104,7 +118,7 @@ alla base della progettazione di HDFS:
     
     Un sistema che esegue HDFS è composto da molti componenti, con probabilità
     di fallimento non triviale. Sulla base di questo principio, HDFS da' per
-    scontato che **ci sia sempre un numero di componenti non funzionanti**, e 
+    scontato che **ci sia sempre un numero di componenti non funzionanti**, e
     si pone di rilevare errori e guasti e di fornire un recupero rapido e
     automatico da questi.
 
@@ -115,7 +129,8 @@ alla base della progettazione di HDFS:
     essere letta da un'altra macchina in modo trasparente per il client.
 
     Il numero di repliche per ogni blocco è configurabile, e ci sono più
-    criteri con cui viene deciso in quali macchine il blocco viene replicato.
+    criteri con cui viene deciso in quali macchine il blocco viene replicato,
+    principalmente orientati al risparmio di banda di rete.
 
  *  **Modello di coerenza semplice**
 
@@ -123,11 +138,11 @@ alla base della progettazione di HDFS:
     specifiche sul tipo di dati che vengono salvati in HDFS e pone dei limiti
     su come l'utente possa lavorare sui file. In particolare, **non è possibile
     modificare arbitrariamente file già esistenti**, e le modifiche devono
-    limitarsi a operazioni di troncamento e di `append` (aggiunta a fine file).
-    Queste supposizioni permettono di semplificare il modello di coerenza,
-    perché i blocchi di dati, una volta scritti, possono essere considerati
-    immutabili, evitando una considerevole quantità di problemi in un ambiente
-    dove i blocchi di dati sono replicati in più posti:
+    limitarsi a operazioni di troncamento e di aggiunta a fine file. Queste
+    supposizioni permettono di semplificare il modello di coerenza, perché i
+    blocchi di dati, una volta scritti, possono essere considerati immutabili,
+    evitando una considerevole quantità di problemi in un ambiente dove i
+    blocchi di dati sono replicati in più posti:
 
     - Per ogni modifica a un blocco di dati, bisognerebbe verificare quali
       altre macchine contengono il blocco, e rieseguire la modifica (o
@@ -141,6 +156,17 @@ alla base della progettazione di HDFS:
     HDFS è progettato, caratterizzato da grandi dataset che vengono copiati nel
     filesystem e letti in blocco.
     
+ *  **Dataset di grandi dimensioni**
+
+    I filesystem distribuiti sono generalmente necessari per aumentare la
+    capacità di storage disponibile oltre quella di una singola macchina. La
+    distribuzione di HDFS, assieme alla grande dimensione dei blocchi
+
+ *  **Portabilità su piattaforme software e hardware eterogenee**
+    
+    HDFS è scritto in Java, ed è portabile in tutti i sistemi che ne supportano
+    il runtime.
+
  *  **Accesso in streaming**
     
     HDFS predilige l'accesso ai dati in streaming, per permettere ai lavori
@@ -148,28 +174,68 @@ alla base della progettazione di HDFS:
     discapito del tempo di latenza della lettura dei file, ma permette di avere
     un throughput in lettura molto vicino ai tempi di lettura del disco.
 
- *  **Dataset di grandi dimensioni**
-
- *  **Portabilità su piattaforme software e hardware eterogenee**
-    
-    HDFS è scritto in Java, ed è portabile in tutti i sistemi che ne supportano
-    il runtime.
 
 ### Funzionamento
 
 L'architettura di HDFS è di tipo master/slave, dove un nodo centrale,
-chiamato NameNode, gestisce i metadati e la struttura del filesystem, mentre i
-nodi slave, chiamati DataNode, contengono i blocchi di cui file sono composti.
+chiamato **NameNode**, gestisce i metadati e la struttura del filesystem, mentre i
+nodi slave, chiamati **DataNode**, contengono i blocchi di cui file sono composti.
 Tipicamente, viene eseguita un'istanza del software del DataNode per macchina
 del cluster, e una macchina dedicata esegue il NameNode.
 
+I *client* del filesystem interagiscono sia con il NameNode che con i DataNode
+per l'accesso ai file. La comunicazione tra il client e i nodi avviene tramite
+socket TCP, e viene coordinata dal NameNode, che fornisce ai client tutte le
+informazioni sul filesystem e su quali nodi contengono i DataBlock dei file
+richiesti.
 
+Il NameNode il riferimento centrale per i metadati del filesystem nel cluster,
+il che vuol dire che se il NameNode non è disponibile il filesystem non è
+accessibile. Questo rende il NameNode un *single point of failure* del sistema,
+e per questa ragione HDFS mette a disposizione dei meccanismi per attenutare
+l'indisponibilità del sistema in caso di non reperibilità del NameNode, e per
+assicurare che lo stato del filesystem possa essere recuperato a partire dal
+NameNode.
 
+### *Namespace image* ed *edit log*
 
+Le informazioni sui metadati del sistema vengono salvate nello storage del
+NameNode all'interno di due file, la _**namespace image**_ e l'_**edit log**_.
+La *namespace image* è uno snapshot dell'intera struttura del filesystem,
+mentre l'*edit log* è un elenco di operazioni eseguite nel filesystem a partire
+dalla *namespace image*. Partendo dalla *namespace image* e applicando le
+operazioni registrate nell'*edit log*, è possibile risalire allo stato attuale
+del filesystem. Il NameNode ha una rappresentazione dello stato del filesystem
+anche nella memoria centrale, che viene utilizzata per servire le richieste di
+lettura.
 
+Quando HDFS riceve una richiesta che richiede la modifica dei metadati, il
+NameNode esegue le seguenti operazioni:
 
+#. registra la transazione nell'*edit log*
+#. aggiorna la rappresentazione del filesystem in memoria
+#. passa all'operazione successiva.
 
+La ragione per cui i cambiamenti dei metadati vengono registrati nell'*edit
+log* invece che nella *namespace image* è la velocità di scrittura: scrivere
+tutti i cambiamenti del filesystem nell'immagine sarebbe lento, dato che questa
+può avere dimensioni nell'ordine dei gigabyte.
+Il NameNode esegue un *merge* dell'*edit log* e della *namespace image* a ogni
+suo avvio, portando lo stato attuale dell'immagine al pari di quello del
+filesystem.
 
+Dato che la dimensione dell'*edit log* può diventare notevole, è utile eseguire
+l'operazione di *merge* periodicamente. Questa operazione è computazionalmente
+costosa, e se fosse eseguita dal NameNode potrebbe interferire con le sue
+operazioni di routine.
+
+Per evitare interruzioni nel NameNode, il compito di eseguire periodicamente il
+*merge* dell'*edit log* è affidato a un'altra entità, il **Secondary
+NameNode**. Il Secondary NameNode viene solitamente eseguito su una macchina
+differente, dato che richiede un'unità di elaborazione potente e almeno la
+stessa memoria del NameNode per eseguire l'operazione di merge.
+
+![Schema di funzionamento dell'architettura di HDFS](img/hdfsarchitecture.png)
 
 
 ## MapReduce
