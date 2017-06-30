@@ -32,5 +32,9 @@ references:
     type: webpage
     title: Apache Hadoop Documentation
     URL: https://hadoop.apache.org/
+  - id: mapr-fs
+    type: webpage
+    title: MapR-FS Overview
+    URL: https://mapr.com/products/mapr-fs/
 urlcolor: NavyBlue
 ---

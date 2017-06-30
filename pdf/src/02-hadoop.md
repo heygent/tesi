@@ -162,11 +162,6 @@ alla base della progettazione di HDFS:
     capacità di storage disponibile oltre quella di una singola macchina. La
     distribuzione di HDFS, assieme alla grande dimensione dei blocchi
 
- *  **Portabilità su piattaforme software e hardware eterogenee**
-    
-    HDFS è scritto in Java, ed è portabile in tutti i sistemi che ne supportano
-    il runtime.
-
  *  **Accesso in streaming**
     
     HDFS predilige l'accesso ai dati in streaming, per permettere ai lavori
@@ -174,8 +169,10 @@ alla base della progettazione di HDFS:
     discapito del tempo di latenza della lettura dei file, ma permette di avere
     un throughput in lettura molto vicino ai tempi di lettura del disco.
 
-
-### Funzionamento
+ *  **Portabilità su piattaforme software e hardware eterogenee**
+    
+    HDFS è scritto in Java, ed è portabile in tutti i sistemi che ne supportano
+    il runtime.
 
 L'architettura di HDFS è di tipo master/slave, dove un nodo centrale,
 chiamato **NameNode**, gestisce i metadati e la struttura del filesystem, mentre i
@@ -185,22 +182,149 @@ del cluster, e una macchina dedicata esegue il NameNode.
 
 I *client* del filesystem interagiscono sia con il NameNode che con i DataNode
 per l'accesso ai file. La comunicazione tra il client e i nodi avviene tramite
-socket TCP, e viene coordinata dal NameNode, che fornisce ai client tutte le
+socket TCP ed è coordinata dal NameNode, che fornisce ai client tutte le
 informazioni sul filesystem e su quali nodi contengono i DataBlock dei file
 richiesti.
 
-Il NameNode il riferimento centrale per i metadati del filesystem nel cluster,
-il che vuol dire che se il NameNode non è disponibile il filesystem non è
-accessibile. Questo rende il NameNode un *single point of failure* del sistema,
-e per questa ragione HDFS mette a disposizione dei meccanismi per attenutare
-l'indisponibilità del sistema in caso di non reperibilità del NameNode, e per
-assicurare che lo stato del filesystem possa essere recuperato a partire dal
+### Comunicare con HDFS
+
+Hadoop fornisce tool e librerie che possono agire da client nei confronti di
+HDFS. Il tool più diretto è la CLI, accessibile nelle macchine in cui è
+installato Hadoop tramite il comando `hadoop fs`.
+
+```sh
+% hadoop fs -help
+Usage: hadoop fs [generic options]
+	[-appendToFile <localsrc> ... <dst>]
+	[-cat [-ignoreCrc] <src> ...]
+	[-checksum <src> ...]
+	[-chgrp [-R] GROUP PATH...]
+	[-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+	[-chown [-R] [OWNER][:[GROUP]] PATH...]
+	[-copyFromLocal [-f] [-p] [-l] [-d] <localsrc> ... <dst>]
+	[-copyToLocal [-f] [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+	[-count [-q] [-h] [-v] [-t [<storage type>]] [-u] [-x] <path> ...]
+	[-cp [-f] [-p | -p[topax]] [-d] <src> ... <dst>]
+...
+```
+
+La CLI fornisce alcuni comandi comuni nei sistemi POSIX, come `cp`, `rm`, `mv`,
+`ls` e `chown`, e altri che riguardano specificamente HDFS, come
+`copyFromLocal` e `copyToLocal`, utili a trasferire dati tra la macchina su cui
+si opera e il filesystem. 
+
+I comandi richiedono l'URI che identifica l'entità su cui si vuole operare. Per
+riferirsi a una risorsa all'interno di un'istanza di HDFS, si usa l'URI del
+namenode, con schema `hdfs`[^2], e con il path corrispondente al percorso della
+risorsa nel filesystem. Ad esempio, è possibile creare una cartella `foo`
+all'interno della radice del filesystem con il seguente comando:
+
+```sh
+hadoop fs -mkdir hdfs://localhost:8020/foo
+```
+
+Per diminuire la verbosità dei comandi, Hadoop può essere configurato per
+riferirsi a un filesystem di default quando riceve comandi che usano un URI
+relativo, accorciando l'esempio precedente a:
+
+```sh
+hadoop fs -mkdir foo
+```
+
+[^2]: Hadoop è abbastanza generale da poter lavorare con diversi filesystem,
+con lo schema definisce il protocollo di comunicazione, che non deve essere
+necessariamente `hdfs`. Ad esempio, un URI con schema `file` si riferisce al
+filesystem locale, e le operazioni eseguite su URI che utilizzano questo schema
+vengono effettuate sulla macchina dove viene eseguito il comando. Questo
+approccio può essere adatto nella fase di testing dei programmi, ma nella
+maggior parte dei casi è comunque desiderabile lavorare su un filesystem
+distribuito adeguato alla gestione dei Big Data, e un'alternativa ad HDFS degna
+di nota è MapR-FS[@mapr-fs].
+
+Ad esempio, data la seguente cartella:
+
+```sh
+[root@sandbox example_data]# ls
+example1.txt  example2.txt  example3.txt
+```
+
+Si possono copiare i file dalla cartella locale della macchina al filesystem
+distribuito con il seguente comando:
+
+```sh
+[root@sandbox example_data]# hadoop fs -copyFromLocal example*.txt /example
+```
+
+Per verificare che l'operazione sia andata a buon fine, si può ottenere un
+listing della cartella in cui si sono trasferiti i file con il comando `ls`:
+
+```sh
+[root@sandbox example_data]# hadoop fs -ls /example
+Found 3 items
+-rw-r--r--   1 root hdfs         70 2017-06-30 03:58 /example/example1.txt
+-rw-r--r--   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt
+-rw-r--r--   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt
+```
+
+Il listing è molto simile a quello ottenibile su sistemi Unix. Una differenza
+importante è la seconda colonna, che non mostra il numero di hard link al file
+nel filesystem^[HDFS correntemente non supporta link nel filesystem.], ma il
+numero di repliche che HDFS ha a disposizione del file, in questo caso una per
+file. Il numero di repliche fatte da HDFS può essere impostato settando il
+fattore di replicazione di default, che per Hadoop in modalità distribuita è 3
+di default. Si può anche cambiare il numero di repliche disponibili per
+determinati file, utilizzando il comando `hdfs dfs`:
+
+```sh
+[root@sandbox ~]# hdfs dfs -setrep 2 /example/example1.txt
+Replication 2 set: /example/example1.txt
+[root@sandbox ~]# hadoop fs -ls /example
+Found 3 items
+-rw-r--r--   2 root hdfs         70 2017-06-30 03:58 /example/example1.txt
+-rw-r--r--   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt
+-rw-r--r--   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt
+```
+
+
+Alcuni tool di amministrazione di cluster Hadoop offrono GUI web con cui è
+possibile interfacciarsi in HDFS. Alcuni esempi sono Cloudera Manager e Apache
+Ambari, che offrono un file manager lato web con cui è possibile interagire in
+modo più semplice, permettendo anche a utenti meno esperti nel campo di
+lavorare con il filesystem.
+
+![Screenshot del file manager HDFS incluso in Ambari](img/ambari_hdfs.png)
+
+### NameNode
+
+Il NameNode è il riferimento centrale per i metadati del filesystem nel
+cluster, il che vuol dire che se il NameNode non è disponibile il filesystem
+non è accessibile. Questo rende il NameNode un *single point of failure* del
+sistema, e per questa ragione HDFS mette a disposizione dei meccanismi per
+attenutare l'indisponibilità del sistema in caso di non reperibilità del
+NameNode, e per assicurare che lo stato del filesystem possa essere recuperato
+a partire dal NameNode.
+
+Il NameNode è anche il nodo a cui i client si connettono alla lettura del file.
+La connessione ha il solo scopo di fornire le informazioni sui DataNode che
+contengono i dati effettivi del file. I dati di un file non passano mai per il
 NameNode.
 
-### *Namespace image* ed *edit log*
+Tuttavia, il NameNode non salva persistentemente le informazioni sulle
+posizioni dei blocchi, che vengono invece mantenute dai DataNode. Perché il
+NameNode possa avere in memoria le informazioni sui file necessarie per essere
+operativo, questo deve ricevere le liste dei blocchi in possesso dei DataNode,
+in messaggi chiamati **block report**. Non è necessario che il DataNode conosca
+la posizione di tutti i blocchi sin dall'inizio, ma basta che per ogni blocco
+conosca la posizione di un numero minimo di repliche, determinato da un'opzione
+chiamata `dfs.replication.min.replicas`, di default 1.
+
+Questa procedura avviene quando il NameNode si trova in uno stato chiamato
+**safe mode**.
+
+#### *Namespace image* ed *edit log*
 
 Le informazioni sui metadati del sistema vengono salvate nello storage del
-NameNode all'interno di due file, la _**namespace image**_ e l'_**edit log**_.
+NameNode in due posti, la _**namespace image**_ e l'_**edit log**_.
 La *namespace image* è uno snapshot dell'intera struttura del filesystem,
 mentre l'*edit log* è un elenco di operazioni eseguite nel filesystem a partire
 dalla *namespace image*. Partendo dalla *namespace image* e applicando le
@@ -218,22 +342,54 @@ NameNode esegue le seguenti operazioni:
 
 La ragione per cui i cambiamenti dei metadati vengono registrati nell'*edit
 log* invece che nella *namespace image* è la velocità di scrittura: scrivere
-tutti i cambiamenti del filesystem nell'immagine sarebbe lento, dato che questa
-può avere dimensioni nell'ordine dei gigabyte.
-Il NameNode esegue un *merge* dell'*edit log* e della *namespace image* a ogni
+ogni cambiamento del filesystem mano a mano che avviene nell'immagine sarebbe
+lento, dato che questa può avere dimensioni nell'ordine dei gigabyte. Il
+NameNode esegue un *merge* dell'*edit log* e della *namespace image* a ogni
 suo avvio, portando lo stato attuale dell'immagine al pari di quello del
 filesystem.
 
 Dato che la dimensione dell'*edit log* può diventare notevole, è utile eseguire
-l'operazione di *merge* periodicamente. Questa operazione è computazionalmente
-costosa, e se fosse eseguita dal NameNode potrebbe interferire con le sue
-operazioni di routine.
+l'operazione di *merge* al raggiungimento di una soglia di dimensione del log.
+Questa operazione è computazionalmente costosa, e se fosse eseguita dal
+NameNode potrebbe interferire con la sua operazione di routine.
 
 Per evitare interruzioni nel NameNode, il compito di eseguire periodicamente il
 *merge* dell'*edit log* è affidato a un'altra entità, il **Secondary
 NameNode**. Il Secondary NameNode viene solitamente eseguito su una macchina
 differente, dato che richiede un'unità di elaborazione potente e almeno la
 stessa memoria del NameNode per eseguire l'operazione di merge.
+
+#### Avvio del NameNode e *Safe Mode*
+
+Prima di essere operativo, il NameNode deve eseguire alcune operazioni di
+startup, tra cui attendere di aver ricevuto i block report dai DataNode in modo
+da conoscere le posizioni dei blocchi. Durante queste operazioni, il NameNode
+si trova in uno stato chiamato *safe mode*, in cui sono permesse unicamente
+operazioni che accedono ai metadati del filesystem, e tentativi di lettura e
+scrittura di file falliscono. Prima di poter permettere l'accesso completo, il
+NameNode ha bisogno di ricevere le informazioni sui blocchi da parte dei
+DataNode.
+
+Per ricapitolare, al suo avvio, il NameNode effettua il merge della *namespace
+image* con l'*edit log*. Al termine dell'operazione, il risultato del merge
+viene salvato come la nuova *namespace image*. Il Secondary NameNode non viene
+coinvolto in questo primo merge.
+
+Prima di uscire dalla safe mode, il NameNode attende di avere abbastanza
+informazioni da poter accedere a un numero minimo di repliche di ogni blocco. A
+questo punto il NameNode esce dalla safe mode.
+
+Si possono utilizzare dei comandi per verificare lo stato, attivare e
+disattivare la safe mode.
+
+```sh
+bash-4.1$ hdfs dfsadmin -safemode get
+Safe mode is OFF
+bash-4.1$ hdfs dfsadmin -safemode enter
+Safe mode is ON
+bash-4.1$ hdfs dfsadmin -safemode leave
+Safe mode is OFF
+```
 
 ![Schema di funzionamento dell'architettura di HDFS](img/hdfsarchitecture.png)
 
