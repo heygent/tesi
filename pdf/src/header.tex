@@ -2,3 +2,19 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \addto\captionsitalian{\renewcommand{\chaptername}{Parte}}
+\renewcommand{\baselinestretch}{1.1} 
+% \renewcommand\thechapter{\Roman{chapter}}
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{subfig}
+\usepackage{float}
+\floatstyle{plain}
+\makeatletter
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\makeatother
+\floatname{codelisting}{Listato}
+\newcommand*\listoflistings{\listof{codelisting}{Elenco dei Listati}}

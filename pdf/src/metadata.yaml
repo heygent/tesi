@@ -2,10 +2,11 @@
 mainfont: Palatino Linotype
 monofont: InconsolataForPowerline Nerd Font
 documentclass: report 
-classoption: a4paper, twoside 
+classoption: a4paper, twoside, 12pt
 geometry: a4paper, left=3.5cm, right=3cm, top=2.5cm, bottom=3cm
 lang: it
 link-citations: true
+codeBlockCaptions: true
 thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
   - id: hadoop-market-analysis
@@ -36,5 +37,24 @@ references:
     type: webpage
     title: MapR-FS Overview
     URL: https://mapr.com/products/mapr-fs/
+  - id: hadoop-aur
+    type: webpage
+    title: AUR - Hadoop
+    URL: https://aur.archlinux.org/packages/hadoop/
+  - id: hadoop-ppa
+    type: webpage
+    title: Hadoop Ubuntu Packagers PPA
+    URL: https://launchpad.net/~hadoop-ubuntu/+archive/ubuntu/stable
+  - id: hadoop-guide-hdfs-file-read
+    type: book
+    title: "Hadoop: The Definitive Guide"
+    author:
+        - family: White
+          given: Tom
+    issued:
+        date-parts:
+            - - 2015
+              - 4
+    page: 69
 urlcolor: NavyBlue
 ---

@@ -78,6 +78,68 @@ Hadoop è composto da diversi moduli:
 * **MapReduce**, un framework e un modello di programmazione fornito da Hadoop
   per la scrittura di programmi paralleli che processano grandi dataset.
 
+## Installazione e Configurazione
+
+Ogni versione di Hadoop viene distribuita in tarball, una con i sorgenti, da
+cui si può eseguire una build manuale, e una binaria, che può essere estratta e
+utilizzata così com'è. Per un approccio più strutturato, sono disponibili
+repository che forniscono versioni pacchettizzate di Hadoop, come il PPA
+per Ubuntu[@hadoop-ppa] e i pacchetti AUR per Arch Linux[@hadoop-aur].
+
+Ci sono anche distribuzioni di immagini virtuali Linux create appositamente con
+lo scopo di fornire un ambiente preconfigurato con Hadoop e vari componenti del
+suo ecosistema. I due ambienti più utilizzati di questo tipo sono Cloudera
+QuickStart e HortonWorks Sandbox, disponibili per VirtualBox, VMWare e Docker.
+Gli esempi di questo documento sono eseguiti prevalentemente da Arch Linux e
+dalla versione Docker di HortonWorks Sandbox.
+
+Hadoop è configurabile tramite file XML, che si trovano rispetto alla cartella
+d'installazione in `etc/hadoop`. Ogni componente di Hadoop (HDFS, MapReduce,
+Yarn) ha un file di configurazione apposito che contiene impostazioni relative
+al componente stesso, mentre un altro file di configurazione contiene proprietà
+comuni a tutti i componenti.
+
++-----------------+-----------------+-----------------+-------------------+
+| Comuni          | HDFS            | YARN            | MapReduce         |
++=================+=================+=================+===================+
+| `core-site.xml` | `hdfs-site.xml` | `yarn-site.xml` | `mapred-site.xml` |
++-----------------+-----------------+-----------------+-------------------+
+
+: Nomi dei file di configurazione per i componenti di Hadoop
+
+```{#lst:hadoop-conf-example .xml}
+<?xml version="1.0"?>
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://namenode/</value>
+    </property>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address</name>
+        <value>resourcemanager:8032</value>
+    </property>
+</configuration>
+```
+
+: Esempio di file di configurazione personalizzato di Hadoop.
+
+È anche possibile selezionare un'altra cartella da cui prendere i file di
+configurazione, impostandola come valore della variabile d'ambiente
+`HADOOP_CONF_DIR`. Un approccio comune alla modifica dei file di configurazione
+consiste nel copiare il contenuto di `etc/hadoop` in un'altra posizione,
+specificare questa in `HADOOP_CONF_DIR` e fare le modifiche nella nuova
+cartella. In questo modo si evita di modificare l'albero d'installazione di
+Hadoop.
+
+Per molti degli eseguibili inclusi in Hadoop, è anche possibile specificare un
+file che contiene ulteriori opzioni di configurazione, che possono
+sovrascrivere quelle in `HADOOP_CONF_DIR` tramite lo switch `-conf`. 
+
+
 ## HDFS
 
 HDFS è un filesystem distribuito che permette l'accesso ad alto throughput ai
@@ -110,6 +172,8 @@ tralasciare alcuni requisiti di conformità alla specifica permette ad HDFS di
 ottenere prestazioni e affidabilità migliori, come verrà descritto in seguito.
 
 ### Principi architetturali
+
+![Schema di funzionamento dell'architettura di HDFS](img/hdfsarchitecture.png)
 
 La documentazione di Hadoop descrive i seguenti come i principi architetturali
 alla base della progettazione di HDFS:
@@ -186,6 +250,7 @@ socket TCP ed è coordinata dal NameNode, che fornisce ai client tutte le
 informazioni sul filesystem e su quali nodi contengono i DataBlock dei file
 richiesti.
 
+
 ### Comunicare con HDFS
 
 Hadoop fornisce tool e librerie che possono agire da client nei confronti di
@@ -223,9 +288,10 @@ all'interno della radice del filesystem con il seguente comando:
 hadoop fs -mkdir hdfs://localhost:8020/foo
 ```
 
-Per diminuire la verbosità dei comandi, Hadoop può essere configurato per
-riferirsi a un filesystem di default quando riceve comandi che usano un URI
-relativo, accorciando l'esempio precedente a:
+Per diminuire la verbosità dei comandi è possibile utilizzare percorsi
+relativi, e specificare l'opzione `dfs.defaultFS` nella configurazione di
+Hadoop all'URI del filesystem ai cui i percorsi relativi si riferiscono.
+In questo modo, si può accorciare l'esempio precedente a:
 
 ```sh
 hadoop fs -mkdir foo
@@ -285,14 +351,29 @@ Found 3 items
 -rw-r--r--   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt
 ```
 
-
-Alcuni tool di amministrazione di cluster Hadoop offrono GUI web con cui è
-possibile interfacciarsi in HDFS. Alcuni esempi sono Cloudera Manager e Apache
-Ambari, che offrono un file manager lato web con cui è possibile interagire in
-modo più semplice, permettendo anche a utenti meno esperti nel campo di
-lavorare con il filesystem.
+HDFS è anche accessibile tramite *HDFS Web Interface*, un tool che fornisce
+informazioni sullo stato generale del filesystem e sul suo contenuto. Ci sono
+anche tool di amministrazione di cluster Hadoop che offrono GUI web più
+avanzate di quella fornita di default da HDFS. Due esempi sono Cloudera Manager
+e Apache Ambari, che offrono un file manager lato web con cui è possibile
+interagire in modo più semplice, permettendo anche a utenti in ambito meno
+tecnico di lavorare con il filesystem.
 
 ![Screenshot del file manager HDFS incluso in Ambari](img/ambari_hdfs.png)
+
+Un'altra interfaccia importante ad HDFS è l'API `FileSystem` di Hadoop, che
+permette un accesso programmatico da linguaggi per JVM a tutte le funzioni del
+filesystem. L'API è generale, in modo che possa essere utilizzata con
+filesystem diversi da HDFS. 
+
+Per linguaggi che non supportano interfacce Java, esiste un'implementazione in
+C chiamata `libhdfs`, che si appoggia sulla Java Native Interface per esporre
+l'API di Hadoop.
+
+Esistono poi progetti che permettono il montaggio di HDFS in un filesystem
+locale. Alcune di queste implementazioni sono basate su FUSE, mentre altre su
+NFS Gateway. Questo metodo di accesso permette l'utilizzo di utilità native del
+sistema in uso in HDFS.
 
 ### NameNode
 
@@ -391,8 +472,85 @@ bash-4.1$ hdfs dfsadmin -safemode leave
 Safe mode is OFF
 ```
 
-![Schema di funzionamento dell'architettura di HDFS](img/hdfsarchitecture.png)
+![Lo stato dello startup di un'istanza di HDFS, mostrata da HDFS Web
+Interface.](img/hdfs-web-startup.png)
 
+### Processo di lettura di file in HDFS
+
+![Diagramma delle operazioni eseguite nella lettura di un file in
+HDFS[@hadoop-guide-hdfs-file-read]](img/hdfs-file-read.png)
+
+Per avere un quadro completo del funzionamento di HDFS, è utile osservare come
+avvenga il processo di lettura di un file. In questa sezione si prende in esame
+un programma di esempio che utilizza le API di HDFS per reimplementare una
+versione semplificata del comando `cat`, confrontano le interfacce Java
+utilizzate con le operazioni a cui queste corrispondono.
+
+
+```{#lst:hdfs-cat .java .numberLines}
+import java.io.InputStream;
+import java.net.URI;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+
+public class MyCat {
+
+    public static void main(String args[]) throws Exception {
+
+        String source = args[0];
+        Configuration conf = new Configuration();
+
+        try(
+            FileSystem sourcefs = FileSystem.get(URI.create(source), conf);
+            InputStream in = sourcefs.open(new Path(source))
+        ) {
+            IOUtils.copyBytes( in, System.out, 4096, false);
+        }
+    }
+}
+```
+
+: Programma di esempio che reimplementa il comando `cat`.
+
+L'interfaccia del programma `cat` di esempio utilizza il primo parametro della
+linea di comando per ricevere l'URI del file che si vuole stampare nello
+standard output.
+Di seguito vengono spiegati i passi eseguiti dal programma. Quando non
+qualificato, l'identificativo `hadoop` si riferisce al package Java
+`org.apache.hadoop`.
+
+#. Si crea un oggetto `hadoop.conf.Configuration`. Gli oggetti
+`Configuration` forniscono l'accesso ai parametri di configurazione di Hadoop
+(impostati in file XML, come descritto in [Installazione e Configurazione]).
+
+#. Si ottiene un riferimento `sourcefs` a un `hadoop.fs.FileSystem`,
+che fornisce le API che verranno usate per leggere e manipolare il filesystem.
+Il riferimento viene ottenuto tramite il metodo statico `FileSystem.get(URI
+source, Configuration conf)`, che richiede un URI che possa essere utilizzato
+per risalire a quale filesystem si vuole accedere. L'URI fornito dall'utente
+può essere adatto allo scopo, se specifica il percorso assoluto del file.
+Un overload di `FileSystem.get` permette di specificare solo l'oggetto
+`Configuration`. In questo caso le informazioni sul filesystem verrebbero
+lette direttamente dalla configurazione, in particolare dalla proprietà
+`dfs.defaultFS`.
+
+#. Si apre il file il lettura, chiamando `FileSystem.open(Path file)`. Il
+metodo restituisce un `hadoop.fs.FSDataInputStream`, una sottoclasse di
+`java.io.InputStream` che rappresenta uno stream contiuguo di dati.
+Questo oggetto è quindi utilizzabile per leggere contiguamente i dati del file,
+e il suo riferimento viene salvato nella variabile `in`.
+
+#. Si copiano i dati dallo stream `in` a `System.out`, di fatto stampando i
+dati nella console. Questa operazione è eseguita tramite il metodo d'utilità
+`hadoop.io.IOUtils.copyBytes(in, out, int bufSize, bool closeStream)`, che
+utilizza le interfacce di `java.io.InputStream` e `OutputStream` per copiare i
+dati da uno stream di input a uno di output.
+
+#. Lo stream e l'oggetto `FileSystem` vengono chiusi. L'operazione, in questo
+caso, avviene implicitamente tramite il costrutto try-with-resources di Java.
 
 ## MapReduce
 
