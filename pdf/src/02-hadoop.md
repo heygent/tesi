@@ -139,6 +139,100 @@ Per molti degli eseguibili inclusi in Hadoop, è anche possibile specificare un
 file che contiene ulteriori opzioni di configurazione, che possono
 sovrascrivere quelle in `HADOOP_CONF_DIR` tramite lo switch `-conf`. 
 
+### Esecuzione di software in Hadoop
+
+I programmi che sfruttano il runtime di Hadoop sono generalmente sviluppati in
+Java (o in un linguaggio che ha come target di compilazione la JVM), e vengono
+avviati tramite l'eseguibile `hadoop`. L'eseguibile richiede che siano
+specificati il classpath del programma, e una classe contente un metodo `main`
+che si desidera eseguire (analogo all'entry point dei programmi Java).
+
+Il classpath può essere specificato tramite la variabile d'ambiente
+`HADOOP_CLASSPATH`, che può essere il percorso di una directory o di un file
+`jar`. La classe con il metodo `main` da invocare viene messa tra i parametri
+del comando `hadoop`, seguita dagli argomenti che si vogliono passare in
+`args[]`.
+
+(@) Volendo eseguire il seguente programma in Hadoop:
+
+    ```java
+    public class SayHello {
+        public static void main(String args[]) {
+            System.out.println("Hello " + args[0] + "!");
+        }
+    }
+    ```
+
+    Lo si può compilare e pacchettizzare in un file `jar`, per poi utilizzare i
+    seguenti comandi:
+
+    ```sh
+
+    $~ export HADOOP_CLASSPATH=say_hello.jar 
+    $~ hadoop SayHello Josh
+
+    Hello Josh!
+    ```
+
+(@) In alternativa, si può eseguire il comando `hadoop jar`, e specificare il
+    file `jar` direttamente nei suoi argomenti:
+
+    ```sh
+
+    $~ hadoop jar say_hello.js SayHello Josh
+
+    Hello Josh!
+    ```
+
+In generale, i programmi eseguiti in Hadoop fanno uso della sua libreria
+client. La libreria fornisce accesso al package `org.apache.hadoop`, che
+contiene le API necessarie per interagire con Hadoop. Non è necessario che la
+libreria client si trovi nel classpath finale, in quanto il runtime di Hadoop
+fornisce le classi della libreria a runtime.
+
+Per gestire le dipendenze e la pacchettizzazione dei programmi per Hadoop è
+pratico utilizzare un tool di gestione delle build. Negli esempi in questo
+documento si utilizza Maven a questo scopo, che permette di specificare
+le proprietà di un progetto, tra cui le sue dipendenze, in un file XML chiamato
+POM (Project Object Model). A partire dal POM, Maven è in grado di scaricare
+automaticamente le dipendenze del progetto, e di pacchettizzarle correttamente
+negli artefatti `jar` a seconda della configurazione fornita.
+
+```{#lst:pom_example .xml .numberLines}
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="..." >
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>say_hello</artifactId>
+    <version>1.0</version>
+
+    <dependencies>
+
+        <!-- Libreria client di Hadoop -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.8.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+</project>
+```
+
+: Un esempio semplificato di un POM per il programma SayHello.
+
+Maven è in grado di gestire correttamente la dipendenza della libreria client
+di Hadoop, attraverso un meccanismo chiamato *dependency scope*. Per ogni
+dipendenza è possibile specificare una proprietà *scope*, che indica in che
+modo la dipendenza debba essere gestita a tempo di build (in particolar modo,
+se debba essere inclusa nel classpath). Se non specificato, lo scope è
+impostato a `compile`, che indica che la dipendenza è resa disponibile nel
+classpath dell'artefatto. Per gestire correttamente la dipendenza dalla
+libreria client di Hadoop, è opportuno impostare lo scope della dipendenza a
+`provided`, che indica che le classi della libreria sono fornite dal container
+in cui è eseguito il programma.
 
 ## HDFS
 
@@ -482,9 +576,10 @@ HDFS[@hadoop-guide-hdfs-file-read]](img/hdfs-file-read.png)
 
 Per avere un quadro completo del funzionamento di HDFS, è utile osservare come
 avvenga il processo di lettura di un file. In questa sezione si prende in esame
-un programma di esempio che utilizza le API di HDFS per reimplementare una
-versione semplificata del comando `cat`, confrontano le interfacce Java
-utilizzate con le operazioni a cui queste corrispondono.
+un programma di esempio che utilizza le API `FileSystem` di Hadoop per
+reimplementare una versione semplificata del comando `cat`, per poi esaminare
+come le operazioni specificate nel programma vengano effettivamente portate a
+termine in un'istanza di HDFS.
 
 
 ```{#lst:hdfs-cat .java .numberLines}
@@ -507,7 +602,7 @@ public class MyCat {
             FileSystem sourcefs = FileSystem.get(URI.create(source), conf);
             InputStream in = sourcefs.open(new Path(source))
         ) {
-            IOUtils.copyBytes( in, System.out, 4096, false);
+            IOUtils.copyBytes(in, System.out, 4096, false);
         }
     }
 }
@@ -515,9 +610,12 @@ public class MyCat {
 
 : Programma di esempio che reimplementa il comando `cat`.
 
-L'interfaccia del programma `cat` di esempio utilizza il primo parametro della
+
+La reimplementazione del programma `cat` utilizza il primo parametro della
 linea di comando per ricevere l'URI del file che si vuole stampare nello
-standard output.
+standard output. L'URI deve contenere il percorso di rete del filesystem HDFS,
+ed essere quindi del formato `hdfs://[indirizzo o hostname del namenode]/[path
+del file]`.
 Di seguito vengono spiegati i passi eseguiti dal programma. Quando non
 qualificato, l'identificativo `hadoop` si riferisce al package Java
 `org.apache.hadoop`.
@@ -530,27 +628,29 @@ qualificato, l'identificativo `hadoop` si riferisce al package Java
 che fornisce le API che verranno usate per leggere e manipolare il filesystem.
 Il riferimento viene ottenuto tramite il metodo statico `FileSystem.get(URI
 source, Configuration conf)`, che richiede un URI che possa essere utilizzato
-per risalire a quale filesystem si vuole accedere. L'URI fornito dall'utente
-può essere adatto allo scopo, se specifica il percorso assoluto del file.
-Un overload di `FileSystem.get` permette di specificare solo l'oggetto
-`Configuration`. In questo caso le informazioni sul filesystem verrebbero
-lette direttamente dalla configurazione, in particolare dalla proprietà
-`dfs.defaultFS`.
+per risalire a quale filesystem si vuole accedere. Un overload di
+`FileSystem.get` permette di specificare solo l'oggetto `Configuration`,
+e ottiene le informazioni sul filesystem da aprire dalla proprietà di
+configurazione `dfs.defaultFS`.
 
 #. Si apre il file il lettura, chiamando `FileSystem.open(Path file)`. Il
-metodo restituisce un `hadoop.fs.FSDataInputStream`, una sottoclasse di
-`java.io.InputStream` che rappresenta uno stream contiuguo di dati.
-Questo oggetto è quindi utilizzabile per leggere contiguamente i dati del file,
-e il suo riferimento viene salvato nella variabile `in`.
+metodo restituisce un oggetto di tipo `hadoop.fs.FSDataInputStream`, una
+sottoclasse di `java.io.InputStream` che supporta anche l'accesso a
+punti arbitrari del file. In questo case l'oggetto è utilizzato per leggere
+il file sequenzialmente, e il suo riferimento viene salvato nella variabile
+`InputStream in`.
 
 #. Si copiano i dati dallo stream `in` a `System.out`, di fatto stampando i
-dati nella console. Questa operazione è eseguita tramite il metodo d'utilità
-`hadoop.io.IOUtils.copyBytes(in, out, int bufSize, bool closeStream)`, che
-utilizza le interfacce di `java.io.InputStream` e `OutputStream` per copiare i
-dati da uno stream di input a uno di output.
+dati nella console. Questa operazione è eseguita tramite il metodo
+`hadoop.io.IOUtils.copyBytes(InputStream in, OutputStream out, int bufSize, bool
+closeStream)`. Il metodo copia i dati da uno stream d'ingresso a uno d'uscita,
+e non ha funzioni specifiche rispetto ad Hadoop, ma viene fornito per la
+mancanza di un meccanismo simile in Java.
 
-#. Lo stream e l'oggetto `FileSystem` vengono chiusi. L'operazione, in questo
-caso, avviene implicitamente tramite il costrutto try-with-resources di Java.
+#. Lo stream e l'oggetto `FileSystem` vengono chiusi. L'operazione avviene
+implicitamente utilizzando il costrutto try-with-resources di Java.
+
+L'esecuzione del programma dà il seguente risultato:
 
 ## MapReduce
 
