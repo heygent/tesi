@@ -624,7 +624,8 @@ qualificato, l'identificativo `hadoop` si riferisce al package Java
 `Configuration` forniscono l'accesso ai parametri di configurazione di Hadoop
 (impostati in file XML, come descritto in [Installazione e Configurazione]).
 
-#. Si ottiene un riferimento `sourcefs` a un `hadoop.fs.FileSystem`,
+#. Si ottiene un riferimento `sourcefs` a un `hadoop.fs.FileSystem` (dichiarato
+come interfaccia Java),
 che fornisce le API che verranno usate per leggere e manipolare il filesystem.
 Il riferimento viene ottenuto tramite il metodo statico `FileSystem.get(URI
 source, Configuration conf)`, che richiede un URI che possa essere utilizzato
@@ -633,12 +634,22 @@ per risalire a quale filesystem si vuole accedere. Un overload di
 e ottiene le informazioni sul filesystem da aprire dalla proprietà di
 configurazione `dfs.defaultFS`.
 
-#. Si apre il file il lettura, chiamando `FileSystem.open(Path file)`. Il
+Nel caso di un URI con schema HDFS, l'istanza concreta di `FileSystem` che
+viene restituita da `FileSystem.get` è di tipo `DistributedFileSystem`.
+
+#. Si apre il file il lettura, chiamando `sourcefs.open(Path file)`. Il
 metodo restituisce un oggetto di tipo `hadoop.fs.FSDataInputStream`, una
 sottoclasse di `java.io.InputStream` che supporta anche l'accesso a
 punti arbitrari del file. In questo case l'oggetto è utilizzato per leggere
 il file sequenzialmente, e il suo riferimento viene salvato nella variabile
 `InputStream in`.
+
+Dietro le quinte, `FSDataInputStream` utilizza chiamate a procedure remote sul
+namenode per ottenere le posizioni dei primi blocchi del file. Per ogni blocco,
+il namenode restituisce gli indirizzi dei datanode che lo contengono, ordinati
+in base alla prossimità del client. Se il client stesso è uno dei datanode che
+contiene un blocco da leggere, il blocco viene letto localmente.
+
 
 #. Si copiano i dati dallo stream `in` a `System.out`, di fatto stampando i
 dati nella console. Questa operazione è eseguita tramite il metodo
@@ -650,17 +661,11 @@ mancanza di un meccanismo simile in Java.
 #. Lo stream e l'oggetto `FileSystem` vengono chiusi. L'operazione avviene
 implicitamente utilizzando il costrutto try-with-resources di Java.
 
-L'esecuzione del programma dà il seguente risultato:
+L'esecuzione del programma dà il seguente output:
 
-## MapReduce
+```sh
+$~ hadoop MyCat hdfs://sandbox.hortonworks.com:8020/example/example1.txt
+This is the first example file
+```
 
-Per dare un'idea concreta di come funziona la programmazione in un cluster
-Hadoop
-
-MapReduce è il primo importante modello di programmazione a cui Hadoop fa
-riferimento per l'esecuzione di applicazioni distribuite. Hadoop è stato
-scritto e pensato per l'esecuzione di lavori MapReduce, e nelle prime versioni
-era il solo modello di programmazione disponibile.
-
-I lavori MapReduce
-
+Le astrazioni

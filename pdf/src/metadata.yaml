@@ -45,6 +45,29 @@ references:
     type: webpage
     title: Hadoop Ubuntu Packagers PPA
     URL: https://launchpad.net/~hadoop-ubuntu/+archive/ubuntu/stable
+  - id: nasa-weblog
+    type: webpage
+    title: HTTP Logs from the KSC-NASA
+    URL: http://ita.ee.lbl.gov/html/contrib/NASA-HTTP.html
+  - id: mapreduce-spark-performance
+    type: article
+    title: "Clash of the Titans: MapReduce vs. Spark for Large Scale Data Analytics"
+    author:
+        - given: Juwei
+          family: Shi
+        - given: Yunjie
+          family: Qiu
+        - given: Umar
+          family: Farooq Minhas
+        - given: Limei
+          family: Jiao
+        - given: Chen
+          family: Wang
+        - given: Berthold
+          family: Reinwald
+        - given: Fatma
+          family: Ozcan
+    URL: http://www.vldb.org/pvldb/vol8/p2110-shi.pdf
   - id: hadoop-guide-hdfs-file-read
     type: book
     title: "Hadoop: The Definitive Guide"
