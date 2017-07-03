@@ -634,22 +634,12 @@ per risalire a quale filesystem si vuole accedere. Un overload di
 e ottiene le informazioni sul filesystem da aprire dalla proprietà di
 configurazione `dfs.defaultFS`.
 
-Nel caso di un URI con schema HDFS, l'istanza concreta di `FileSystem` che
-viene restituita da `FileSystem.get` è di tipo `DistributedFileSystem`.
-
 #. Si apre il file il lettura, chiamando `sourcefs.open(Path file)`. Il
 metodo restituisce un oggetto di tipo `hadoop.fs.FSDataInputStream`, una
 sottoclasse di `java.io.InputStream` che supporta anche l'accesso a
 punti arbitrari del file. In questo case l'oggetto è utilizzato per leggere
 il file sequenzialmente, e il suo riferimento viene salvato nella variabile
 `InputStream in`.
-
-Dietro le quinte, `FSDataInputStream` utilizza chiamate a procedure remote sul
-namenode per ottenere le posizioni dei primi blocchi del file. Per ogni blocco,
-il namenode restituisce gli indirizzi dei datanode che lo contengono, ordinati
-in base alla prossimità del client. Se il client stesso è uno dei datanode che
-contiene un blocco da leggere, il blocco viene letto localmente.
-
 
 #. Si copiano i dati dallo stream `in` a `System.out`, di fatto stampando i
 dati nella console. Questa operazione è eseguita tramite il metodo
@@ -668,4 +658,38 @@ $~ hadoop MyCat hdfs://sandbox.hortonworks.com:8020/example/example1.txt
 This is the first example file
 ```
 
-Le astrazioni
+Nel caso di un URI con schema HDFS, l'istanza concreta di `FileSystem` che
+viene restituita da `FileSystem.get` è di tipo `DistributedFileSystem`, che
+contiene le funzionalità necessarie a comunicare con HDFS. Con uno schema
+diverso (ad esempio `file`), l'istanza concreta di `FileSystem` cambia.
+
+Dietro le quinte, `FSDataInputStream`, restituito da `FileSystem.open(...)`,
+utilizza chiamate a procedure remote sul namenode per ottenere le posizioni dei
+primi blocchi del file. Per ogni blocco, il namenode restituisce gli indirizzi
+dei datanode che lo contengono, ordinati in base alla prossimità del client. Se
+il client stesso è uno dei datanode che contiene un blocco da leggere, il
+blocco viene letto localmente.
+
+Alla prima chiamata di `read()` su `FSDataInputStream`, l'oggetto si connette
+al DataNode che contiene il primo blocco del file, e lo richiede (nell'esempio,
+`read` viene chiamato da `IOUtils.copyBytes`). Il DataNode risponde inviando i
+dati corrispondenti al blocco, fino al termine di questi. Al raggiungimento
+della fine di un blocco, `DFSInputStream` termina la connessione con il
+DataNode corrente e ne inizia un'altra con il più prossimo dei DataNode che
+contiene il blocco successivo.
+
+In caso di errore dovuto al fallimento di un DataNode o alla ricezione di un
+blocco di dati corrotto, il client può ricevere il blocco dal nodo successivo
+della lista dei DataNode contenenti il blocco ricevuta dal NameNode.
+
+I blocchi del file non vengono inviati tutti insieme, e il client deve
+periodicamente richiedere al NameNode i dati sui blocchi successivi. Questo
+avviene trasparentemente rispetto al client, che si limita a chiamare `read` su
+`DFSInputStream`.
+
+Le comunicazioni di rete, in questo meccanismo, sono distribuite su tutto il
+cluster. Il NameNode riceve richieste che riguardano solo i metadati dei file,
+mentre il resto delle connessioni viene eseguito direttamente tra client e
+DataNode. Questo approccio permette ad HDFS di raggiungere un gran livello di
+scalabilità, evitando i colli di bottiglia dovuti a un punto di connessione
+centralizzato nel filesystem.
