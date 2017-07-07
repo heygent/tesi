@@ -51,9 +51,43 @@ In questa definizione sono racchiusi dei punti molti importanti:
     trasparente all'utente, a cui basta persitere i dati da elaborare nel
     cluster per usifruirne. Questo principio viene definito **data locality**.
 
+ *  **Rack awareness**
+
+    Nel contesto di Hadoop, *rack awareness* si riferisce a delle
+    ottimizzazioni sull'utilizzo di banda di rete e sull'affidabilità che
+    Hadoop fa basandosi sulla struttura del cluster. 
+
+    \begin{figure}
+    \def\svgwidth{\linewidth}
+    \input{img/hadoop_topology.pdf_tex}
+    \label{fig:hadoop-topology}
+    \caption{Topologia di rete tipica di un cluster Hadoop.}
+    \end{figure}
+
+    Quando configurato per essere *rack aware*, Hadoop considera il cluster
+    come un insieme di *rack* che contengono i nodi del cluster. Tutti i nodi
+    di un rack sono connessi a uno switch di rete (o dispositivo equivalente),
+    e tutti gli switch sono a loro volta connessi a uno switch centrale.
+
+    A partire da questa struttura si può fare un'assunzione importante: la
+    comunicazione tra nodi in uno stesso rack è meno onerosa in termini di
+    banda rispetto alla comunicazione tra nodi in rack diversi, perché la
+    comunicazione può essere commutata tramite un solo switch.
+
+    Quando possibile, Hadoop utilizza questo principio per minimizzare l'uso di
+    banda tra nodi del cluster. Come si vedrà, i vari componenti di Hadoop
+    fanno uso della configurazione di rete per raggiungere diversi risultati,
+    tra cui l'ottimizzazione dell'uso di banda di rete e una migliore
+    fault-tolerance.
+
  *  **Scalabilità**
 
-    |||
+    Hadoop è in grado di scalare linearmente in termini di velocità di
+    computazione e storage, ed è in grado di sostenere cluster composti da un
+    gran numero di macchine. Il più grande cluster Hadoop conosciuto dal punto
+    di vista dello storage è gestito da Facebook, che secondo gli ultimi dati
+    disponibili nell'anno 2011 conteneva 21 petabyte di dati ed è composto da
+    più di 2000 nodi.
 
  *  **Hardware non necessariamente affidabile**
 
@@ -240,30 +274,33 @@ HDFS è un filesystem distribuito che permette l'accesso ad alto throughput ai
 dati. HDFS è scritto in Java, e viene eseguito nello userspace. Lo storage dei
 dati passa per il filesystem del sistema che lo esegue. 
 
-I dati contenuti in HDFS sono organizzati in unità logiche chiamate *blocchi*,
-come è comune nei filesystem. I blocchi di un singolo file possono essere
-distribuiti all'interno di più macchine all'interno del cluster, permettendo di
-avere file più grandi della capacità di storage di ogni singola macchina nel
-cluster. Rispetto ai filesystem comuni la dimensione di un blocco è molto più
-grande, 128 MB di default. La ragione per cui HDFS utilizza blocchi così grandi
-è minimizzare il costo delle operazioni di seek, dato il fatto che se i file
-sono composti da meno blocchi, si rende necessario trovare l'inizio di un
-blocco un minor numero di volte. Questo approccio riduce anche la
-frammentazione dei dati, rendendo più probabile che questi vengano scritti
-contiguamente all'interno della macchina[^1].
+I dati contenuti in HDFS sono organizzati, a livello di storage, in unità
+logiche chiamate *blocchi*, nel senso comune del termine nel dominio dei
+filesystem. I blocchi di un singolo file possono essere distribuiti all'interno
+di più macchine all'interno del cluster, permettendo di avere file più grandi
+della capacità di storage di ogni singola macchina nel cluster. Rispetto ai
+filesystem comuni la dimensione di un blocco è molto più grande, 128 MB di
+default. La ragione per cui HDFS utilizza blocchi così grandi è minimizzare il
+costo delle operazioni di seek, dato il fatto che se i file sono composti da
+meno blocchi, si rende necessario trovare l'inizio di un blocco un minor numero
+di volte. Questo approccio riduce anche la frammentazione dei dati, rendendo
+più probabile che questi vengano scritti contiguamente all'interno della
+macchina[^1].
 
 [^1]: Non è possibile essere certi della contiguità dei dati, perché HDFS non è
 un'astrazione diretta sulla scrittura del disco, ma sul filesystem del sistema
 operativo che lo esegue. Per cui la frammentazione effettiva dipende da come i
-dati vengono organizzati dal filesystem sottostante.
+dati vengono organizzati dal filesystem del sistema operativo.
 
-Il blocco, inoltre, è un'astrazione che si presta bene alla replicazione dei
-dati nel filesystem all'interno del cluster: per replicare i dati, come si
-vedrà, si mette uno stesso blocco all'interno di più macchine nel cluster.
 
-HDFS è basato sulla specifica POSIX, ma non la implementa in modo rigido:
-tralasciare alcuni requisiti di conformità alla specifica permette ad HDFS di
-ottenere prestazioni e affidabilità migliori, come verrà descritto in seguito.
+HDFS è basato sulla specifica POSIX, e ha quindi una struttura gerarchica.
+L'utente può strutturare i dati salvati in directory, e impostare permessi di
+accesso in file e cartelle. Tuttavia, l'adesione a POSIX non è rigida, e alcune
+operazioni non sono rese possibili, come la modifica dei file in punti
+arbitrari. Queste restrizioni permettono ad HDFS di implementare
+efficientemente funzioni specifiche del suo dominio (come il batch processing),
+e di semplificare la sua architettura.
+
 
 ### Principi architetturali
 
@@ -344,6 +381,30 @@ socket TCP ed è coordinata dal NameNode, che fornisce ai client tutte le
 informazioni sul filesystem e su quali nodi contengono i DataBlock dei file
 richiesti.
 
+### Replicazione e fault-tolerance
+
+Il blocco è un'astrazione che si presta bene alla replicazione dei dati nel
+filesystem all'interno del cluster: per replicare i dati, HDFS persiste ogni
+blocco all'interno di più macchine nel cluster. HDFS utilizza le informazioni
+sulla configurazione di rete del cluster per decidere il posizionamento delle
+repliche di ogni blocco: considerando che i tempi di latenza di rete sono più
+bassi tra nodi in uno stesso rack, HDFS salva due copie del blocco in due nodi
+che condividono il rack. In questo modo, nell'eventualità in cui una delle
+copie del blocco non fosse disponibile, una sua replica può essere recuperata
+in un nodo che si trova all'interno del rack, minimizzando l'overhead di rete.
+
+Per aumentare la fault-tolerance, HDFS salva un'ulteriore copia del blocco al
+di fuori del rack in cui ha memorizzato le prime due. Questa operazione
+salvaguardia l'accesso al blocco in caso di fallimento dello switch di rete del
+rack che contiene le prime due copie, che renderebbe inaccessibili tutte le
+macchine che contieneche contiene.
+
+Il numero di repliche create da HDFS per ogni blocco è definito *replication
+factor*, ed è configurabile tramite l'opzione `dfs.replication`. Quando il
+numero di repliche di un certo file scende sotto la soglia di questa proprietà
+(eventualità che accade in caso di fallimento dei nodi) HDFS riesegue
+trasparentemente la replicazione dei blocchi per raggiungere la soglia definita
+nella configurazione.
 
 ### Comunicare con HDFS
 
@@ -428,12 +489,13 @@ Found 3 items
 
 Il listing è molto simile a quello ottenibile su sistemi Unix. Una differenza
 importante è la seconda colonna, che non mostra il numero di hard link al file
-nel filesystem^[HDFS correntemente non supporta link nel filesystem.], ma il
-numero di repliche che HDFS ha a disposizione del file, in questo caso una per
-file. Il numero di repliche fatte da HDFS può essere impostato settando il
-fattore di replicazione di default, che per Hadoop in modalità distribuita è 3
-di default. Si può anche cambiare il numero di repliche disponibili per
-determinati file, utilizzando il comando `hdfs dfs`:
+nel filesystem^[Non è necessario mostrare i link dei file, perché HDFS
+correntemente non li supporta.], ma il numero di repliche che HDFS ha a
+disposizione del file, in questo caso una per file. Il numero di repliche fatte
+da HDFS può essere impostato settando il fattore di replicazione di default,
+che per Hadoop in modalità distribuita è 3 di default. Si può anche cambiare il
+numero di repliche disponibili per determinati file, utilizzando il comando
+`hdfs dfs`:
 
 ```sh
 [root@sandbox ~]# hdfs dfs -setrep 2 /example/example1.txt
@@ -661,7 +723,8 @@ This is the first example file
 Nel caso di un URI con schema HDFS, l'istanza concreta di `FileSystem` che
 viene restituita da `FileSystem.get` è di tipo `DistributedFileSystem`, che
 contiene le funzionalità necessarie a comunicare con HDFS. Con uno schema
-diverso (ad esempio `file`), l'istanza concreta di `FileSystem` cambia.
+diverso (ad esempio `file`), l'istanza concreta di `FileSystem` cambia per
+gestire opportunamente lo schema richiesto (se supportato).
 
 Dietro le quinte, `FSDataInputStream`, restituito da `FileSystem.open(...)`,
 utilizza chiamate a procedure remote sul namenode per ottenere le posizioni dei
@@ -690,6 +753,61 @@ avviene trasparentemente rispetto al client, che si limita a chiamare `read` su
 Le comunicazioni di rete, in questo meccanismo, sono distribuite su tutto il
 cluster. Il NameNode riceve richieste che riguardano solo i metadati dei file,
 mentre il resto delle connessioni viene eseguito direttamente tra client e
-DataNode. Questo approccio permette ad HDFS di raggiungere un gran livello di
-scalabilità, evitando i colli di bottiglia dovuti a un punto di connessione
-centralizzato nel filesystem.
+DataNode. Questo approccio permette ad HDFS di evitare colli di bottiglia
+dovuti a un punto di connessione ai client centralizzato, e di distribuire le
+comunicazioni di rete attraverso i vari nodi del cluster.
+
+## YARN
+
+HDFS è la parte di Hadoop che si occupa di gestire lo storage distribuito. La
+computazione distribuita è gestita da YARN, in termini di gestione delle
+risorse e di esecuzione.
+
+YARN è acronimo di Yet Another Resource Negotiator, ed è l'insieme di API su
+cui sono implementati framework di programmazione distribuita di livello più
+alto, come MapReduce e Spark. YARN si definisce un *"negotiator"* perché è
+l'entità che decide quando e come le risorse del cluster debbano essere
+allocate per l'esecuzione distribuita, e che gestisce le comunicazioni
+che riguardano le risorse con tutti i nodi coinvolti. Inoltre, YARN ha
+l'importante ruolo di esporre un'interfaccia che permette di imporre **vincoli
+di località** sulle risorse richieste dalle applicazioni, permettendo
+l'implementazione di applicazioni che seguono il principio di *data locality*
+di Hadoop.
+
+I servizi di YARN sono offerti tramite *demoni* eseguiti nei nodi del cluster.
+Ci sono due tipi di demoni in YARN:
+
+* i **NodeManager**, che eseguono su richiesta i processi necessari allo
+  svolgimento dell'applicazione nel cluster. L'esecuzione dei processi avviene
+  attraverso *container*, che permettono di limitare le risorse utilizzate da
+  ogni processo eseguito. Il NodeManager viene eseguito in ogni nodo del
+  cluster che prende parte alle computazioni distribuite.
+
+* il **ResourceManager**, di cui è eseguita un'istanza per cluster, e che
+  gestisce le sue risorse. Il ResourceManager è l'entità che comunica con i
+  NodeManager e che decide quali processi questi debbano eseguire e quando. 
+
+I container in YARN possono essere rappresentativi di diverse modalità di
+esecuzione di un processo, configurabili dall'utente tramite la proprietà
+`yarn.nodemanager.container-executor.class`, il cui valore identifica una
+classe che stabilisce come i processi debbano essere eseguiti. Di default,
+l'esecuzione utilizza normali processi UNIX, ma la configurazione permette
+l'uso di container di virtualizzazione OS-level, come lxc e Docker.
+
+L'esecuzione di applicazioni distribuite in YARN è richiesta dai client al
+ResourceManager. Quando il ResourceManager decide di avviare un'applicazione,
+alloca un container in uno dei NodeManager, e vi esegue il primo processo di
+ogni programma YARN, che viene definito **application master**.
+
+L'application master è specificato dalle applicazioni, ed ha i seguenti
+ruoli[@hortonworks-yarn]:
+
+* negoziare l'acquisizione di nuovi container con il ResourceManager nel corso
+  dell'applicazione;
+* utilizzare i container per eseguire i processi distribuiti di cui è
+  costituita l'applicazione;
+- monitorare lo stato e il progresso dell'esecuzione dei processi nei
+  container.
+
+Il modello di richiesta delle risorse da parte di YARN permette di specificare
+dettagliatamente le risorse necessarie

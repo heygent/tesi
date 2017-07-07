@@ -3,18 +3,18 @@
 # Introduzione {-}
 
 Negli ultimi decenni, i Big Data hanno preso piede in modo impetuoso in una
-grande varietà di ambiti. Il fenomeno ha avuto un enorme impatto: settori come
-medicina, finanza, business analytics e marketing sfruttano i Big Data per
-guidare lo sviluppo in modi semplicemente non possibili prima.
+grande varietà di ambiti. Settori come medicina, finanza, business analytics e
+marketing sfruttano i Big Data per guidare lo sviluppo, utilizzando tecnologie
+che riescono a ricavare valore da grandi dataset in tempi eccezionalmente brevi
+rispetto al passato.
 
-L'innovazione che rende possibili questi risultati è guidata dal software
-molto più che dall'hardware. Ci sono stati dei grandi cambiamenti nel
-modo di pensare alla computazione e all'organizzazione dei suoi processi, che
-hanno portato a risultati notevoli nell'efficienza di elaborazione di grandi
-quantità di dati.
+L'innovazione che rende possibili questi risultati è stata guidata dal software
+molto più che dall'hardware. Sono stati i cambiamenti nel modo di pensare alla
+computazione e all'organizzazione dei suoi processi che hanno portato a
+risultati notevoli nell'efficienza di elaborazione di grandi quantità di dati.
 
-Uno dei più importanti fenomeni che hanno portato a questa spinta è stato lo
-sviluppo di Hadoop, un framework open source progettato per la computazione
+Uno dei fattori più importanti ad aver dato slancio a questo fenomeno è stato
+lo sviluppo di Hadoop, un framework open source progettato per la computazione
 batch di dataset di grandi dimensioni. Utilizzando un'architettura ben
 congeniata, Hadoop ha permesso l'analisi in tempi molto rapidi di interi
 dataset di dimensioni nell'ordine dei terabyte, fornendo una capacità di
@@ -37,24 +37,24 @@ delle capacità di analisi dei dati:
   per creare programmi che necessitano di un altro grado di parallelismo.
 
 Questi fattori hanno spinto a una vasta adozione di Hadoop e dell'ecosistema
-software che lo circonda, in ambito aziendale e scientifico. 
-L'adozione di Hadoop, secondo un sondaggio fatto a maggio
-2015[@hadoop-adoption-survey], si aggira al 26% delle imprese negli Stati
-Uniti, e si prevede che il mercato attorno ad Hadoop sorpasserà i 16 miliardi
-di dollari nel 2020 [@hadoop-market-analysis].
+software che lo circonda, in ambito aziendale e scientifico. L'adozione di
+Hadoop, secondo un sondaggio fatto a maggio 2015[@hadoop-adoption-survey], si
+aggira al 26% delle imprese negli Stati Uniti, e si prevede che il mercato
+attorno ad Hadoop sorpasserà i 16 miliardi di dollari nel 2020
+[@hadoop-market-analysis].
 
 Tutto questo accade in un'ottica in cui la produzione di informazioni aumenta
 ad una scala senza precedenti: secondo uno studio di IDC[@digital-univ], la
 quantità di informazioni nell'"Universo Digitale" ammontava a 4.4 TB nel 2014,
-e la sua dimensione stimata nel 2020 è di 44 TB.
+e la sua dimensione stimata nel 2020 è di 44 TB. Data la presenza di questa
+vasta quantità di informazioni, il loro sfruttamento efficace può essere fonte
+di grandi opportunità. 
 
-Data la presenza di questa vasta quantità di informazioni, lo sfruttamento
-efficace di queste è fonte di grandi opportunità. In questo documento si
-analizzano le varie tecniche che sono a disposizione per l'utilizzo effettivo
-dei Big Data, come queste differiscono tra di loro, e quali strumenti le
-mettono a disposizione. Si parlerà inoltre di come gli strumenti possano essere
-integrati in sistemi di produzione esistenti, le possibili architetture di un
-sistema di questo tipo e come ...
+In questo documento si analizzano le varie tecniche che sono a disposizione per
+l'utilizzo effettivo dei Big Data, come queste differiscono tra di loro, e
+quali strumenti le mettono a disposizione. Si parlerà inoltre di come gli
+strumenti possano essere integrati in sistemi di produzione esistenti, le
+possibili architetture di un sistema di questo tipo e come ...
 
 La gestione di sistemi per l'elaborazione di Big Data richiede una
 configurazione accurata per ottenere affidabilità e fault-tolerance. Pur

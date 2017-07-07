@@ -9,6 +9,42 @@ link-citations: true
 codeBlockCaptions: true
 thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
+  - id: rdd-conf
+    type: speech
+    title: "Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing"
+    URL: https://www.usenix.org/conference/nsdi12/technical-sessions/presentation/zaharia
+    author:
+        - given: Zaharia
+          family: Matei
+  - id: hortonworks-yarn
+    type: webpage
+    title: HortonWorks - Apache Hadoop YARN
+    URL: https://it.hortonworks.com/apache/yarn/
+  - id: mapred-diagram
+    type: graphic
+    title: How Hadoop Map/Reduce works 
+    URI: https://dzone.com/articles/how-hadoop-mapreduce-works
+    container-title: DZone
+  - id: ibm-yarn-containers
+    title: IBM Knowledge Center - Configuring YARN container execution
+    type: webpage
+    URL: https://www.ibm.com/support/knowledgecenter/en/SSPT3X_4.1.0/com.ibm.swg.im.infosphere.biginsights.install.doc/doc/inst_adv_yarn_config.html
+  - id: hadoop-yarn-docker
+    title: Apache Hadoop 2.8.0 - Docker Container Executor
+    type: webpage
+    URL: https://hadoop.apache.org/docs/r2.8.0/hadoop-yarn/hadoop-yarn-site/DockerContainerExecutor.html
+  - id: spark-graphx
+    type: webpage
+    title: Spark GraphX
+    URL: https://spark.apache.org/graphx/ 
+  - id: spark-sql
+    type: webpage
+    title: Spark SQL
+    URL: https://spark.apache.org/sql/ 
+  - id: spark-mllib
+    type: webpage
+    title: Spark MLlib
+    URL: https://spark.apache.org/mllib/ 
   - id: hadoop-market-analysis
     type: webpage
     title: Hadoop Market Forecast 2017-2022
@@ -24,11 +60,14 @@ references:
     container-title: Gartner
     issued:
         raw: 2015-5-13
+  - id: hadoop-node-scale
+    type: webpage
+    title: 
   - id: digital-univ
     title: "The Digital Universe of Opportunities: Rich Data and the Increasing Value of the Internet of Things"
     URL: https://www.emc.com/leadership/digital-universe/2014iview/executive-summary.htm
     issued:
-        raw: 2014-4-2
+        rawgt: 2014-4-2
   - id: hadoop-doc-main
     type: webpage
     title: Apache Hadoop Documentation
