@@ -1,7 +1,7 @@
 # Hadoop
 
 Nell'ambito dei Big Data, Hadoop è il perno centrale su cui è basato un
-*ecosistema* di tool e tecnologie, tant'è che spesso il termine Hadoop viene
+*ecosistema* di tool e tecnologie, tant'è che spesso il nome Hadoop viene
 utilizzato per riferirsi all'intero ecosistema di tool e tecnologie construiti
 attorno a questo.
 
