@@ -19,8 +19,8 @@ scrittura nel disco, o peggio in HDFS.
 YARN è stato creato proprio per questo motivo: permettere che altri modelli di
 computazione diversi da MapReduce potessero essere eseguiti sfruttando HDFS. 
 Le nuove versioni di MapReduce sono implementate al di sopra di YARN invece che
-direttamente in Hadoop, a testimoniare l'effettiva capacità di YARN di
-generalizzare i modelli di esecuzione nei cluster.
+direttamente in Hadoop come in passato, a testimoniare l'effettiva capacità di
+YARN di generalizzare i modelli di esecuzione nei cluster.
 
 La sua alternativa più popolare, Apache Spark, ha API più espressive e
 funzionali rispetto a MapReduce, ed è più performante in molti tipi di
@@ -208,13 +208,14 @@ sono tipi standard Java, ma sono forniti dalla libreria. Hadoop utilizza un suo
 formato di serializzazione per lo storage e per la trasmissione dei dati in
 rete, diverso dalla serializzazione integrata in Java. In questo modo il
 framework ha controllo preciso sulla fase di serializzazione, un fattore
-importante data la crucialità in termini di efficienza di elaborazione che
-questa può avere. Le funzionalità di serializzazione di Hadoop sono rese
-accessibili dagli oggetti serializzabili tramite l'interfaccia
-`hadoop.io.Writable`. Le classi `LongWritable` e `Text` sono dei wrapper sui
-tipi `long` e `String` che implementano l'interfaccia `Writable`, e i valori
-contenuti in questi tipi possono essere ottenuti rispettivamente con
-`LongWritable.get()` e `Text.toString()`[^6].
+importante data la crucialità in termini di efficienza che questa può avere.
+
+Le funzionalità di serializzazione di Hadoop sono rese accessibili dagli
+oggetti serializzabili tramite l'interfaccia `hadoop.io.Writable`. Le classi
+`LongWritable` e `Text` sono dei wrapper sui tipi `long` e `String` che
+implementano l'interfaccia `Writable`, e i valori contenuti in questi tipi
+possono essere ottenuti rispettivamente con `LongWritable.get()` e
+`Text.toString()`[^6].
 
 [^6]: Le classi definite dagli utenti possono implementare a loro volta
 l'interfaccia `Writable` per essere supportate come tipi di chiavi e valori nei
@@ -349,10 +350,14 @@ un'interfaccia web fornita dal framework.
 
 Al termine dell'esecuzione, i risultati sono disponibili in HDFS nella cartella
 `/example/LogAnalyzerOutput`, come specificato nei parametri d'esecuzione. I
-risultati si trovano in una cartella perché questi sono composti da più file,
-uno per ogni Reducer eseguito parallelamente dal framework. In questo caso, il
-job è stato eseguito da un solo reducer, per cui i risultati si trovano in un
-unico file. 
+risultati si trovano in una cartella perché possono essere composti da più
+file, uno per ogni Reducer eseguito parallelamente dal framework. Questa
+limitazione è dovuta ad HDFS, che restringe rigidamente l'accesso in
+scrittura ai file a un solo utilizzatore. In questo caso, il job è stato
+eseguito da un solo reducer, per cui i risultati si trovano in un unico file.
+L'output dei reducer è salvato in file testuali con il nome `part-r-` seguito
+da un numero sequenziale che identifica l'istanza del Reducer che lo ha
+prodotto.
 
 Eseguendo `ls` nella cartella di output si può effettivamente verificare la
 presenza del file prodotto dal Reducer.
@@ -365,9 +370,9 @@ Found 2 items
 ```
 
 Assieme al risultato della computazione, MapReduce salva un file vuoto chiamato
-`_SUCCESS`, di cui si può verificare la presenza in HDFS per capire se il job è
-andato a buon fine.
-Consultando il file, si può osservare il risultato della computazione eseguita.
+`_SUCCESS`, utilizzabile per verificare programmaticamente se il job è andato a
+buon fine. Consultando il file, si può osservare il risultato della
+computazione eseguita.
 
 ```sh
 ...
@@ -390,7 +395,7 @@ Consultando il file, si può osservare il risultato della computazione eseguita.
 
 \clearpage
 
-### Efficienza di MapReduce
+### Modello di esecuzione di MapReduce
 
 Il modello di programmazione di MapReduce è progettato per essere altamente
 parallelizzabile e in modo che sia possibile processare diverse parti
@@ -402,28 +407,57 @@ indipendenti.
 MapReduce è implementato in YARN, e utilizza le sue astrazioni per
 avvantaggiarsi della località dei dati, eseguendo i processi che riguardano una
 certa porzione di input nei nodi che contengono i corrispondenti blocchi HDFS.
+L'esecuzione dei lavori MapReduce avviene secondo i seguenti step:
 
-I file vengono partizionati da MapReduce in frammenti chiamati *split*, e per
-ognuno di questi MapReduce esegue un *map task* in un determinato nodo del
-cluster. Ogni map task può eseguire uno o più processi nel nodo in cui si
-trova, a seconda delle risorse assegnate da YARN.
+ #. I file vengono partizionati da MapReduce in frammenti chiamati *split*, e
+    per ognuno di questi MapReduce esegue un *map task* in un determinato nodo del
+    cluster. Ogni map task può eseguire uno o più processi nel nodo in cui si
+    trova, a seconda delle risorse assegnate da YARN.
 
-La dimensione degli split è configurabile, e non corrisponde necessariamente
-alla dimensione di un blocco HDFS, pur essendo questa l'opzione di default. Con
-split della stessa dimensione dei blocchi, la maggior parte dei dati può essere
-processata dai nodi che contengono il blocco nel loro storage locale. È
-possibile configurare MapReduce per utilizzare split più grandi, ma se una
-parte dello split non si trova nel nodo in cui viene eseguito il map task,
-questa deve essere ricevuta tramite rete da un altro nodo nel cluster che la
-contiene, con conseguente overhead.
+    La dimensione degli split è configurabile, e non corrisponde
+    necessariamente alla dimensione di un blocco HDFS, pur essendo questa
+    l'opzione di default (128 MB). Con split della stessa dimensione dei blocchi,
+    la maggior parte dei dati può essere processata dai nodi che contengono il
+    blocco nel loro storage locale. È possibile configurare MapReduce per
+    utilizzare split più grandi, ma se una parte dello split non si trova nel nodo
+    in cui viene eseguito il map task, questa deve essere ricevuta tramite rete da
+    un altro nodo nel cluster che la contiene, riducendo quindi la *data
+    locality*.
 
-In ogni *map task*, lo split corrispondente viene diviso in più *record*, che
-corrispondono alle coppie ricevute in input dal Mapper[^7]. Il map task esegue
-il Mapper in uno o più processi del nodo in cui si trova, per poi salvare il
-loro output nello storage locale del nodo che esegue il map task. 
+ #. In ogni *map task*, lo split corrispondente viene diviso in più *record*, che
+    corrispondono alle coppie ricevute in input dal Mapper. Il map task esegue
+    il Mapper in uno o più processi del nodo in cui si trova, per poi salvare il
+    loro output nello storage locale del nodo che esegue il map task. Lo storage
+    locale è più efficiente per la scrittura, ma non offre fault-tolerance, per cui
+    in caso di fallimento del nodo che contiene i risultati di un *map task*,
+    l'application master dell'applicazione MapReduce deve schedulare la sua
+    riesecuzione.
 
-Una volta terminati i map task, il framework esegue i *reduce task*. Prima di
-eseguire l'operazione di reduce, 
+    Oltre all'esecuzione dei Mapper, i nodi in questa fase ordinano la parte di
+    output in loro possesso in base alla chiave. Questo permette di eseguire
+    parallelamente buona parte del sorting dell'input dei Reducer.
+
+ #. Quando non ci sono più *map task* da eseguire sull'input, l'application master
+    inizia ad avviare i *reduce task*. I *reduce task* ricevono in input i
+    risultati ordinati prodotti dai *map task* mano a mano che questi sono
+    disponibili. Ogni *map task* può inviare coppie chiave-valore a ogni
+    *reduce task*, a condizione che coppie con la stessa chiave finiscano
+    sempre nello stesso reducer.
+    
+    Per fare questo, i nodi che eseguono *map task* dividono il loro output in
+    partizioni, una per ogni Reducer. Ogni chiave delle coppie di output viene
+    associata univocamente a una partizione, utilizzando la seguente funzione:
+
+    $$partitionId(K_i) = hashCode(K_i) \bmod partitionCount$$
+
+    In questo modo, la stessa chiave è sempre associata alla stessa partizione
+    in ogni nodo.
+
+ #. I nodi che eseguono i Reducer ricevono dai nodi Mapper diversi insiemi
+    ordinati di coppie chiave-valore. Questi gruppi vengono uniti tramite
+    un'operazione di *merge*, analoga alla stessa operazione nel contesto del
+    *mergesort*. Una volta ricevuti tutti i valori, il *reduce task* esegue i
+    Reducer che computano l'output finale dell'applicazione.
 
 ## Spark
 
@@ -431,21 +465,19 @@ Le astrazioni fornite dal paradigma computazionale di MapReduce tolgono
 dall'utente l'onere di pensare al dataset in elaborazione, astraendo
 l'applicazione a una serie di elaborazioni su chiavi e valori. Questa
 astrazione ha tuttavia un costo: l'utente non ha il controllo sulla gestione
-del flusso dei dati, che è gestita interamente dal framework.
+del flusso dei dati, che è affidata interamente dal framework.
 
 Il costo della semplificazione diventa evidente quando si cerca di utilizzare
 MapReduce per eseguire operazioni che richiedono la rielaborazione di
-risultati. Al termine di ogni job MapReduce, questi vengono salvati in HDFS, ed
-è quindi necessario rileggerli dal filesystem per poterli riutilizzare.
+risultati. Al termine di ogni job MapReduce, l'output viene salvato in HDFS, ed
+è quindi necessario rileggerlo dal filesystem per poterlo utilizzare.
 
 Di per sé, MapReduce non contiene un meccanismo che permetta la schedulazione
 consecutiva di job che ricevono in input l'output di un altro job, e per
 eseguire elaborazioni che richiedono più fasi è necessario utilizzare tool
-esterni.
-
-Inoltre, l'overhead della lettura e scrittura in HDFS è alto, e MapReduce non
-fornisce metodi per rielaborare i dati nella memoria centrale prima della
-scrittura in HDFS.
+esterni. Inoltre, l'overhead della lettura e scrittura in HDFS è alto, e
+MapReduce non fornisce metodi per rielaborare i dati direttamente nella memoria
+centrale.
 
 Il creatore di Spark, Matei Zaharia[@rdd-conf], ha posto questo problema come
 dovuto alla mancanza di *primitive efficienti per la condivisione di dati* in
@@ -456,21 +488,23 @@ del dataset invece che delle singole chiavi e valori.
 Infine, la scrittura dei risultati delle computazioni in HDFS è necessaria per
 fornire fault-tolerance sui risultati delle computazioni, che andrebbero persi
 nel caso di un fallimento di un nodo che mantiene i risultati nella memoria
-centrale. Per poter avere
+centrale. Per poter avere 
 
 Spark si propone come alternativa a MapReduce, con l'intenzione di dare una
 soluzione a questi problemi. Le soluzioni derivano da un approccio funzionale
-alla computazione, sfruttando strutture dati immutabili per rappresentare i
-dataset e API che utilizzano funzioni di ordine superiore per esprimere
-concisamente le computazioni. L'astrazione principale del modello di Spark è
-il Resilient Distributed Dataset, o RDD, che rappresenta una collezione
-immutabile di record di cui è composto un dataset distribuito o una sua
-rielaborazione.
+alla computazione, sfruttando strutture con semantica di immutabilibità per
+rappresentare i dataset e API che utilizzano funzioni di ordine superiore per
+esprimere concisamente le computazioni. L'astrazione principale del modello
+di Spark è il Resilient Distributed Dataset, o RDD, che rappresenta una
+collezione immutabile di record di cui è composto un dataset distribuito o una
+sua rielaborazione.
 
 Spark è scritto in Scala, e la sua esecuzione su Hadoop è gestita da YARN.
 YARN non è l'unico motore di esecuzione di Spark, che può essere eseguito anche
-su Apache Mesos o in modalità standalone, su cluster Spark dedicati.
-Le API client di Spark sono disponibili in Scala, Java e Python.
+su Apache Mesos o in modalità standalone, sia su cluster che su macchine
+singole.
+Le API client di Spark sono canonicamente disponibili in Scala, Java, R e
+Python.
 
 Spark dispone anche di una modalità interattiva, in cui l'utente interagisce
 con il framework tramite una shell REPL Scala o Python. Questa modalità
@@ -483,13 +517,51 @@ precedenti.
 ### Interfaccia di Spark
 
 I Resilient Distributed Dataset sono degli oggetti che rappresentano un dataset
-distribuito. Gli RDD possono essere creati a partire da HDFS, sfruttando
-la data locality per la lettura, o da un qualunque elemento iterabile.
-La creazione degli RDD è eseguita da un oggetto SparkContext, che 
+partizionato e distribuito, su cui è possibile eseguire operazioni
+parallelamente. 
 
-(@)
+Gli RDD sono immutabili, e ogni computazione richiesta su di questi restituisce
+un valore o un nuovo RDD. Le computazioni sono eseguite tramite metodi chiamati
+sugli oggetti RDD, e si dividono in due categorie: **azioni** e
+**trasformazioni**.
 
-L'API di Spark consiste di un oggetto `SparkSession`, 
+Le trasformazioni creano un nuovo RDD, basato su delle operazioni
+deterministiche sull'RDD di origine. L'elaborazione del nuovo RDD è lazy, e
+non viene eseguita nessuna operazione finché non viene richiesta l'esecuzione
+di un'azione. 
+
+Alcuni esempi di trasformazioni sono `map`, che associa a ogni valore del
+dataset un nuovo valore, e `filter`, che scarta dei valori nel dataset in base
+a un predicato. Spesso, per descrivere le computazioni, le trasformazioni
+richiedono in input funzioni pure (prive di side-effect).
+
+Le azioni fanno scattare la valutazione dell'RDD, che porta quindi
+all'esecuzione di tutte le trasformazioni da cui questo è derivato. Alcuni
+esempi di azioni sono `foreach`, che esegue una funzione specificata
+dall'utente per ogni input del dataset, `reduce`, che riceve in input una
+funzione per aggregare i valori del dataset, e `saveAsTextFile`, che permette
+il salvataggio di un RDD in un file testuale.
+
+Se non vengono fatte specificazioni, la computazione delle trasformazioni
+avviene ogni volta che viene chiamata un'azione su di un RDD. Per evitare
+ricomputazioni costose, è possibile specificare quali RDD persistere nella
+memoria dei nodi, in modo che i risultati computati possano essere
+riutilizzati. Per segnalare un RDD come da persistere, è sufficiente chiamare
+il suo metodo `persist`.
+
+Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
+utilizzando un grafo che viene definito **lineage**. Tramite questa struttura,
+Spark è in grado di fornire fault-tolerance: nell'eventualità in cui un nodo
+che esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
+può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare un RDD
+salvato in memoria. A partire da questo, si può ricavare la partizione del
+dataset da cui l'input del nodo fallito è ricavato, e rischedulare la serie di
+operazioni per cui la partizione è passata, fino alla rielaborazione
+dell'operazione fallita.
+
+Quante più operazioni possibili vengono eseguite nello stesso nodo. Cambiare i
+nodi della computazione si rende necessario in certe operazioni, come
+l'aggregazione. In questi casi 
 
 +-------------------------+-------------------------------------------+
 | Trasformazione          | Risultato                                 |

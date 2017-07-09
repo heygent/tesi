@@ -1,9 +1,16 @@
 # Hadoop
 
-Nell'ambito dei Big Data, Hadoop è il perno centrale su cui è basato un
-*ecosistema* di tool e tecnologie, tant'è che spesso il nome Hadoop viene
-utilizzato per riferirsi all'intero ecosistema di tool e tecnologie construiti
-attorno a questo.
+Hadoop è una piattaforma software utilizzata per lo storage e la computazione
+distribuita di dataset di grandi dimensioni. Hadoop viene eseguito in *cluster*
+di computer, che vengono coordinati dalla piattaforma per fornire delle API in
+grado di astrarre una parte importante della complessità insita nei sistemi
+distribuiti. Hadoop fornisce delle interfacce per l'elaborazione diretta
+dei dati da parte degli utenti, e delle primitive di livello più basso che
+consentono l'implementazione di altri framework basati sulla sua
+infrastruttura di base. Grazie a quest'ultima caratteristica, Hadoop è
+diventato un perno centrale nell'ambito dei Big Data, su cui si è costruito un
+ecosistema di tool e tecnologie che ne utilizzano l'infrastruttura o con cui
+viene fornita una stretta integrazione.
 
 La documentazione ufficiale[@hadoop-doc-main] lo descrive come:
 
@@ -16,18 +23,20 @@ per rilevare e gestire i fallimenti [delle computazioni] a livello applicativo,
 mettendo a disposizione un servizio ad alta affidiabilità su cluster di
 computer proni al fallimento.
 
-In questa definizione sono racchiusi dei punti molti importanti:
+In questa definizione sono racchiusi dei punti importanti:
 
  *  **Semplici modelli di programmazione**
 
     Hadoop raggiunge molti dei suoi obiettivi fornendo un'interfaccia di
-    livello molto alto al programmatore, in modo di potersi assumere la
-    responsabilità di concetti complessi e necessari all'efficienza nella
-    computazione distribuita, ma che hanno poco a che fare con il problema da
-    risolvere in sé (ad esempio, la sincronizzazione di task paralleli e lo
-    scambio dei dati tra nodi del sistema distribuito). Questo modello **pone
-    dei limiti alla libertà del programmatore**, che deve adeguare la codifica
-    della risoluzione del problema al modello di programmazione fornito.
+    alto livello al programmatore, in modo di potersi assumere la
+    responsabilità di molti concetti complessi e necessari alla correttezza e
+    all'efficienza della computazione distribuita, ma che hanno poco a che fare
+    con il problema da risolvere in sé (come la sincronizzazione di task
+    paralleli e lo scambio dei dati tra nodi del sistema distribuito). 
+
+    Il framwork fornisce un modello di programmazione distribuita rivolto agli
+    utenti, chiamato MapReduce, e ne esistono molti altri creati da terze
+    parti. 
 
  *  **Computazione e storage locale**
 
@@ -45,11 +54,12 @@ In questa definizione sono racchiusi dei punti molti importanti:
     Hadoop unisce i due concetti utilizzando cluster di macchine che hanno sia
     lo scopo di mantenere lo storage, che quello di elaborare i dati.
     Quando Hadoop esegue un lavoro, **quante più possibili delle computazioni
-    richieste vengono eseguite nei nodi che contengono i dati da elaborare**.
-    Questo permette di ridurre la latenza di rete, minimizzando la quantità
-    di dati che devono essere scambiati tra i nodi del cluster. Il meccanismo è
-    trasparente all'utente, a cui basta persitere i dati da elaborare nel
-    cluster per usifruirne. Questo principio viene definito **data locality**.
+    richieste vengono eseguite nei nodi che già contengono i dati da
+    elaborare**. Questo permette di ridurre la latenza di rete, minimizzando la
+    quantità di dati che devono essere scambiati tra i nodi del cluster. Il
+    meccanismo è trasparente all'utente, a cui basta persitere i dati da
+    elaborare nel cluster e utilizzare un framework basato su Hadoop per
+    usifruirne. Questo principio viene definito **data locality**.
 
  *  **Rack awareness**
 
@@ -76,9 +86,8 @@ In questa definizione sono racchiusi dei punti molti importanti:
 
     Quando possibile, Hadoop utilizza questo principio per minimizzare l'uso di
     banda tra nodi del cluster. Come si vedrà, i vari componenti di Hadoop
-    fanno uso della configurazione di rete per raggiungere diversi risultati,
-    tra cui l'ottimizzazione dell'uso di banda di rete e una migliore
-    fault-tolerance.
+    fanno uso della configurazione di rete per ottimizzazare dell'uso della
+    rete e per ottenere una migliore fault-tolerance.
 
  *  **Scalabilità**
 
@@ -87,18 +96,18 @@ In questa definizione sono racchiusi dei punti molti importanti:
     gran numero di macchine. Il più grande cluster Hadoop conosciuto dal punto
     di vista dello storage è gestito da Facebook, che secondo gli ultimi dati
     disponibili nell'anno 2011 conteneva 21 petabyte di dati ed è composto da
-    più di 2000 nodi.
+    più di 2000 nodi.|||
 
  *  **Hardware non necessariamente affidabile**
 
     I cluster di macchine che eseguono Hadoop non hanno particolari requisiti
-    di affidabilità rispetto ad hardware consumer. Il framework è progettato
-    per tenere in conto dell'alta probabilità di fallimento dell'hardware, e
-    per attenuarne le conseguenze, sia dal punto di vista dello storage e della
-    potenziale perdita di dati, che da quello della perdita di risultati
-    intermedi e parziali nel corso dell'esecuzione di lavori computazionalmente
-    costosi. In questo modo l'utente è sgravato dal compito generalmente
-    difficile di gestire fallimenti parziali nel corso delle computazioni.
+    di affidabilità. Il framework è progettato per tenere in conto dell'alta
+    probabilità di fallimento dell'hardware, e per attenuarne le conseguenze,
+    sia dal punto di vista dello storage e della potenziale perdita di dati,
+    che da quello della perdita di risultati intermedi e parziali nel corso
+    dell'esecuzione di lavori computazionalmente costosi. In questo modo
+    l'utente è sgravato dal compito generalmente difficile di gestire
+    fallimenti parziali nel corso delle computazioni.
 
 Hadoop è composto da diversi moduli:
 
@@ -115,23 +124,23 @@ Hadoop è composto da diversi moduli:
 ## Installazione e Configurazione
 
 Ogni versione di Hadoop viene distribuita in tarball, una con i sorgenti, da
-cui si può eseguire una build manuale, e una binaria, che può essere estratta e
-utilizzata così com'è. Per un approccio più strutturato, sono disponibili
-repository che forniscono versioni pacchettizzate di Hadoop, come il PPA
-per Ubuntu[@hadoop-ppa] e i pacchetti AUR per Arch Linux[@hadoop-aur].
+cui si può eseguire una build manuale, e una binaria. Per un approccio più
+strutturato, sono disponibili repository che forniscono versioni pacchettizzate
+di Hadoop, come il PPA per Ubuntu[@hadoop-ppa] e i pacchetti AUR per Arch
+Linux[@hadoop-aur].
 
 Ci sono anche distribuzioni di immagini virtuali Linux create appositamente con
-lo scopo di fornire un ambiente preconfigurato con Hadoop e vari componenti del
-suo ecosistema. I due ambienti più utilizzati di questo tipo sono Cloudera
-QuickStart e HortonWorks Sandbox, disponibili per VirtualBox, VMWare e Docker.
-Gli esempi di questo documento sono eseguiti prevalentemente da Arch Linux e
-dalla versione Docker di HortonWorks Sandbox.
+lo scopo di fornire un ambiente preconfigurato di prototipazione con Hadoop e
+vari componenti del suo ecosistema. I due ambienti più utilizzati di questo
+tipo sono Cloudera QuickStart e HortonWorks Sandbox, disponibili per
+VirtualBox, VMWare e Docker. Gli esempi di questo documento sono eseguiti
+prevalentemente da Arch Linux e dalla versione Docker di HortonWorks Sandbox.
 
 Hadoop è configurabile tramite file XML, che si trovano rispetto alla cartella
 d'installazione in `etc/hadoop`. Ogni componente di Hadoop (HDFS, MapReduce,
-Yarn) ha un file di configurazione apposito che contiene impostazioni relative
-al componente stesso, mentre un altro file di configurazione contiene proprietà
-comuni a tutti i componenti.
+Yarn) ha un file di configurazione apposito che contiene le sue impostazioni,
+e un file di configurazione globale per il cluster contiene proprietà comuni a
+tutti i componenti.
 
 +-----------------+-----------------+-----------------+-------------------+
 | Comuni          | HDFS            | YARN            | MapReduce         |
@@ -161,7 +170,7 @@ comuni a tutti i componenti.
 
 : Esempio di file di configurazione personalizzato di Hadoop.
 
-È anche possibile selezionare un'altra cartella da cui prendere i file di
+È possibile selezionare un'altra cartella da cui prendere i file di
 configurazione, impostandola come valore della variabile d'ambiente
 `HADOOP_CONF_DIR`. Un approccio comune alla modifica dei file di configurazione
 consiste nel copiare il contenuto di `etc/hadoop` in un'altra posizione,
@@ -271,8 +280,10 @@ in cui è eseguito il programma.
 ## HDFS
 
 HDFS è un filesystem distribuito che permette l'accesso ad alto throughput ai
-dati. HDFS è scritto in Java, e viene eseguito nello userspace. Lo storage dei
-dati passa per il filesystem del sistema che lo esegue. 
+dati, scritto in Java ed eseguito nello userspace. HDFS è stato studiato e
+progettato per fornire un sistema di storage distribuito che permetta
+l'efficiente elaborazione batch di grandi dataset, e che sia resiliente al
+fallimento delle singole macchine del cluster.
 
 I dati contenuti in HDFS sono organizzati, a livello di storage, in unità
 logiche chiamate *blocchi*, nel senso comune del termine nel dominio dei
@@ -289,9 +300,8 @@ macchina[^1].
 
 [^1]: Non è possibile essere certi della contiguità dei dati, perché HDFS non è
 un'astrazione diretta sulla scrittura del disco, ma sul filesystem del sistema
-operativo che lo esegue. Per cui la frammentazione effettiva dipende da come i
-dati vengono organizzati dal filesystem del sistema operativo.
-
+operativo che lo esegue. La frammentazione effettiva dipende da come i dati
+vengono organizzati dal filesystem del sistema operativo.
 
 HDFS è basato sulla specifica POSIX, e ha quindi una struttura gerarchica.
 L'utente può strutturare i dati salvati in directory, e impostare permessi di
@@ -300,7 +310,6 @@ operazioni non sono rese possibili, come la modifica dei file in punti
 arbitrari. Queste restrizioni permettono ad HDFS di implementare
 efficientemente funzioni specifiche del suo dominio (come il batch processing),
 e di semplificare la sua architettura.
-
 
 ### Principi architetturali
 
@@ -390,8 +399,9 @@ sulla configurazione di rete del cluster per decidere il posizionamento delle
 repliche di ogni blocco: considerando che i tempi di latenza di rete sono più
 bassi tra nodi in uno stesso rack, HDFS salva due copie del blocco in due nodi
 che condividono il rack. In questo modo, nell'eventualità in cui una delle
-copie del blocco non fosse disponibile, una sua replica può essere recuperata
-in un nodo che si trova all'interno del rack, minimizzando l'overhead di rete.
+copie del blocco non fosse disponibile o avesse problemi d'integrità, una sua
+replica può essere recuperata in un nodo che si trova all'interno del rack,
+minimizzando l'overhead di rete.
 
 Per aumentare la fault-tolerance, HDFS salva un'ulteriore copia del blocco al
 di fuori del rack in cui ha memorizzato le prime due. Questa operazione
@@ -405,6 +415,9 @@ numero di repliche di un certo file scende sotto la soglia di questa proprietà
 (eventualità che accade in caso di fallimento dei nodi) HDFS riesegue
 trasparentemente la replicazione dei blocchi per raggiungere la soglia definita
 nella configurazione.
+
+L'integrità dei blocchi è verificata trasparentemente da HDFS alla loro lettura
+e scrittura, utilizzando checksum CRC-32|||
 
 ### Comunicare con HDFS
 
@@ -444,9 +457,11 @@ hadoop fs -mkdir hdfs://localhost:8020/foo
 ```
 
 Per diminuire la verbosità dei comandi è possibile utilizzare percorsi
-relativi, e specificare l'opzione `dfs.defaultFS` nella configurazione di
-Hadoop all'URI del filesystem ai cui i percorsi relativi si riferiscono.
-In questo modo, si può accorciare l'esempio precedente a:
+relativi, specificando nell'opzione `dfs.defaultFS` della configurazione del
+cluster l'URI del filesystem ai cui i percorsi relativi si riferiscono.
+Gli URI riferiti a istanze di HDFS hanno schema `hdfs://`, seguito
+dall'indirizzo IP o dell'hostname della macchina che esegue il NameNode.
+Specificando l'URI, si può accorciare l'esempio precedente a:
 
 ```sh
 hadoop fs -mkdir foo
@@ -512,15 +527,15 @@ informazioni sullo stato generale del filesystem e sul suo contenuto. Ci sono
 anche tool di amministrazione di cluster Hadoop che offrono GUI web più
 avanzate di quella fornita di default da HDFS. Due esempi sono Cloudera Manager
 e Apache Ambari, che offrono un file manager lato web con cui è possibile
-interagire in modo più semplice, permettendo anche a utenti in ambito meno
-tecnico di lavorare con il filesystem.
+interagire in modo più semplice, permettendo anche a utenti non tecnicamente
+esperti di lavorare con il filesystem.
 
 ![Screenshot del file manager HDFS incluso in Ambari](img/ambari_hdfs.png)
 
-Un'altra interfaccia importante ad HDFS è l'API `FileSystem` di Hadoop, che
-permette un accesso programmatico da linguaggi per JVM a tutte le funzioni del
-filesystem. L'API è generale, in modo che possa essere utilizzata con
-filesystem diversi da HDFS. 
+Un altro importante modo di interfacciarsi ad HDFS è l'API `FileSystem` di
+Hadoop, che permette un accesso programmatico da linguaggi per JVM alle
+funzioni del filesystem. L'API fornisce interfacce Java generali che possono
+utilizzata con filesystem diversi da HDFS, permettendo
 
 Per linguaggi che non supportano interfacce Java, esiste un'implementazione in
 C chiamata `libhdfs`, che si appoggia sulla Java Native Interface per esporre
@@ -531,7 +546,7 @@ locale. Alcune di queste implementazioni sono basate su FUSE, mentre altre su
 NFS Gateway. Questo metodo di accesso permette l'utilizzo di utilità native del
 sistema in uso in HDFS.
 
-### NameNode
+### NameNode in dettaglio
 
 Il NameNode è il riferimento centrale per i metadati del filesystem nel
 cluster, il che vuol dire che se il NameNode non è disponibile il filesystem
@@ -547,28 +562,28 @@ contengono i dati effettivi del file. I dati di un file non passano mai per il
 NameNode.
 
 Tuttavia, il NameNode non salva persistentemente le informazioni sulle
-posizioni dei blocchi, che vengono invece mantenute dai DataNode. Perché il
-NameNode possa avere in memoria le informazioni sui file necessarie per essere
-operativo, questo deve ricevere le liste dei blocchi in possesso dei DataNode,
-in messaggi chiamati **block report**. Non è necessario che il DataNode conosca
-la posizione di tutti i blocchi sin dall'inizio, ma basta che per ogni blocco
-conosca la posizione di un numero minimo di repliche, determinato da un'opzione
-chiamata `dfs.replication.min.replicas`, di default 1.
+posizioni dei blocchi, che vengono invece mantenute dai DataNode. Prima che il
+NameNode possa essere operativo, deve ricevere e salvare in memoria le
+liste dei blocchi in possesso dei DataNode, in messaggi chiamati **block
+report**. Non è necessario che il DataNode conosca la posizione di tutti i
+blocchi sin dall'inizio, ed è sufficiente che per ogni blocco conosca la
+posizione di un numero minimo di repliche, determinato dall'opzione del cluster
+`dfs.replication.min.replicas`, di default 1.
 
 Questa procedura avviene quando il NameNode si trova in uno stato chiamato
-**safe mode**.
+[*safe mode*](#safe-mode)
 
 #### *Namespace image* ed *edit log*
 
 Le informazioni sui metadati del sistema vengono salvate nello storage del
 NameNode in due posti, la _**namespace image**_ e l'_**edit log**_.
 La *namespace image* è uno snapshot dell'intera struttura del filesystem,
-mentre l'*edit log* è un elenco di operazioni eseguite nel filesystem a partire
-dalla *namespace image*. Partendo dalla *namespace image* e applicando le
-operazioni registrate nell'*edit log*, è possibile risalire allo stato attuale
-del filesystem. Il NameNode ha una rappresentazione dello stato del filesystem
-anche nella memoria centrale, che viene utilizzata per servire le richieste di
-lettura.
+mentre l'*edit log* è un elenco di transazioni eseguite nel filesystem a
+partire dallo stato registrato nella *namespace image*. Partendo dalla
+*namespace image* e applicando le operazioni registrate nell'*edit log*, è
+possibile risalire allo stato attuale del filesystem. Il NameNode ha una
+rappresentazione dello stato del filesystem anche nella memoria centrale, che
+viene utilizzata per servire le richieste di lettura.
 
 Quando HDFS riceve una richiesta che richiede la modifica dei metadati, il
 NameNode esegue le seguenti operazioni:
@@ -596,7 +611,7 @@ NameNode**. Il Secondary NameNode viene solitamente eseguito su una macchina
 differente, dato che richiede un'unità di elaborazione potente e almeno la
 stessa memoria del NameNode per eseguire l'operazione di merge.
 
-#### Avvio del NameNode e *Safe Mode*
+#### Avvio del NameNode e *Safe Mode* {#safe-mode}
 
 Prima di essere operativo, il NameNode deve eseguire alcune operazioni di
 startup, tra cui attendere di aver ricevuto i block report dai DataNode in modo
@@ -723,8 +738,9 @@ This is the first example file
 Nel caso di un URI con schema HDFS, l'istanza concreta di `FileSystem` che
 viene restituita da `FileSystem.get` è di tipo `DistributedFileSystem`, che
 contiene le funzionalità necessarie a comunicare con HDFS. Con uno schema
-diverso (ad esempio `file`), l'istanza concreta di `FileSystem` cambia per
-gestire opportunamente lo schema richiesto (se supportato).
+diverso (ad esempio `file://` per filesystem locali), l'istanza concreta di
+`FileSystem` cambia per gestire opportunamente lo schema richiesto (se
+supportato).
 
 Dietro le quinte, `FSDataInputStream`, restituito da `FileSystem.open(...)`,
 utilizza chiamate a procedure remote sul namenode per ottenere le posizioni dei
@@ -742,26 +758,22 @@ DataNode corrente e ne inizia un'altra con il più prossimo dei DataNode che
 contiene il blocco successivo.
 
 In caso di errore dovuto al fallimento di un DataNode o alla ricezione di un
-blocco di dati corrotto, il client può ricevere il blocco dal nodo successivo
-della lista dei DataNode contenenti il blocco ricevuta dal NameNode.
+blocco di dati corrotto, il client può ricevere un'altra copia del blocco dal
+nodo successivo della lista di DataNode ricevuta dal NameNode.
 
 I blocchi del file non vengono inviati tutti insieme, e il client deve
 periodicamente richiedere al NameNode i dati sui blocchi successivi. Questo
-avviene trasparentemente rispetto al client, che si limita a chiamare `read` su
-`DFSInputStream`.
+passaggio avviene trasparentemente rispetto all'interfaccia, in cui
+l'utilizzatore si limita a chiamare `read` su `DFSInputStream`.
 
 Le comunicazioni di rete, in questo meccanismo, sono distribuite su tutto il
 cluster. Il NameNode riceve richieste che riguardano solo i metadati dei file,
 mentre il resto delle connessioni viene eseguito direttamente tra client e
 DataNode. Questo approccio permette ad HDFS di evitare colli di bottiglia
-dovuti a un punto di connessione ai client centralizzato, e di distribuire le
+dovuti a un punto di connessione ai client centralizzato, distribuendo le
 comunicazioni di rete attraverso i vari nodi del cluster.
 
 ## YARN
-
-HDFS è la parte di Hadoop che si occupa di gestire lo storage distribuito. La
-computazione distribuita è gestita da YARN, in termini di gestione delle
-risorse e di esecuzione.
 
 YARN è acronimo di Yet Another Resource Negotiator, ed è l'insieme di API su
 cui sono implementati framework di programmazione distribuita di livello più
@@ -788,18 +800,18 @@ Ci sono due tipi di demoni in YARN:
   NodeManager e che decide quali processi questi debbano eseguire e quando. 
 
 I container in YARN possono essere rappresentativi di diverse modalità di
-esecuzione di un processo, configurabili dall'utente tramite la proprietà
-`yarn.nodemanager.container-executor.class`, il cui valore identifica una
-classe che stabilisce come i processi debbano essere eseguiti. Di default,
+esecuzione di un processo. Queste sono configurabili dall'utente tramite la
+proprietà `yarn.nodemanager.container-executor.class`, il cui valore identifica
+una classe che stabilisce come i processi debbano essere eseguiti. Di default,
 l'esecuzione utilizza normali processi UNIX, ma la configurazione permette
 l'uso di container di virtualizzazione OS-level, come lxc e Docker.
 
 L'esecuzione di applicazioni distribuite in YARN è richiesta dai client al
 ResourceManager. Quando il ResourceManager decide di avviare un'applicazione,
-alloca un container in uno dei NodeManager, e vi esegue il primo processo di
-ogni programma YARN, che viene definito **application master**.
+alloca un container in uno dei NodeManager e lo utilizza per invocare un
+**application master**.
 
-L'application master è specificato dalle applicazioni, ed ha i seguenti
+L'application master è specificato dalle singole applicazioni, ed ha i seguenti
 ruoli[@hortonworks-yarn]:
 
 * negoziare l'acquisizione di nuovi container con il ResourceManager nel corso
@@ -809,5 +821,47 @@ ruoli[@hortonworks-yarn]:
 - monitorare lo stato e il progresso dell'esecuzione dei processi nei
   container.
 
-Il modello di richiesta delle risorse da parte di YARN permette di specificare
-dettagliatamente le risorse necessarie
+Le richieste di container specificano CPU, memoria, e la specifica macchina
+dove si desidera l'esecuzione. Tra i parametri della richiesta è anche
+possibile specificare se si vuole permettere l'esecuzione in una macchina
+diversa da quella richiesta, qualora non fosse disponibile.
+
+Mano a mano che la computazione procede, l'application master può riferire al
+ResourceManager di rilasciare determinate risorse. Quando il master decide di
+porre termine all'applicazione, lo riferisce al ResourceManager, in modo da
+permettere il rilascio del container in cui è eseguito.
+
+Il ResourceManager è in grado di gestire più job contemporaneamente utilizzando
+diverse politiche di scheduling. L'esecuzione dei job può essere richiesta da
+diversi utenti ed entità che hanno accesso al cluster, e la scelta di una
+politica di scheduling adeguata permette di stabilire priorità di accesso
+diverse per ognuna delle entità.
+
+Tra gli scheduler forniti da Hadoop, i seguenti sono i più utilizzati:
+
+* Lo scheduler **FIFO** esegue i job sequenzialmente in ordine di arrivo, e
+  ogni job può potenzialmente utilizzare tutte le risorse del risorse del
+  cluster.
+
+* Il **Fair Scheduler** esegue i job concorrentemente, fornendo una parte delle
+  risorse del cluster a ogni job. I job possono avere una *priorità*, ovvero un
+  peso che determina la frazione di risorse che ricevono. Mano a mano che nuovi
+  job arrivano, le risorse rilasciate dai job già in esecuzione vengono
+  riassegnate al nuovo job per bilanciare la distribuzione delle risorse in
+  base ai pesi[@yarn-fair-scheduler]. È anche possibile configurare lo
+  scheduler in modo che le risorse siano distribuite in base agli utenti che
+  richiedono l'esecuzione dei job. 
+
+* Il **Capacity Scheduler** è il più adatto per condividere cluster tra
+  organizzazioni. Lo scheduler viene configurato per avere diverse *code
+  gerarchiche* di job, ognuna dedicata a un ente che fa uso del cluster.
+  Per ogni coda è specificata una quantità minima di risorse del cluster che
+  devono essere disponibili per l'uso in ogni momento, di cui lo scheduler
+  garantisce la disponibilità.
+
+Gli scheduler sono implementati in classi, e lo scheduler da istanziare viene
+scelto dal ResourceManager cercando, tramite reflection Java, la classe con
+il nome indicato in `yarn.resourcemanager.scheduler.class`. L'utente è libero
+di implementare un proprio scheduler e di specificarne l'identificatore in
+questa proprietà.
+

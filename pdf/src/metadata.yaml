@@ -9,6 +9,14 @@ link-citations: true
 codeBlockCaptions: true
 thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
+  - title: YARN Container Configuration
+    id: yarn-container
+    URL: https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/SecureContainer.html
+    type: webpage
+  - title: Default Partitioner Implementation
+    URL: https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java/org/apache/hadoop/mapred/lib/HashPartitioner.java
+    id: default-partitioner
+    type: webpage
   - id: rdd-conf
     type: speech
     title: "Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing"
