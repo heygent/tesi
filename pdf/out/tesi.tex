@@ -24,6 +24,7 @@
 \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
 }{}
 \PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage{fancyvrb}
 \usepackage[unicode=true]{hyperref}
 \PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
 \hypersetup{
@@ -33,6 +34,7 @@
             urlcolor=NavyBlue,
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
+\VerbatimFootnotes % allows verbatim text in footnotes
 \usepackage[a4paper, left=3.5cm, right=3cm, top=2.5cm, bottom=3cm]{geometry}
 \ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
   \usepackage[shorthands=off,main=italian]{babel}
@@ -40,44 +42,6 @@
   \usepackage{polyglossia}
   \setmainlanguage[]{italian}
 \fi
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\newenvironment{Shaded}{}{}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
-\newcommand{\ImportTok}[1]{#1}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
-\newcommand{\BuiltInTok}[1]{#1}
-\newcommand{\ExtensionTok}[1]{#1}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
-\newcommand{\RegionMarkerTok}[1]{#1}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{#1}
 \usepackage{longtable,booktabs}
 % Fix footnotes in tables (requires footnote package)
 \IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{long table}}{}
@@ -116,6 +80,7 @@
 \makeatother
 
 \usepackage[dvipsnames]{xcolor}
+\usepackage{textcomp}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \addto\captionsitalian{\renewcommand{\chaptername}{Parte}}
@@ -126,15 +91,16 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
+\usepackage{listings}
 
-\usepackage{subfig}
-\usepackage{float}
-\floatstyle{plain}
-\makeatletter
-\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
-\makeatother
-\floatname{codelisting}{Listato}
-\newcommand*\listoflistings{\listof{codelisting}{Elenco dei Listati}}
+%\usepackage{subfig}
+%\usepackage{float}
+%\floatstyle{plain}
+%\makeatletter
+%\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+%\makeatother
+%\floatname{codelisting}{Listato}
+%\newcommand*\listoflistings{\listof{codelisting}{Elenco dei Listati}}
 
 \date{}
 
@@ -223,18 +189,18 @@
 \addcontentsline{toc}{chapter}{Introduzione}
 
 Negli ultimi decenni, i Big Data hanno preso piede in modo impetuoso in
-una grande varietà di ambiti. Il fenomeno ha avuto un enorme impatto:
-settori come medicina, finanza, business analytics e marketing sfruttano
-i Big Data per guidare lo sviluppo in modi semplicemente non possibili
-prima.
+una grande varietà di ambiti. Settori come medicina, finanza, business
+analytics e marketing sfruttano i Big Data per guidare lo sviluppo,
+utilizzando tecnologie che riescono a ricavare valore da grandi dataset
+in tempi eccezionalmente brevi rispetto al passato.
 
-L'innovazione che rende possibili questi risultati è guidata dal
-software molto più che dall'hardware. Ci sono stati dei grandi
-cambiamenti nel modo di pensare alla computazione e all'organizzazione
-dei suoi processi, che hanno portato a risultati notevoli
-nell'efficienza di elaborazione di grandi quantità di dati.
+L'innovazione che rende possibili questi risultati è stata guidata dal
+software molto più che dall'hardware. Sono stati i cambiamenti nel modo
+di pensare alla computazione e all'organizzazione dei suoi processi che
+hanno portato a risultati notevoli nell'efficienza di elaborazione di
+grandi quantità di dati.
 
-Uno dei più importanti fenomeni che hanno portato a questa spinta è
+Uno dei fattori più importanti ad aver dato slancio a questo fenomeno è
 stato lo sviluppo di Hadoop, un framework open source progettato per la
 computazione batch di dataset di grandi dimensioni. Utilizzando
 un'architettura ben congeniata, Hadoop ha permesso l'analisi in tempi
@@ -270,25 +236,24 @@ democratizzazione delle capacità di analisi dei dati:
 Questi fattori hanno spinto a una vasta adozione di Hadoop e
 dell'ecosistema software che lo circonda, in ambito aziendale e
 scientifico. L'adozione di Hadoop, secondo un sondaggio fatto a maggio
-2015{[}\protect\hyperlink{ref-hadoop-adoption-survey}{1}{]}, si aggira
-al 26\% delle imprese negli Stati Uniti, e si prevede che il mercato
-attorno ad Hadoop sorpasserà i 16 miliardi di dollari nel 2020
-{[}\protect\hyperlink{ref-hadoop-market-analysis}{2}{]}.
+2015{[}@hadoop-adoption-survey{]}, si aggira al 26\% delle imprese negli
+Stati Uniti, e si prevede che il mercato attorno ad Hadoop sorpasserà i
+16 miliardi di dollari nel 2020 {[}@hadoop-market-analysis{]}.
 
 Tutto questo accade in un'ottica in cui la produzione di informazioni
 aumenta ad una scala senza precedenti: secondo uno studio di
-IDC{[}\protect\hyperlink{ref-digital-univ}{3}{]}, la quantità di
-informazioni nell'``Universo Digitale'' ammontava a 4.4 TB nel 2014, e
-la sua dimensione stimata nel 2020 è di 44 TB.
+IDC{[}@digital-univ{]}, la quantità di informazioni nell'``Universo
+Digitale'' ammontava a 4.4 TB nel 2014, e la sua dimensione stimata nel
+2020 è di 44 TB. Data la presenza di questa vasta quantità di
+informazioni, il loro sfruttamento efficace può essere fonte di grandi
+opportunità.
 
-Data la presenza di questa vasta quantità di informazioni, lo
-sfruttamento efficace di queste è fonte di grandi opportunità. In questo
-documento si analizzano le varie tecniche che sono a disposizione per
-l'utilizzo effettivo dei Big Data, come queste differiscono tra di loro,
-e quali strumenti le mettono a disposizione. Si parlerà inoltre di come
-gli strumenti possano essere integrati in sistemi di produzione
-esistenti, le possibili architetture di un sistema di questo tipo e come
-\ldots{}
+In questo documento si analizzano le varie tecniche che sono a
+disposizione per l'utilizzo effettivo dei Big Data, come queste
+differiscono tra di loro, e quali strumenti le mettono a disposizione.
+Si parlerà inoltre di come gli strumenti possano essere integrati in
+sistemi di produzione esistenti, le possibili architetture di un sistema
+di questo tipo e come \ldots{}
 
 La gestione di sistemi per l'elaborazione di Big Data richiede una
 configurazione accurata per ottenere affidabilità e fault-tolerance. Pur
@@ -304,13 +269,14 @@ richiedere strumenti innovativi per poterli gestire e analizzare. Uno
 dei modelli tradizionali e più popolari per descrivere le
 caratteristiche dei Big Data si chiama \textbf{modello delle 3V}. Il
 modello identifica i Big Data come collezioni di informazione che
-presentano grande abbondanza in una più delle seguenti caratteristiche:
+presentano grande abbondanza in una o più delle seguenti
+caratteristiche:
 
 \begin{itemize}
 \tightlist
 \item
   Il \textbf{volume} delle informazioni, che può aggirarsi dalle decine
-  di terabyte per arrivare all'ordine dei petabyte;
+  di terabyte per arrivare fino ai petabyte;
 \item
   La \textbf{varietà}, intesa come la varietà di \emph{fonti} e di
   \emph{possibili strutturazioni} delle informazioni di interesse;
@@ -325,23 +291,23 @@ accentuarsi andando avanti nel tempo, in particolare:
 \item
   Il volume delle collezioni dei dati è aumentato esponenzialmente in
   tempi recenti, con l'avvento dei Social Media, dell'IOT, e degli
-  smartphone muniti di molti sensori diversi. Generalizzando, i fattori
-  che hanno portato a un grande incremento del volume dei data set sono
-  un aumento della generazione automatica di dati da parte dei
-  dispositivi e dei contenuti prodotti dagli utenti.
+  smartphone. Generalizzando, i fattori che hanno portato a un grande
+  incremento del volume dei data set sono un aumento della generazione
+  automatica di dati da parte dei dispositivi e dei contenuti prodotti
+  dagli utenti.
 \item
   L'aumento dei dispositivi e dei dati generati dagli utenti portano
-  conseguentemente a un aumento delle fonti dei dati, ed essendo queste
-  gestite da enti e persone diverse la struttura che le fonti presentano
-  difficilmente sarà uniforme, l'una rispetto all'altra. Inoltre,
-  l'utilizzo di dati non strutturati rigidamente è prevalente nelle
-  tecnologie web (in particolare documenti JSON), che sono spesso un
-  obiettivo desiderabile di analisi.
+  conseguentemente a un aumento delle fonti, gestite da enti e persone
+  diverse. Per questa ragione, le strutture dei dati ricavati
+  difficilmente saranno uniformi. Inoltre, l'utilizzo di dati non
+  strutturati rigidamente è prevalente nelle tecnologie consumer,
+  business e scientifiche (come documenti JSON, XML e CSV), che sono
+  spesso un obiettivo auspicabile per l'analisi.
 \item
   Si possono fare le stesse considerazioni fatte per il volume dei dati
   per quanto riguarda la velocità. I flussi di dati vengono generati dai
-  dispositivi e dagli utenti, che li producono a velocità molto maggiori
-  rispetto agli operatori.
+  dispositivi e dagli utenti, che li producono a ritmi molto più
+  incalzanti rispetto agli operatori.
 \end{itemize}
 
 Per l'elaborazione di dataset con queste caratteristiche sono stati
@@ -354,13 +320,12 @@ sono il \emph{batch processing} e lo \emph{stream processing}.
 Processing}\label{batch-e-streaming-processing}
 
 Il batch processing è il pattern di elaborazione generalmente più
-efficiente, e consiste nell'elaborazione di un intero dataset in
-un'unità di lavoro, per poi ottenere i risultati al termine di questa.
+efficiente, e consiste nell'elaborare un intero dataset in un'unità di
+lavoro, per poi ottenere i risultati al termine di questa.
 
-Questo approccio è ottimale quando non c'è una necessità impendente di
-avere risultati, ma in alcuni casi è necessario avere i risultati a
-disposizione mano a mano che la computazione procede, e il batch
-processing non è adatto a questo scopo:
+Questo approccio è ottimale quando i dati da elaborare sono disponibili
+a priori, e non c'è necessità di ottenere i risultati in tempi immediati
+o con bassa latenza. Tuttavia, questo approccio ha dei limiti.
 
 \begin{itemize}
 \item
@@ -376,8 +341,10 @@ processing non è adatto a questo scopo:
 
 Per use case in cui questi fattori sono rilevanti, lo \textbf{stream
 processing} si presta come più adatto. In questo paradigma, i dati da
-elaborare vengono ricevuti da stream (nella maggior parte dei casi da
-Internet) e vengono processati mano a mano con il loro arrivo. I job in
+elaborare vengono ricevuti da \emph{stream}, che rappresentano flussi di
+dati contigui provenienti da origini non necessariamente controllate.
+Gli stream forniscono nuovi dati in modo \emph{asincrono}, e la loro
+elaborazione avviene a ogni nuovo evento di ricezione. I job in
 streaming molto spesso non hanno un termine prestabilito, ma vengono
 terminati dall'utente, e i risultati dell'elaborazione possono essere
 disponibili mano a mano che l'elaborazione procede, permettendo quindi
@@ -388,26 +355,24 @@ Motion}}{Data at Rest e Data in Motion}}\label{data-at-rest-e-data-in-motion}
 
 I due paradigmi si differenziano anche per il modo in cui i dati sono
 disponibili. Il processing batch richiede che l'informazione sia
-\emph{data at rest}, ovvero informazioni salvate interamente in un mezzo
-di memoria accessibile al programma. I dati di input in una computazione
-batch sono determinati all'inizio dell'elaborazione, e non possono
-cambiare nel corso di questa. Questo significa che se nuova informazione
-arriva nel corso di un job batch, questa non può essere tenuta in conto
-nell'elaborazione finale.
+\emph{data at rest}, ovvero informazioni completamente accessibili a
+priori dal programma. I dati di input in una computazione batch sono
+determinati al suo inizio, e non possono cambiare durante il suo corso.
+Questo significa che se si rende desiderabile dare in input una nuova
+informazione in un lavoro batch, l'unico modo per farlo è rieseguire
+interamente il lavoro.
 
 Lo \textbf{stream processing}, invece, è progettato per \emph{data in
-motion}, dati in arrivo continuo la cui quantità non è fissa a priori. È
-possibile utilizzare strumenti di processing in streaming anche per
+motion}, dati in arrivo continuo non necessariamente disponibili prima
+dell'inizio dell'elaborazione. Esempi di data in motion possono essere
+rappresentati dai dati ricevuti in un socket TCP inviati da reti di
+sensori IOT, o dall'ascolto di servizi di social media.
+
+È possibile utilizzare strumenti di processing in streaming anche per
 \emph{data at rest}, rappresentando il dataset come uno stream. Questa
 proprietà è desiderabile, perché permette di utilizzare le stesse
-applicazioni per l'elaborazione di dati in arrivo dalla rete e quelli
-salvati. Come si vedrà, la Kappa architecture, ovvero una possibile
-architettura software per l'elaborazione di Big Data, utilizza questa
-proprietà per sfruttare un solo paradigma sia per computazioni in
-real-time di dati in arrivo da stream, che per i dati salvati
-storicamente, permettendo di utilizzare gli stessi tool e interfacce di
-programmazione per entrambi i tipi di elaborazione e massimizzare il
-riutilizzo di codice.
+applicazioni per elaborazioni che riguardano dataset disponibili a
+priori e stream di cui non si ha completo controllo.
 
 \begin{longtable}[]{@{}lll@{}}
 \caption{Differenze tra elaborazione batch e streaming}\tabularnewline
@@ -469,22 +434,87 @@ considerare l'invio di dati da parte di sensori IoT o le pubblicazioni
 degli utenti nei social media, che sono continui e senza una fine
 determinata.
 
-\section{Hadoop e modelli di
-elaborazione}\label{hadoop-e-modelli-di-elaborazione}
+\subsection{Architetture di sistemi Big
+Data}\label{architetture-di-sistemi-big-data}
 
-Nella prossima sezione si discuterà di Hadoop, un progetto nato con
-l'intento di affrontare la computazione batch
+I paradigmi di Batch e Stream processing presentano differenze notevoli
+nelle astrazioni, nei tool e nelle API utilizzate. Il loro utilizzo è
+condizionat
+
+Ad oggi, le architetture dei sistemi che sfruttano i Big Data si basano
+principalmente su due modelli, la \textbf{lambda} e la \textbf{kappa}
+architecture.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{img/lambda_architecture.png}
+\caption{Diagramma della Lambda Architecture}
+\end{figure}
+
+La lambda architecture utilizza tre unità logiche, il \textbf{batch
+layer}, lo \textbf{speed layer} e il \textbf{serving layer}. Il serving
+layer è un servizio o un insieme di servizi che permettono di eseguire
+query sui dati elaborati dagli altri due layer. Il batch layer esegue
+framework per computazioni batch, mentre lo speed layer esegue
+computazioni stream. Questi due layer rendono disponibili i risultati
+delle loro computazioni al serving layer per la consultazione da parte
+degli utenti.
+
+Il \textbf{batch layer} opera sui dati archiviati storicamente, e
+riesegue le computazioni periodicamente per integrare i nuovi dati
+ricevuti. Questo layer può eseguire velocemente computazioni sulla
+totalità dei dati. Lo \textbf{speed layer} invece elabora i dati
+asincronamente alla loro ricezione, e offre risultati con una bassa
+latenza.
+
+Questo approccio è il più versatile, perché permette l'utilizzo di
+entrambi i paradigmi e della totalità degli strumenti progettati per
+batch e stream processing. Tuttavia, i layer batch e speed richiedono
+una gestione separata, e il mantenimento di due basi di codice scritte
+con API e potenzialmente linguaggi diversi, anche per applicazioni che
+eseguono le stesse funzioni. I sistemi che implementano architetture
+lambda sono i più onerosi nello sviluppo e nella manutenzione.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{img/kappa_architecture.png}
+\caption{Diagramma della Kappa Architecture}
+\end{figure}
+
+In contrapposizione, la kappa architecture non utilizza un batch layer,
+e la totalità delle computazioni viene eseguita dallo speed layer. Per
+eseguire elaborazioni sui dati archiviati, questi vengono rappresentati
+come uno stream, che viene dato in ingestione allo speed layer. In
+questo modo gli strumenti e le basi di codice possono essere unificate,
+semplificando l'architettura e rendendo la gestione del sistema meno
+impegnativa.
+
+Le differenze tra i due approcci sono più visibili quando si mettono a
+confronto i framework di elaborazione batch e streaming per osservare le
+differenze nell'uso. Come regola generale, si può definire preferibile
+la lambda architecture per l'efficienza delle computazioni, superiore
+nei sistemi di elaborazione batch. La lambda architecture è preferibile
+quando le elaborazioni che si vogliono eseguire sui dati storici e
+quelli in arrivo sono identiche o molto simili, o si vuole ottenere un
+sistema architetturalmente più semplice. Spesso la scelta dipende da un
+tradeoff tra questi due fattori.
 
 \hypertarget{hadoop}{\chapter{Hadoop}\label{hadoop}}
 
-Nell'ambito dei Big Data, Hadoop è il perno centrale su cui è basato un
-\emph{ecosistema} di tool e tecnologie, tant'è che spesso il termine
-Hadoop viene utilizzato per riferirsi all'intero ecosistema di tool e
-tecnologie construiti attorno a questo.
+Hadoop è una piattaforma software utilizzata per lo storage e la
+computazione distribuita di dataset di grandi dimensioni. Hadoop viene
+eseguito in \emph{cluster} di computer, che vengono coordinati dalla
+piattaforma per fornire delle API in grado di astrarre una parte
+importante della complessità insita nei sistemi distribuiti. Hadoop
+fornisce delle interfacce per l'elaborazione diretta dei dati da parte
+degli utenti, e delle primitive di livello più basso che consentono
+l'implementazione di altri framework basati sulla sua infrastruttura di
+base. Grazie a quest'ultima caratteristica, Hadoop è diventato un perno
+centrale nell'ambito dei Big Data, su cui si è costruito un ecosistema
+di tool e tecnologie che ne utilizzano l'infrastruttura o con cui viene
+fornita una stretta integrazione.
 
-La documentazione
-ufficiale{[}\protect\hyperlink{ref-hadoop-doc-main}{4}{]} lo descrive
-come:
+La documentazione ufficiale{[}@hadoop-doc-main{]} lo descrive come:
 
 \begin{quote}
 \ldots{}un framework che abilita l'elaborazione distribuita di grandi
@@ -499,21 +529,23 @@ disposizione un servizio ad alta affidiabilità su cluster di computer
 proni al fallimento.
 \end{quote}
 
-In questa definizione sono racchiusi dei punti molti importanti:
+In questa definizione sono racchiusi dei punti importanti:
 
 \begin{itemize}
 \item
   \textbf{Semplici modelli di programmazione}
 
   Hadoop raggiunge molti dei suoi obiettivi fornendo un'interfaccia di
-  livello molto alto al programmatore, in modo di potersi assumere la
-  responsabilità di concetti complessi e necessari all'efficienza nella
-  computazione distribuita, ma che hanno poco a che fare con il problema
-  da risolvere in sé (ad esempio, la sincronizzazione di task paralleli
-  e lo scambio dei dati tra nodi del sistema distribuito). Questo
-  modello \textbf{pone dei limiti alla libertà del programmatore}, che
-  deve adeguare la codifica della risoluzione del problema al modello di
-  programmazione fornito.
+  alto livello al programmatore, in modo di potersi assumere la
+  responsabilità di molti concetti complessi e necessari alla
+  correttezza e all'efficienza della computazione distribuita, ma che
+  hanno poco a che fare con il problema da risolvere in sé (come la
+  sincronizzazione di task paralleli e lo scambio dei dati tra nodi del
+  sistema distribuito).
+
+  Il framwork fornisce un modello di programmazione distribuita rivolto
+  agli utenti, chiamato MapReduce, e ne esistono molti altri creati da
+  terze parti.
 \item
   \textbf{Computazione e storage locale}
 
@@ -532,12 +564,13 @@ In questa definizione sono racchiusi dei punti molti importanti:
   Hadoop unisce i due concetti utilizzando cluster di macchine che hanno
   sia lo scopo di mantenere lo storage, che quello di elaborare i dati.
   Quando Hadoop esegue un lavoro, \textbf{quante più possibili delle
-  computazioni richieste vengono eseguite nei nodi che contengono i dati
-  da elaborare}. Questo permette di ridurre la latenza di rete,
+  computazioni richieste vengono eseguite nei nodi che già contengono i
+  dati da elaborare}. Questo permette di ridurre la latenza di rete,
   minimizzando la quantità di dati che devono essere scambiati tra i
   nodi del cluster. Il meccanismo è trasparente all'utente, a cui basta
-  persitere i dati da elaborare nel cluster per usifruirne. Questo
-  principio viene definito \textbf{data locality}.
+  persitere i dati da elaborare nel cluster e utilizzare un framework
+  basato su Hadoop per usifruirne. Questo principio viene definito
+  \textbf{data locality}.
 \item
   \textbf{Rack awareness}
 
@@ -556,8 +589,7 @@ In questa definizione sono racchiusi dei punti molti importanti:
   cluster come un insieme di \emph{rack} che contengono i nodi del
   cluster. Tutti i nodi di un rack sono connessi a uno switch di rete (o
   dispositivo equivalente), e tutti gli switch sono a loro volta
-  connessi a uno switch centrale. Questa struttura è mostrata in
-  fig.~\ref{fig:hadoop-topology}.
+  connessi a uno switch centrale.
 
   A partire da questa struttura si può fare un'assunzione importante: la
   comunicazione tra nodi in uno stesso rack è meno onerosa in termini di
@@ -566,23 +598,28 @@ In questa definizione sono racchiusi dei punti molti importanti:
 
   Quando possibile, Hadoop utilizza questo principio per minimizzare
   l'uso di banda tra nodi del cluster. Come si vedrà, i vari componenti
-  di Hadoop fanno uso della configurazione di rete per raggiungere
-  diversi risultati.
+  di Hadoop fanno uso della configurazione di rete per ottimizzazare
+  dell'uso della rete e per ottenere una migliore fault-tolerance.
 \item
   \textbf{Scalabilità}
 
-  \textbar{}\textbar{}\textbar{}
+  Hadoop è in grado di scalare linearmente in termini di velocità di
+  computazione e storage, ed è in grado di sostenere cluster composti da
+  un gran numero di macchine. Il più grande cluster Hadoop conosciuto
+  dal punto di vista dello storage è gestito da Facebook, che secondo
+  gli ultimi dati disponibili nell'anno 2011 conteneva 21 petabyte di
+  dati ed è composto da più di 2000 nodi.\textbar{}\textbar{}\textbar{}
 \item
   \textbf{Hardware non necessariamente affidabile}
 
   I cluster di macchine che eseguono Hadoop non hanno particolari
-  requisiti di affidabilità rispetto ad hardware consumer. Il framework
-  è progettato per tenere in conto dell'alta probabilità di fallimento
-  dell'hardware, e per attenuarne le conseguenze, sia dal punto di vista
-  dello storage e della potenziale perdita di dati, che da quello della
-  perdita di risultati intermedi e parziali nel corso dell'esecuzione di
-  lavori computazionalmente costosi. In questo modo l'utente è sgravato
-  dal compito generalmente difficile di gestire fallimenti parziali nel
+  requisiti di affidabilità. Il framework è progettato per tenere in
+  conto dell'alta probabilità di fallimento dell'hardware, e per
+  attenuarne le conseguenze, sia dal punto di vista dello storage e
+  della potenziale perdita di dati, che da quello della perdita di
+  risultati intermedi e parziali nel corso dell'esecuzione di lavori
+  computazionalmente costosi. In questo modo l'utente è sgravato dal
+  compito generalmente difficile di gestire fallimenti parziali nel
   corso delle computazioni.
 \end{itemize}
 
@@ -606,26 +643,25 @@ Hadoop è composto da diversi moduli:
 Configurazione}\label{installazione-e-configurazione}}
 
 Ogni versione di Hadoop viene distribuita in tarball, una con i
-sorgenti, da cui si può eseguire una build manuale, e una binaria, che
-può essere estratta e utilizzata così com'è. Per un approccio più
-strutturato, sono disponibili repository che forniscono versioni
-pacchettizzate di Hadoop, come il PPA per
-Ubuntu{[}\protect\hyperlink{ref-hadoop-ppa}{5}{]} e i pacchetti AUR per
-Arch Linux{[}\protect\hyperlink{ref-hadoop-aur}{6}{]}.
+sorgenti, da cui si può eseguire una build manuale, e una binaria. Per
+un approccio più strutturato, sono disponibili repository che forniscono
+versioni pacchettizzate di Hadoop, come il PPA per
+Ubuntu{[}@hadoop-ppa{]} e i pacchetti AUR per Arch
+Linux{[}@hadoop-aur{]}.
 
 Ci sono anche distribuzioni di immagini virtuali Linux create
-appositamente con lo scopo di fornire un ambiente preconfigurato con
-Hadoop e vari componenti del suo ecosistema. I due ambienti più
-utilizzati di questo tipo sono Cloudera QuickStart e HortonWorks
-Sandbox, disponibili per VirtualBox, VMWare e Docker. Gli esempi di
-questo documento sono eseguiti prevalentemente da Arch Linux e dalla
-versione Docker di HortonWorks Sandbox.
+appositamente con lo scopo di fornire un ambiente preconfigurato di
+prototipazione con Hadoop e vari componenti del suo ecosistema. I due
+ambienti più utilizzati di questo tipo sono Cloudera QuickStart e
+HortonWorks Sandbox, disponibili per VirtualBox, VMWare e Docker. Gli
+esempi di questo documento sono eseguiti prevalentemente da Arch Linux e
+dalla versione Docker di HortonWorks Sandbox.
 
 Hadoop è configurabile tramite file XML, che si trovano rispetto alla
-cartella d'installazione in \texttt{etc/hadoop}. Ogni componente di
+cartella d'installazione in \lstinline!etc/hadoop!. Ogni componente di
 Hadoop (HDFS, MapReduce, Yarn) ha un file di configurazione apposito che
-contiene impostazioni relative al componente stesso, mentre un altro
-file di configurazione contiene proprietà comuni a tutti i componenti.
+contiene le sue impostazioni, e un file di configurazione globale per il
+cluster contiene proprietà comuni a tutti i componenti.
 
 \begin{longtable}[]{@{}llll@{}}
 \caption{Nomi dei file di configurazione per i componenti di
@@ -655,13 +691,13 @@ MapReduce\strut
 \midrule
 \endhead
 \begin{minipage}[t]{0.22\columnwidth}\raggedright\strut
-\texttt{core-site.xml}\strut
+\lstinline!core-site.xml!\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright\strut
-\texttt{hdfs-site.xml}\strut
+\lstinline!hdfs-site.xml!\strut
 \end{minipage} & \begin{minipage}[t]{0.22\columnwidth}\raggedright\strut
-\texttt{yarn-site.xml}\strut
+\lstinline!yarn-site.xml!\strut
 \end{minipage} & \begin{minipage}[t]{0.24\columnwidth}\raggedright\strut
-\texttt{mapred-site.xml}\strut
+\lstinline!mapred-site.xml!\strut
 \end{minipage}\tabularnewline
 \bottomrule
 \end{longtable}
@@ -670,41 +706,38 @@ MapReduce\strut
 
 \caption{Esempio di file di configurazione personalizzato di Hadoop.}
 
-\hypertarget{lst:hadoop-conf-example}{\label{lst:hadoop-conf-example}}
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{<?xml}\NormalTok{ version="1.0"}\KeywordTok{?>}
-\KeywordTok{<configuration>}
-    \KeywordTok{<property>}
-        \KeywordTok{<name>}\NormalTok{fs.defaultFS}\KeywordTok{</name>}
-        \KeywordTok{<value>}\NormalTok{hdfs://namenode/}\KeywordTok{</value>}
-    \KeywordTok{</property>}
-    \KeywordTok{<property>}
-        \KeywordTok{<name>}\NormalTok{mapreduce.framework.name}\KeywordTok{</name>}
-        \KeywordTok{<value>}\NormalTok{yarn}\KeywordTok{</value>}
-    \KeywordTok{</property>}
-    \KeywordTok{<property>}
-        \KeywordTok{<name>}\NormalTok{yarn.resourcemanager.address}\KeywordTok{</name>}
-        \KeywordTok{<value>}\NormalTok{resourcemanager:8032}\KeywordTok{</value>}
-    \KeywordTok{</property>}
-\KeywordTok{</configuration>}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=XML, label=lst:hadoop-conf-example]
+<?xml version="1.0"?>
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://namenode/</value>
+    </property>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.address</name>
+        <value>resourcemanager:8032</value>
+    </property>
+</configuration>
+\end{lstlisting}
 
 \end{codelisting}
 
-È anche possibile selezionare un'altra cartella da cui prendere i file
-di configurazione, impostandola come valore della variabile d'ambiente
-\texttt{HADOOP\_CONF\_DIR}. Un approccio comune alla modifica dei file
+È possibile selezionare un'altra cartella da cui prendere i file di
+configurazione, impostandola come valore della variabile d'ambiente
+\lstinline!HADOOP_CONF_DIR!. Un approccio comune alla modifica dei file
 di configurazione consiste nel copiare il contenuto di
-\texttt{etc/hadoop} in un'altra posizione, specificare questa in
-\texttt{HADOOP\_CONF\_DIR} e fare le modifiche nella nuova cartella. In
+\lstinline!etc/hadoop! in un'altra posizione, specificare questa in
+\lstinline!HADOOP_CONF_DIR! e fare le modifiche nella nuova cartella. In
 questo modo si evita di modificare l'albero d'installazione di Hadoop.
 
 Per molti degli eseguibili inclusi in Hadoop, è anche possibile
 specificare un file che contiene ulteriori opzioni di configurazione,
-che possono sovrascrivere quelle in \texttt{HADOOP\_CONF\_DIR} tramite
-lo switch \texttt{-conf}.
+che possono sovrascrivere quelle in \lstinline!HADOOP_CONF_DIR! tramite
+lo switch \lstinline!-conf!.
 
 \hypertarget{esecuzione-di-software-in-hadoop}{\subsection{Esecuzione di
 software in Hadoop}\label{esecuzione-di-software-in-hadoop}}
@@ -712,60 +745,56 @@ software in Hadoop}\label{esecuzione-di-software-in-hadoop}}
 I programmi che sfruttano il runtime di Hadoop sono generalmente
 sviluppati in Java (o in un linguaggio che ha come target di
 compilazione la JVM), e vengono avviati tramite l'eseguibile
-\texttt{hadoop}. L'eseguibile richiede che siano specificati il
-classpath del programma, e una classe contente un metodo \texttt{main}
-che si desidera eseguire (analogo all'entry point dei programmi Java).
+\lstinline!hadoop!. L'eseguibile richiede che siano specificati il
+classpath del programma, e una classe contente un metodo
+\lstinline!main! che si desidera eseguire (analogo all'entry point dei
+programmi Java).
 
 Il classpath può essere specificato tramite la variabile d'ambiente
-\texttt{HADOOP\_CLASSPATH}, che può essere il percorso di una directory
-o di un file \texttt{jar}. La classe con il metodo \texttt{main} da
-invocare viene messa tra i parametri del comando \texttt{hadoop},
-seguita dagli argomenti che si vogliono passare in \texttt{args{[}{]}}.
+\lstinline!HADOOP_CLASSPATH!, che può essere il percorso di una
+directory o di un file \lstinline!jar!. La classe con il metodo
+\lstinline!main! da invocare viene messa tra i parametri del comando
+\lstinline!hadoop!, seguita dagli argomenti che si vogliono passare in
+\lstinline!args[]!.
 
 \begin{enumerate}
 \def\labelenumi{(\arabic{enumi})}
 \item
   Volendo eseguire il seguente programma in Hadoop:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ SayHello \{}
-    \KeywordTok{public} \DataTypeTok{static} \DataTypeTok{void} \FunctionTok{main}\NormalTok{(}\BuiltInTok{String}\NormalTok{ args[]) \{}
-        \BuiltInTok{System}\NormalTok{.}\FunctionTok{out}\NormalTok{.}\FunctionTok{println}\NormalTok{(}\StringTok{"Hello "}\NormalTok{ + args[}\DecValTok{0}\NormalTok{] + }\StringTok{"!"}\NormalTok{);}
-\NormalTok{    \}}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=Java]
+public class SayHello {
+    public static void main(String args[]) {
+        System.out.println("Hello " + args[0] + "!");
+    }
+}
+\end{lstlisting}
 
-  Lo si può compilare e pacchettizzare in un file \texttt{jar}, per poi
-  utilizzare i seguenti comandi:
+  Lo si può compilare e pacchettizzare in un file \lstinline!jar!, per
+  poi utilizzare i seguenti comandi:
 
-\begin{Shaded}
-\begin{Highlighting}[]
+\begin{lstlisting}[language=sh]
 
-\NormalTok{$}\ExtensionTok{~} \BuiltInTok{export} \VariableTok{HADOOP_CLASSPATH=}\NormalTok{say_hello.jar }
-\NormalTok{$}\ExtensionTok{~} \ExtensionTok{hadoop}\NormalTok{ SayHello Josh}
+$~ export HADOOP_CLASSPATH=say_hello.jar 
+$~ hadoop SayHello Josh
 
-\ExtensionTok{Hello}\NormalTok{ Josh!}
-\end{Highlighting}
-\end{Shaded}
+Hello Josh!
+\end{lstlisting}
 \item
-  In alternativa, si può eseguire il comando \texttt{hadoop\ jar}, e
-  specificare il file \texttt{jar} direttamente nei suoi argomenti:
+  In alternativa, si può eseguire il comando \lstinline!hadoop jar!, e
+  specificare il file \lstinline!jar! direttamente nei suoi argomenti:
 
-\begin{Shaded}
-\begin{Highlighting}[]
+\begin{lstlisting}[language=sh]
 
-\NormalTok{$}\ExtensionTok{~} \ExtensionTok{hadoop}\NormalTok{ jar say_hello.js SayHello Josh}
+$~ hadoop jar say_hello.js SayHello Josh
 
-\ExtensionTok{Hello}\NormalTok{ Josh!}
-\end{Highlighting}
-\end{Shaded}
+Hello Josh!
+\end{lstlisting}
 \end{enumerate}
 
 In generale, i programmi eseguiti in Hadoop fanno uso della sua libreria
 client. La libreria fornisce accesso al package
-\texttt{org.apache.hadoop}, che contiene le API necessarie per
+\lstinline!org.apache.hadoop!, che contiene le API necessarie per
 interagire con Hadoop. Non è necessario che la libreria client si trovi
 nel classpath finale, in quanto il runtime di Hadoop fornisce le classi
 della libreria a runtime.
@@ -777,37 +806,34 @@ permette di specificare le proprietà di un progetto, tra cui le sue
 dipendenze, in un file XML chiamato POM (Project Object Model). A
 partire dal POM, Maven è in grado di scaricare automaticamente le
 dipendenze del progetto, e di pacchettizzarle correttamente negli
-artefatti \texttt{jar} a seconda della configurazione fornita.
+artefatti \lstinline!jar! a seconda della configurazione fornita.
 
 \begin{codelisting}
 
 \caption{Un esempio semplificato di un POM per il programma SayHello.}
 
-\hypertarget{lst:pom_example}{\label{lst:pom_example}}
-\begin{Shaded}
-\begin{Highlighting}[numbers=left,,]
-\KeywordTok{<?xml}\NormalTok{ version="1.0" encoding="UTF-8"}\KeywordTok{?>}
-\KeywordTok{<project}\OtherTok{ xmlns=}\StringTok{"..."} \KeywordTok{>}
-    \KeywordTok{<modelVersion>}\NormalTok{4.0.0}\KeywordTok{</modelVersion>}
+\begin{lstlisting}[language=XML, numbers=left, label=lst:pom_example]
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="..." >
+    <modelVersion>4.0.0</modelVersion>
 
-    \KeywordTok{<groupId>}\NormalTok{com.example}\KeywordTok{</groupId>}
-    \KeywordTok{<artifactId>}\NormalTok{say_hello}\KeywordTok{</artifactId>}
-    \KeywordTok{<version>}\NormalTok{1.0}\KeywordTok{</version>}
+    <groupId>com.example</groupId>
+    <artifactId>say_hello</artifactId>
+    <version>1.0</version>
 
-    \KeywordTok{<dependencies>}
+    <dependencies>
 
-        \CommentTok{<!-- Libreria client di Hadoop -->}
-        \KeywordTok{<dependency>}
-            \KeywordTok{<groupId>}\NormalTok{org.apache.hadoop}\KeywordTok{</groupId>}
-            \KeywordTok{<artifactId>}\NormalTok{hadoop-client}\KeywordTok{</artifactId>}
-            \KeywordTok{<version>}\NormalTok{2.8.1}\KeywordTok{</version>}
-            \KeywordTok{<scope>}\NormalTok{provided}\KeywordTok{</scope>}
-        \KeywordTok{</dependency>}
+        <!-- Libreria client di Hadoop -->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.8.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-    \KeywordTok{</dependencies>}
-\KeywordTok{</project>}
-\end{Highlighting}
-\end{Shaded}
+    </dependencies>
+</project>
+\end{lstlisting}
 
 \end{codelisting}
 
@@ -816,46 +842,47 @@ client di Hadoop, attraverso un meccanismo chiamato \emph{dependency
 scope}. Per ogni dipendenza è possibile specificare una proprietà
 \emph{scope}, che indica in che modo la dipendenza debba essere gestita
 a tempo di build (in particolar modo, se debba essere inclusa nel
-classpath). Se non specificato, lo scope è impostato a \texttt{compile},
-che indica che la dipendenza è resa disponibile nel classpath
-dell'artefatto. Per gestire correttamente la dipendenza dalla libreria
-client di Hadoop, è opportuno impostare lo scope della dipendenza a
-\texttt{provided}, che indica che le classi della libreria sono fornite
-dal container in cui è eseguito il programma.
+classpath). Se non specificato, lo scope è impostato a
+\lstinline!compile!, che indica che la dipendenza è resa disponibile nel
+classpath dell'artefatto. Per gestire correttamente la dipendenza dalla
+libreria client di Hadoop, è opportuno impostare lo scope della
+dipendenza a \lstinline!provided!, che indica che le classi della
+libreria sono fornite dal container in cui è eseguito il programma.
 
 \section{HDFS}\label{hdfs}
 
 HDFS è un filesystem distribuito che permette l'accesso ad alto
-throughput ai dati. HDFS è scritto in Java, e viene eseguito nello
-userspace. Lo storage dei dati passa per il filesystem del sistema che
-lo esegue.
+throughput ai dati, scritto in Java ed eseguito nello userspace. HDFS è
+stato studiato e progettato per fornire un sistema di storage
+distribuito che permetta l'efficiente elaborazione batch di grandi
+dataset, e che sia resiliente al fallimento delle singole macchine del
+cluster.
 
-I dati contenuti in HDFS sono organizzati in unità logiche chiamate
-\emph{blocchi}, come è comune nei filesystem. I blocchi di un singolo
-file possono essere distribuiti all'interno di più macchine all'interno
-del cluster, permettendo di avere file più grandi della capacità di
-storage di ogni singola macchina nel cluster. Rispetto ai filesystem
-comuni la dimensione di un blocco è molto più grande, 128 MB di default.
-La ragione per cui HDFS utilizza blocchi così grandi è minimizzare il
-costo delle operazioni di seek, dato il fatto che se i file sono
-composti da meno blocchi, si rende necessario trovare l'inizio di un
-blocco un minor numero di volte. Questo approccio riduce anche la
-frammentazione dei dati, rendendo più probabile che questi vengano
-scritti contiguamente all'interno della macchina\footnote{Non è
-  possibile essere certi della contiguità dei dati, perché HDFS non è
-  un'astrazione diretta sulla scrittura del disco, ma sul filesystem del
-  sistema operativo che lo esegue. Per cui la frammentazione effettiva
-  dipende da come i dati vengono organizzati dal filesystem sottostante.}.
+I dati contenuti in HDFS sono organizzati, a livello di storage, in
+unità logiche chiamate \emph{blocchi}, nel senso comune del termine nel
+dominio dei filesystem. I blocchi di un singolo file possono essere
+distribuiti all'interno di più macchine all'interno del cluster,
+permettendo di avere file più grandi della capacità di storage di ogni
+singola macchina nel cluster. Rispetto ai filesystem comuni la
+dimensione di un blocco è molto più grande, 128 MB di default. La
+ragione per cui HDFS utilizza blocchi così grandi è minimizzare il costo
+delle operazioni di seek, dato il fatto che se i file sono composti da
+meno blocchi, si rende necessario trovare l'inizio di un blocco un minor
+numero di volte. Questo approccio riduce anche la frammentazione dei
+dati, rendendo più probabile che questi vengano scritti contiguamente
+all'interno della macchina\footnote{Non è possibile essere certi della
+  contiguità dei dati, perché HDFS non è un'astrazione diretta sulla
+  scrittura del disco, ma sul filesystem del sistema operativo che lo
+  esegue. La frammentazione effettiva dipende da come i dati vengono
+  organizzati dal filesystem del sistema operativo.}.
 
-Il blocco, inoltre, è un'astrazione che si presta bene alla replicazione
-dei dati nel filesystem all'interno del cluster: per replicare i dati,
-come si vedrà, si mette uno stesso blocco all'interno di più macchine
-nel cluster.
-
-HDFS è basato sulla specifica POSIX, ma non la implementa in modo
-rigido: tralasciare alcuni requisiti di conformità alla specifica
-permette ad HDFS di ottenere prestazioni e affidabilità migliori, come
-verrà descritto in seguito.
+HDFS è basato sulla specifica POSIX, e ha quindi una struttura
+gerarchica. L'utente può strutturare i dati salvati in directory, e
+impostare permessi di accesso in file e cartelle. Tuttavia, l'adesione a
+POSIX non è rigida, e alcune operazioni non sono rese possibili, come la
+modifica dei file in punti arbitrari. Queste restrizioni permettono ad
+HDFS di implementare efficientemente funzioni specifiche del suo dominio
+(come il batch processing), e di semplificare la sua architettura.
 
 \subsection{Principi architetturali}\label{principi-architetturali}
 
@@ -951,103 +978,126 @@ nodi avviene tramite socket TCP ed è coordinata dal NameNode, che
 fornisce ai client tutte le informazioni sul filesystem e su quali nodi
 contengono i DataBlock dei file richiesti.
 
+\subsection{Replicazione e
+fault-tolerance}\label{replicazione-e-fault-tolerance}
+
+Il blocco è un'astrazione che si presta bene alla replicazione dei dati
+nel filesystem all'interno del cluster: per replicare i dati, HDFS
+persiste ogni blocco all'interno di più macchine nel cluster. HDFS
+utilizza le informazioni sulla configurazione di rete del cluster per
+decidere il posizionamento delle repliche di ogni blocco: considerando
+che i tempi di latenza di rete sono più bassi tra nodi in uno stesso
+rack, HDFS salva due copie del blocco in due nodi che condividono il
+rack. In questo modo, nell'eventualità in cui una delle copie del blocco
+non fosse disponibile o avesse problemi d'integrità, una sua replica può
+essere recuperata in un nodo che si trova all'interno del rack,
+minimizzando l'overhead di rete.
+
+Per aumentare la fault-tolerance, HDFS salva un'ulteriore copia del
+blocco al di fuori del rack in cui ha memorizzato le prime due. Questa
+operazione salvaguardia l'accesso al blocco in caso di fallimento dello
+switch di rete del rack che contiene le prime due copie, che renderebbe
+inaccessibili tutte le macchine che contieneche contiene.
+
+Il numero di repliche create da HDFS per ogni blocco è definito
+\emph{replication factor}, ed è configurabile tramite l'opzione
+\lstinline!dfs.replication!. Quando il numero di repliche di un certo
+file scende sotto la soglia di questa proprietà (eventualità che accade
+in caso di fallimento dei nodi) HDFS riesegue trasparentemente la
+replicazione dei blocchi per raggiungere la soglia definita nella
+configurazione.
+
+L'integrità dei blocchi è verificata trasparentemente da HDFS alla loro
+lettura e scrittura, utilizzando checksum
+CRC-32\textbar{}\textbar{}\textbar{}
+
 \subsection{Comunicare con HDFS}\label{comunicare-con-hdfs}
 
 Hadoop fornisce tool e librerie che possono agire da client nei
 confronti di HDFS. Il tool più diretto è la CLI, accessibile nelle
 macchine in cui è installato Hadoop tramite il comando
-\texttt{hadoop\ fs}.
+\lstinline!hadoop fs!.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{%}\NormalTok{ hadoop fs -help}
-\ExtensionTok{Usage}\NormalTok{: hadoop fs [generic options]}
-\NormalTok{    [}\ExtensionTok{-appendToFile} \OperatorTok{<}\NormalTok{localsrc}\OperatorTok{>}\NormalTok{ ... }\OperatorTok{<}\NormalTok{dst}\OperatorTok{>}\NormalTok{]}
-\NormalTok{    [}\ExtensionTok{-cat}\NormalTok{ [-ignoreCrc] }\OperatorTok{<}\NormalTok{src}\OperatorTok{>}\NormalTok{ ...]}
-\NormalTok{    [}\ExtensionTok{-checksum} \OperatorTok{<}\NormalTok{src}\OperatorTok{>}\NormalTok{ ...]}
-\NormalTok{    [}\ExtensionTok{-chgrp}\NormalTok{ [-R] GROUP PATH...]}
-\NormalTok{    [}\ExtensionTok{-chmod}\NormalTok{ [-R] }\OperatorTok{<}\NormalTok{MODE[,MODE]... }\KeywordTok{|} \ExtensionTok{OCTALMODE}\OperatorTok{>}\NormalTok{ PATH...]}
-\NormalTok{    [}\ExtensionTok{-chown}\NormalTok{ [-R] [OWNER][:[GROUP]] PATH...]}
-\NormalTok{    [}\ExtensionTok{-copyFromLocal}\NormalTok{ [-f] [-p] [-l] [-d] }\OperatorTok{<}\NormalTok{localsrc}\OperatorTok{>}\NormalTok{ ... }\OperatorTok{<}\NormalTok{dst}\OperatorTok{>}\NormalTok{]}
-\NormalTok{    [}\ExtensionTok{-copyToLocal}\NormalTok{ [-f] [-p] [-ignoreCrc] [-crc] }\OperatorTok{<}\NormalTok{src}\OperatorTok{>}\NormalTok{ ... }\OperatorTok{<}\NormalTok{localdst}\OperatorTok{>}\NormalTok{]}
-\NormalTok{    [}\ExtensionTok{-count}\NormalTok{ [-q] [-h] [-v] [-t [}\OperatorTok{<}\NormalTok{storage type}\OperatorTok{>}\NormalTok{]] [-u] [-x] }\OperatorTok{<}\NormalTok{path}\OperatorTok{>}\NormalTok{ ...]}
-\NormalTok{    [}\ExtensionTok{-cp}\NormalTok{ [-f] [-p }\KeywordTok{|} \ExtensionTok{-p}\NormalTok{[topax]] [-d] }\OperatorTok{<}\NormalTok{src}\OperatorTok{>}\NormalTok{ ... }\OperatorTok{<}\NormalTok{dst}\OperatorTok{>}\NormalTok{]}
-\ExtensionTok{...}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+% hadoop fs -help
+Usage: hadoop fs [generic options]
+    [-appendToFile <localsrc> ... <dst>]
+    [-cat [-ignoreCrc] <src> ...]
+    [-checksum <src> ...]
+    [-chgrp [-R] GROUP PATH...]
+    [-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+    [-chown [-R] [OWNER][:[GROUP]] PATH...]
+    [-copyFromLocal [-f] [-p] [-l] [-d] <localsrc> ... <dst>]
+    [-copyToLocal [-f] [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+    [-count [-q] [-h] [-v] [-t [<storage type>]] [-u] [-x] <path> ...]
+    [-cp [-f] [-p | -p[topax]] [-d] <src> ... <dst>]
+...
+\end{lstlisting}
 
 La CLI fornisce alcuni comandi comuni nei sistemi POSIX, come
-\texttt{cp}, \texttt{rm}, \texttt{mv}, \texttt{ls} e \texttt{chown}, e
-altri che riguardano specificamente HDFS, come \texttt{copyFromLocal} e
-\texttt{copyToLocal}, utili a trasferire dati tra la macchina su cui si
-opera e il filesystem.
+\lstinline!cp!, \lstinline!rm!, \lstinline!mv!, \lstinline!ls! e
+\lstinline!chown!, e altri che riguardano specificamente HDFS, come
+\lstinline!copyFromLocal! e \lstinline!copyToLocal!, utili a trasferire
+dati tra la macchina su cui si opera e il filesystem.
 
 I comandi richiedono l'URI che identifica l'entità su cui si vuole
 operare. Per riferirsi a una risorsa all'interno di un'istanza di HDFS,
-si usa l'URI del namenode, con schema \texttt{hdfs}\footnote{Hadoop è
+si usa l'URI del namenode, con schema \lstinline!hdfs!\footnote{Hadoop è
   abbastanza generale da poter lavorare con diversi filesystem, con lo
   schema definisce il protocollo di comunicazione, che non deve essere
-  necessariamente \texttt{hdfs}. Ad esempio, un URI con schema
-  \texttt{file} si riferisce al filesystem locale, e le operazioni
+  necessariamente \lstinline!hdfs!. Ad esempio, un URI con schema
+  \lstinline!file! si riferisce al filesystem locale, e le operazioni
   eseguite su URI che utilizzano questo schema vengono effettuate sulla
   macchina dove viene eseguito il comando. Questo approccio può essere
   adatto nella fase di testing dei programmi, ma nella maggior parte dei
   casi è comunque desiderabile lavorare su un filesystem distribuito
   adeguato alla gestione dei Big Data, e un'alternativa ad HDFS degna di
-  nota è MapR-FS{[}\protect\hyperlink{ref-mapr-fs}{7}{]}.}, e con il
-path corrispondente al percorso della risorsa nel filesystem. Ad
-esempio, è possibile creare una cartella \texttt{foo} all'interno della
-radice del filesystem con il seguente comando:
+  nota è MapR-FS{[}@mapr-fs{]}.}, e con il path corrispondente al
+percorso della risorsa nel filesystem. Ad esempio, è possibile creare
+una cartella \lstinline!foo! all'interno della radice del filesystem con
+il seguente comando:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{hadoop}\NormalTok{ fs -mkdir hdfs://localhost:8020/foo}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+hadoop fs -mkdir hdfs://localhost:8020/foo
+\end{lstlisting}
 
 Per diminuire la verbosità dei comandi è possibile utilizzare percorsi
-relativi, e specificare l'opzione \texttt{dfs.defaultFS} nella
-configurazione di Hadoop all'URI del filesystem ai cui i percorsi
-relativi si riferiscono. In questo modo, si può accorciare l'esempio
-precedente a:
+relativi, specificando nell'opzione \lstinline!dfs.defaultFS! della
+configurazione del cluster l'URI del filesystem ai cui i percorsi
+relativi si riferiscono. Gli URI riferiti a istanze di HDFS hanno schema
+\lstinline!hdfs://!, seguito dall'indirizzo IP o dell'hostname della
+macchina che esegue il NameNode. Specificando l'URI, si può accorciare
+l'esempio precedente a:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{hadoop}\NormalTok{ fs -mkdir foo}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+hadoop fs -mkdir foo
+\end{lstlisting}
 
 Ad esempio, data la seguente cartella:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{[}\ExtensionTok{root@sandbox}\NormalTok{ example_data]# ls}
-\ExtensionTok{example1.txt}\NormalTok{  example2.txt  example3.txt}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+[root@sandbox example_data]# ls
+example1.txt  example2.txt  example3.txt
+\end{lstlisting}
 
 Si possono copiare i file dalla cartella locale della macchina al
 filesystem distribuito con il seguente comando:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{[}\ExtensionTok{root@sandbox}\NormalTok{ example_data]# hadoop fs -copyFromLocal example*.txt /example}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+[root@sandbox example_data]# hadoop fs -copyFromLocal example*.txt /example
+\end{lstlisting}
 
 Per verificare che l'operazione sia andata a buon fine, si può ottenere
 un listing della cartella in cui si sono trasferiti i file con il
-comando \texttt{ls}:
+comando \lstinline!ls!:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{[}\ExtensionTok{root@sandbox}\NormalTok{ example_data]# hadoop fs -ls /example}
-\ExtensionTok{Found}\NormalTok{ 3 items}
-\ExtensionTok{-rw-r--r--}\NormalTok{   1 root hdfs         70 2017-06-30 03:58 /example/example1.txt}
-\ExtensionTok{-rw-r--r--}\NormalTok{   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt}
-\ExtensionTok{-rw-r--r--}\NormalTok{   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+[root@sandbox example_data]# hadoop fs -ls /example
+Found 3 items
+-rw-r--r--   1 root hdfs         70 2017-06-30 03:58 /example/example1.txt
+-rw-r--r--   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt
+-rw-r--r--   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt
+\end{lstlisting}
 
 Il listing è molto simile a quello ottenibile su sistemi Unix. Una
 differenza importante è la seconda colonna, che non mostra il numero di
@@ -1058,19 +1108,17 @@ una per file. Il numero di repliche fatte da HDFS può essere impostato
 settando il fattore di replicazione di default, che per Hadoop in
 modalità distribuita è 3 di default. Si può anche cambiare il numero di
 repliche disponibili per determinati file, utilizzando il comando
-\texttt{hdfs\ dfs}:
+\lstinline!hdfs dfs!:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{[}\ExtensionTok{root@sandbox}\NormalTok{ ~]# hdfs dfs -setrep 2 /example/example1.txt}
-\ExtensionTok{Replication}\NormalTok{ 2 set: /example/example1.txt}
-\NormalTok{[}\ExtensionTok{root@sandbox}\NormalTok{ ~]# hadoop fs -ls /example}
-\ExtensionTok{Found}\NormalTok{ 3 items}
-\ExtensionTok{-rw-r--r--}\NormalTok{   2 root hdfs         70 2017-06-30 03:58 /example/example1.txt}
-\ExtensionTok{-rw-r--r--}\NormalTok{   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt}
-\ExtensionTok{-rw-r--r--}\NormalTok{   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+[root@sandbox ~]# hdfs dfs -setrep 2 /example/example1.txt
+Replication 2 set: /example/example1.txt
+[root@sandbox ~]# hadoop fs -ls /example
+Found 3 items
+-rw-r--r--   2 root hdfs         70 2017-06-30 03:58 /example/example1.txt
+-rw-r--r--   1 root hdfs         39 2017-06-30 03:58 /example/example2.txt
+-rw-r--r--   1 root hdfs         43 2017-06-30 03:58 /example/example3.txt
+\end{lstlisting}
 
 HDFS è anche accessibile tramite \emph{HDFS Web Interface}, un tool che
 fornisce informazioni sullo stato generale del filesystem e sul suo
@@ -1078,7 +1126,7 @@ contenuto. Ci sono anche tool di amministrazione di cluster Hadoop che
 offrono GUI web più avanzate di quella fornita di default da HDFS. Due
 esempi sono Cloudera Manager e Apache Ambari, che offrono un file
 manager lato web con cui è possibile interagire in modo più semplice,
-permettendo anche a utenti in ambito meno tecnico di lavorare con il
+permettendo anche a utenti non tecnicamente esperti di lavorare con il
 filesystem.
 
 \begin{figure}
@@ -1087,21 +1135,22 @@ filesystem.
 \caption{Screenshot del file manager HDFS incluso in Ambari}
 \end{figure}
 
-Un'altra interfaccia importante ad HDFS è l'API \texttt{FileSystem} di
-Hadoop, che permette un accesso programmatico da linguaggi per JVM a
-tutte le funzioni del filesystem. L'API è generale, in modo che possa
-essere utilizzata con filesystem diversi da HDFS.
+Un altro importante modo di interfacciarsi ad HDFS è l'API
+\lstinline!FileSystem! di Hadoop, che permette un accesso programmatico
+da linguaggi per JVM alle funzioni del filesystem. L'API fornisce
+interfacce Java generali che possono utilizzata con filesystem diversi
+da HDFS, permettendo
 
 Per linguaggi che non supportano interfacce Java, esiste
-un'implementazione in C chiamata \texttt{libhdfs}, che si appoggia sulla
-Java Native Interface per esporre l'API di Hadoop.
+un'implementazione in C chiamata \lstinline!libhdfs!, che si appoggia
+sulla Java Native Interface per esporre l'API di Hadoop.
 
 Esistono poi progetti che permettono il montaggio di HDFS in un
 filesystem locale. Alcune di queste implementazioni sono basate su FUSE,
 mentre altre su NFS Gateway. Questo metodo di accesso permette
 l'utilizzo di utilità native del sistema in uso in HDFS.
 
-\subsection{NameNode}\label{namenode}
+\subsection{NameNode in dettaglio}\label{namenode-in-dettaglio}
 
 Il NameNode è il riferimento centrale per i metadati del filesystem nel
 cluster, il che vuol dire che se il NameNode non è disponibile il
@@ -1117,17 +1166,17 @@ DataNode che contengono i dati effettivi del file. I dati di un file non
 passano mai per il NameNode.
 
 Tuttavia, il NameNode non salva persistentemente le informazioni sulle
-posizioni dei blocchi, che vengono invece mantenute dai DataNode. Perché
-il NameNode possa avere in memoria le informazioni sui file necessarie
-per essere operativo, questo deve ricevere le liste dei blocchi in
-possesso dei DataNode, in messaggi chiamati \textbf{block report}. Non è
-necessario che il DataNode conosca la posizione di tutti i blocchi sin
-dall'inizio, ma basta che per ogni blocco conosca la posizione di un
-numero minimo di repliche, determinato da un'opzione chiamata
-\texttt{dfs.replication.min.replicas}, di default 1.
+posizioni dei blocchi, che vengono invece mantenute dai DataNode. Prima
+che il NameNode possa essere operativo, deve ricevere e salvare in
+memoria le liste dei blocchi in possesso dei DataNode, in messaggi
+chiamati \textbf{block report}. Non è necessario che il DataNode conosca
+la posizione di tutti i blocchi sin dall'inizio, ed è sufficiente che
+per ogni blocco conosca la posizione di un numero minimo di repliche,
+determinato dall'opzione del cluster
+\lstinline!dfs.replication.min.replicas!, di default 1.
 
 Questa procedura avviene quando il NameNode si trova in uno stato
-chiamato \textbf{safe mode}.
+chiamato \protect\hyperlink{safe-mode}{\emph{safe mode}}
 
 \subsubsection{\texorpdfstring{\emph{Namespace image} ed \emph{edit
 log}}{Namespace image ed edit log}}\label{namespace-image-ed-edit-log}
@@ -1136,10 +1185,10 @@ Le informazioni sui metadati del sistema vengono salvate nello storage
 del NameNode in due posti, la \emph{\textbf{namespace image}} e
 l'\emph{\textbf{edit log}}. La \emph{namespace image} è uno snapshot
 dell'intera struttura del filesystem, mentre l'\emph{edit log} è un
-elenco di operazioni eseguite nel filesystem a partire dalla
-\emph{namespace image}. Partendo dalla \emph{namespace image} e
-applicando le operazioni registrate nell'\emph{edit log}, è possibile
-risalire allo stato attuale del filesystem. Il NameNode ha una
+elenco di transazioni eseguite nel filesystem a partire dallo stato
+registrato nella \emph{namespace image}. Partendo dalla \emph{namespace
+image} e applicando le operazioni registrate nell'\emph{edit log}, è
+possibile risalire allo stato attuale del filesystem. Il NameNode ha una
 rappresentazione dello stato del filesystem anche nella memoria
 centrale, che viene utilizzata per servire le richieste di lettura.
 
@@ -1178,8 +1227,9 @@ viene solitamente eseguito su una macchina differente, dato che richiede
 un'unità di elaborazione potente e almeno la stessa memoria del NameNode
 per eseguire l'operazione di merge.
 
-\subsubsection{\texorpdfstring{Avvio del NameNode e \emph{Safe
-Mode}}{Avvio del NameNode e Safe Mode}}\label{avvio-del-namenode-e-safe-mode}
+\hypertarget{safe-mode}{\subsubsection{\texorpdfstring{Avvio del
+NameNode e \emph{Safe
+Mode}}{Avvio del NameNode e Safe Mode}}\label{safe-mode}}
 
 Prima di essere operativo, il NameNode deve eseguire alcune operazioni
 di startup, tra cui attendere di aver ricevuto i block report dai
@@ -1203,16 +1253,14 @@ blocco. A questo punto il NameNode esce dalla safe mode.
 Si possono utilizzare dei comandi per verificare lo stato, attivare e
 disattivare la safe mode.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{bash-4.1}\NormalTok{$ hdfs dfsadmin -safemode get}
-\ExtensionTok{Safe}\NormalTok{ mode is OFF}
-\ExtensionTok{bash-4.1}\NormalTok{$ hdfs dfsadmin -safemode enter}
-\ExtensionTok{Safe}\NormalTok{ mode is ON}
-\ExtensionTok{bash-4.1}\NormalTok{$ hdfs dfsadmin -safemode leave}
-\ExtensionTok{Safe}\NormalTok{ mode is OFF}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+bash-4.1$ hdfs dfsadmin -safemode get
+Safe mode is OFF
+bash-4.1$ hdfs dfsadmin -safemode enter
+Safe mode is ON
+bash-4.1$ hdfs dfsadmin -safemode leave
+Safe mode is OFF
+\end{lstlisting}
 
 \begin{figure}
 \centering
@@ -1228,180 +1276,262 @@ HDFS}\label{processo-di-lettura-di-file-in-hdfs}
 \centering
 \includegraphics{img/hdfs-file-read.png}
 \caption{Diagramma delle operazioni eseguite nella lettura di un file in
-HDFS{[}\protect\hyperlink{ref-hadoop-guide-hdfs-file-read}{8}{]}}
+HDFS{[}@hadoop-guide-hdfs-file-read{]}}
 \end{figure}
 
 Per avere un quadro completo del funzionamento di HDFS, è utile
 osservare come avvenga il processo di lettura di un file. In questa
 sezione si prende in esame un programma di esempio che utilizza le API
-\texttt{FileSystem} di Hadoop per reimplementare una versione
-semplificata del comando \texttt{cat}, per poi esaminare come le
+\lstinline!FileSystem! di Hadoop per reimplementare una versione
+semplificata del comando \lstinline!cat!, per poi esaminare come le
 operazioni specificate nel programma vengano effettivamente portate a
 termine in un'istanza di HDFS.
 
 \begin{codelisting}
 
-\caption{Programma di esempio che reimplementa il comando \texttt{cat}.}
+\caption{Programma di esempio che reimplementa il comando
+\lstinline!cat!.}
 
-\hypertarget{lst:hdfs-cat}{\label{lst:hdfs-cat}}
-\begin{Shaded}
-\begin{Highlighting}[numbers=left,,]
-\KeywordTok{import}\ImportTok{ java.io.InputStream;}
-\KeywordTok{import}\ImportTok{ java.net.URI;}
+\begin{lstlisting}[language=Java, numbers=left, label=lst:hdfs-cat]
+import java.io.InputStream;
+import java.net.URI;
 
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.conf.Configuration;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.fs.FileSystem;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.fs.Path;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.IOUtils;}
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
 
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ MyCat \{}
+public class MyCat {
 
-    \KeywordTok{public} \DataTypeTok{static} \DataTypeTok{void} \FunctionTok{main}\NormalTok{(}\BuiltInTok{String}\NormalTok{ args[]) }\KeywordTok{throws} \BuiltInTok{Exception}\NormalTok{ \{}
+    public static void main(String args[]) throws Exception {
 
-        \BuiltInTok{String}\NormalTok{ source = args[}\DecValTok{0}\NormalTok{];}
-        \BuiltInTok{Configuration}\NormalTok{ conf = }\KeywordTok{new} \BuiltInTok{Configuration}\NormalTok{();}
+        String source = args[0];
+        Configuration conf = new Configuration();
 
-        \KeywordTok{try}\NormalTok{(}
-\NormalTok{            FileSystem sourcefs = FileSystem.}\FunctionTok{get}\NormalTok{(}\BuiltInTok{URI}\NormalTok{.}\FunctionTok{create}\NormalTok{(source), conf);}
-            \BuiltInTok{InputStream}\NormalTok{ in = sourcefs.}\FunctionTok{open}\NormalTok{(}\KeywordTok{new} \FunctionTok{Path}\NormalTok{(source))}
-\NormalTok{        ) \{}
-\NormalTok{            IOUtils.}\FunctionTok{copyBytes}\NormalTok{(in, }\BuiltInTok{System}\NormalTok{.}\FunctionTok{out}\NormalTok{, }\DecValTok{4096}\NormalTok{, }\KeywordTok{false}\NormalTok{);}
-\NormalTok{        \}}
-\NormalTok{    \}}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+        try(
+            FileSystem sourcefs = FileSystem.get(URI.create(source), conf);
+            InputStream in = sourcefs.open(new Path(source))
+        ) {
+            IOUtils.copyBytes(in, System.out, 4096, false);
+        }
+    }
+}
+\end{lstlisting}
 
 \end{codelisting}
 
-La reimplementazione del programma \texttt{cat} utilizza il primo
+La reimplementazione del programma \lstinline!cat! utilizza il primo
 parametro della linea di comando per ricevere l'URI del file che si
 vuole stampare nello standard output. L'URI deve contenere il percorso
 di rete del filesystem HDFS, ed essere quindi del formato
-\texttt{hdfs://{[}indirizzo\ o\ hostname\ del\ namenode{]}/{[}path\ del\ file{]}}.
+\lstinline!hdfs://[indirizzo o hostname del namenode]/[path del file]!.
 Di seguito vengono spiegati i passi eseguiti dal programma. Quando non
-qualificato, l'identificativo \texttt{hadoop} si riferisce al package
-Java \texttt{org.apache.hadoop}.
+qualificato, l'identificativo \lstinline!hadoop! si riferisce al package
+Java \lstinline!org.apache.hadoop!.
 
 \begin{enumerate}
 \item
-  Si crea un oggetto \texttt{hadoop.conf.Configuration}. Gli oggetti
-  \texttt{Configuration} forniscono l'accesso ai parametri di
+  Si crea un oggetto \lstinline!hadoop.conf.Configuration!. Gli oggetti
+  \lstinline!Configuration! forniscono l'accesso ai parametri di
   configurazione di Hadoop (impostati in file XML, come descritto in
   \protect\hyperlink{installazione-e-configurazione}{Installazione e
   Configurazione}).
 \item
-  Si ottiene un riferimento \texttt{sourcefs} a un
-  \texttt{hadoop.fs.FileSystem} (dichiarato come interfaccia Java), che
-  fornisce le API che verranno usate per leggere e manipolare il
+  Si ottiene un riferimento \lstinline!sourcefs! a un
+  \lstinline!hadoop.fs.FileSystem! (dichiarato come interfaccia Java),
+  che fornisce le API che verranno usate per leggere e manipolare il
   filesystem. Il riferimento viene ottenuto tramite il metodo statico
-  \texttt{FileSystem.get(URI\ source,\ Configuration\ conf)}, che
+  \lstinline!FileSystem.get(URI source, Configuration conf)!, che
   richiede un URI che possa essere utilizzato per risalire a quale
-  filesystem si vuole accedere. Un overload di \texttt{FileSystem.get}
-  permette di specificare solo l'oggetto \texttt{Configuration}, e
-  ottiene le informazioni sul filesystem da aprire dalla proprietà di
-  configurazione \texttt{dfs.defaultFS}.
+  filesystem si vuole accedere. Un overload di
+  \lstinline!FileSystem.get! permette di specificare solo l'oggetto
+  \lstinline!Configuration!, e ottiene le informazioni sul filesystem da
+  aprire dalla proprietà di configurazione \lstinline!dfs.defaultFS!.
 \item
   Si apre il file il lettura, chiamando
-  \texttt{sourcefs.open(Path\ file)}. Il metodo restituisce un oggetto
-  di tipo \texttt{hadoop.fs.FSDataInputStream}, una sottoclasse di
-  \texttt{java.io.InputStream} che supporta anche l'accesso a punti
+  \lstinline!sourcefs.open(Path file)!. Il metodo restituisce un oggetto
+  di tipo \lstinline!hadoop.fs.FSDataInputStream!, una sottoclasse di
+  \lstinline!java.io.InputStream! che supporta anche l'accesso a punti
   arbitrari del file. In questo case l'oggetto è utilizzato per leggere
   il file sequenzialmente, e il suo riferimento viene salvato nella
-  variabile \texttt{InputStream\ in}.
+  variabile \lstinline!InputStream in!.
 \item
-  Si copiano i dati dallo stream \texttt{in} a \texttt{System.out}, di
-  fatto stampando i dati nella console. Questa operazione è eseguita
-  tramite il metodo
-  \texttt{hadoop.io.IOUtils.copyBytes(InputStream\ in,\ OutputStream\ out,\ int\ bufSize,\ bool\ closeStream)}.
+  Si copiano i dati dallo stream \lstinline!in! a
+  \lstinline!System.out!, di fatto stampando i dati nella console.
+  Questa operazione è eseguita tramite il metodo
+  \lstinline!hadoop.io.IOUtils.copyBytes(InputStream in, OutputStream out, int bufSize, bool closeStream)!.
   Il metodo copia i dati da uno stream d'ingresso a uno d'uscita, e non
   ha funzioni specifiche rispetto ad Hadoop, ma viene fornito per la
   mancanza di un meccanismo simile in Java.
 \item
-  Lo stream e l'oggetto \texttt{FileSystem} vengono chiusi. L'operazione
-  avviene implicitamente utilizzando il costrutto try-with-resources di
-  Java.
+  Lo stream e l'oggetto \lstinline!FileSystem! vengono chiusi.
+  L'operazione avviene implicitamente utilizzando il costrutto
+  try-with-resources di Java.
 \end{enumerate}
 
 L'esecuzione del programma dà il seguente output:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{$}\ExtensionTok{~} \ExtensionTok{hadoop}\NormalTok{ MyCat hdfs://sandbox.hortonworks.com:8020/example/example1.txt}
-\ExtensionTok{This}\NormalTok{ is the first example file}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+$~ hadoop MyCat hdfs://sandbox.hortonworks.com:8020/example/example1.txt
+This is the first example file
+\end{lstlisting}
 
 Nel caso di un URI con schema HDFS, l'istanza concreta di
-\texttt{FileSystem} che viene restituita da \texttt{FileSystem.get} è di
-tipo \texttt{DistributedFileSystem}, che contiene le funzionalità
-necessarie a comunicare con HDFS. Con uno schema diverso (ad esempio
-\texttt{file}), l'istanza concreta di \texttt{FileSystem} cambia.
+\lstinline!FileSystem! che viene restituita da
+\lstinline!FileSystem.get! è di tipo \lstinline!DistributedFileSystem!,
+che contiene le funzionalità necessarie a comunicare con HDFS. Con uno
+schema diverso (ad esempio \lstinline!file://! per filesystem locali),
+l'istanza concreta di \lstinline!FileSystem! cambia per gestire
+opportunamente lo schema richiesto (se supportato).
 
-Dietro le quinte, \texttt{FSDataInputStream}, restituito da
-\texttt{FileSystem.open(...)}, utilizza chiamate a procedure remote sul
-namenode per ottenere le posizioni dei primi blocchi del file. Per ogni
-blocco, il namenode restituisce gli indirizzi dei datanode che lo
+Dietro le quinte, \lstinline!FSDataInputStream!, restituito da
+\lstinline!FileSystem.open(...)!, utilizza chiamate a procedure remote
+sul namenode per ottenere le posizioni dei primi blocchi del file. Per
+ogni blocco, il namenode restituisce gli indirizzi dei datanode che lo
 contengono, ordinati in base alla prossimità del client. Se il client
 stesso è uno dei datanode che contiene un blocco da leggere, il blocco
 viene letto localmente.
 
-Alla prima chiamata di \texttt{read()} su \texttt{FSDataInputStream},
-l'oggetto si connette al DataNode che contiene il primo blocco del file,
-e lo richiede (nell'esempio, \texttt{read} viene chiamato da
-\texttt{IOUtils.copyBytes}). Il DataNode risponde inviando i dati
-corrispondenti al blocco, fino al termine di questi. Al raggiungimento
-della fine di un blocco, \texttt{DFSInputStream} termina la connessione
-con il DataNode corrente e ne inizia un'altra con il più prossimo dei
-DataNode che contiene il blocco successivo.
+Alla prima chiamata di \lstinline!read()! su
+\lstinline!FSDataInputStream!, l'oggetto si connette al DataNode che
+contiene il primo blocco del file, e lo richiede (nell'esempio,
+\lstinline!read! viene chiamato da \lstinline!IOUtils.copyBytes!). Il
+DataNode risponde inviando i dati corrispondenti al blocco, fino al
+termine di questi. Al raggiungimento della fine di un blocco,
+\lstinline!DFSInputStream! termina la connessione con il DataNode
+corrente e ne inizia un'altra con il più prossimo dei DataNode che
+contiene il blocco successivo.
 
 In caso di errore dovuto al fallimento di un DataNode o alla ricezione
-di un blocco di dati corrotto, il client può ricevere il blocco dal nodo
-successivo della lista dei DataNode contenenti il blocco ricevuta dal
+di un blocco di dati corrotto, il client può ricevere un'altra copia del
+blocco dal nodo successivo della lista di DataNode ricevuta dal
 NameNode.
 
 I blocchi del file non vengono inviati tutti insieme, e il client deve
 periodicamente richiedere al NameNode i dati sui blocchi successivi.
-Questo avviene trasparentemente rispetto al client, che si limita a
-chiamare \texttt{read} su \texttt{DFSInputStream}.
+Questo passaggio avviene trasparentemente rispetto all'interfaccia, in
+cui l'utilizzatore si limita a chiamare \lstinline!read! su
+\lstinline!DFSInputStream!.
 
 Le comunicazioni di rete, in questo meccanismo, sono distribuite su
 tutto il cluster. Il NameNode riceve richieste che riguardano solo i
 metadati dei file, mentre il resto delle connessioni viene eseguito
 direttamente tra client e DataNode. Questo approccio permette ad HDFS di
-raggiungere un gran livello di scalabilità, evitando i colli di
-bottiglia dovuti a un punto di connessione centralizzato nel filesystem.
+evitare colli di bottiglia dovuti a un punto di connessione ai client
+centralizzato, distribuendo le comunicazioni di rete attraverso i vari
+nodi del cluster.
 
 \section{YARN}\label{yarn}
 
-HDFS è la parte di Hadoop che si occupa di gestire lo storage
-distribuito. La computazione distribuita è gestita da YARN, in termini
-di gestione delle risorse e di esecuzione del software distribuito.
-
-YARN è un acronimo che sta per Yet Another Resource Negotiator, ed è
-l'insieme di API su cui sono implementati framework di programmazione
-distribuita di livello più alto, come MapReduce e Spark. YARN si
-definisce un \emph{``negotiator''} perché è l'entità che decide quando e
-come le risorse del cluster debbano essere allocate per l'esecuzione
+YARN è acronimo di Yet Another Resource Negotiator, ed è l'insieme di
+API su cui sono implementati framework di programmazione distribuita di
+livello più alto, come MapReduce e Spark. YARN si definisce un
+\emph{``negotiator''} perché è l'entità che decide quando e come le
+risorse del cluster debbano essere allocate per l'esecuzione
 distribuita, e che gestisce le comunicazioni che riguardano le risorse
-con tutti i nodi coinvolti.
+con tutti i nodi coinvolti. Inoltre, YARN ha l'importante ruolo di
+esporre un'interfaccia che permette di imporre \textbf{vincoli di
+località} sulle risorse richieste dalle applicazioni, permettendo
+l'implementazione di applicazioni che seguono il principio di \emph{data
+locality} di Hadoop.
 
 I servizi di YARN sono offerti tramite \emph{demoni} eseguiti nei nodi
 del cluster. Ci sono due tipi di demoni in YARN:
 
 \begin{itemize}
 \item
-  i \textbf{NodeManager}, che utilizzano \emph{container} per eseguire
-  con risorse limitate un processo nei nodi del cluster;
+  i \textbf{NodeManager}, che eseguono su richiesta i processi necessari
+  allo svolgimento dell'applicazione nel cluster. L'esecuzione dei
+  processi avviene attraverso \emph{container}, che permettono di
+  limitare le risorse utilizzate da ogni processo eseguito. Il
+  NodeManager viene eseguito in ogni nodo del cluster che prende parte
+  alle computazioni distribuite.
 \item
-  il \textbf{ResourceManager}, di cui ne è eseguita un'istanza per
-  cluster, e che ne gestisce le risorse. Il ResourceManager è l'entità
-  che comunica con i NodeManager e che decide quali applicazioni i
-  container debbano eseguire.
+  il \textbf{ResourceManager}, di cui è eseguita un'istanza per cluster,
+  e che gestisce le sue risorse. Il ResourceManager è l'entità che
+  comunica con i NodeManager e che decide quali processi questi debbano
+  eseguire e quando.
 \end{itemize}
 
-I client che vogliono eseguire un'applicazione distribuita in un cluster
-Hadoop ne debbono far richiesta al ResourceManager.
+I container in YARN possono essere rappresentativi di diverse modalità
+di esecuzione di un processo. Queste sono configurabili dall'utente
+tramite la proprietà
+\lstinline!yarn.nodemanager.container-executor.class!, il cui valore
+identifica una classe che stabilisce come i processi debbano essere
+eseguiti. Di default, l'esecuzione utilizza normali processi UNIX, ma la
+configurazione permette l'uso di container di virtualizzazione OS-level,
+come lxc e Docker.
+
+L'esecuzione di applicazioni distribuite in YARN è richiesta dai client
+al ResourceManager. Quando il ResourceManager decide di avviare
+un'applicazione, alloca un container in uno dei NodeManager e lo
+utilizza per invocare un \textbf{application master}.
+
+L'application master è specificato dalle singole applicazioni, ed ha i
+seguenti ruoli{[}@hortonworks-yarn{]}:
+
+\begin{itemize}
+\tightlist
+\item
+  negoziare l'acquisizione di nuovi container con il ResourceManager nel
+  corso dell'applicazione;
+\item
+  utilizzare i container per eseguire i processi distribuiti di cui è
+  costituita l'applicazione;
+\item
+  monitorare lo stato e il progresso dell'esecuzione dei processi nei
+  container.
+\end{itemize}
+
+Le richieste di container specificano CPU, memoria, e la specifica
+macchina dove si desidera l'esecuzione. Tra i parametri della richiesta
+è anche possibile specificare se si vuole permettere l'esecuzione in una
+macchina diversa da quella richiesta, qualora non fosse disponibile.
+
+Mano a mano che la computazione procede, l'application master può
+riferire al ResourceManager di rilasciare determinate risorse. Quando il
+master decide di porre termine all'applicazione, lo riferisce al
+ResourceManager, in modo da permettere il rilascio del container in cui
+è eseguito.
+
+Il ResourceManager è in grado di gestire più job contemporaneamente
+utilizzando diverse politiche di scheduling. L'esecuzione dei job può
+essere richiesta da diversi utenti ed entità che hanno accesso al
+cluster, e la scelta di una politica di scheduling adeguata permette di
+stabilire priorità di accesso diverse per ognuna delle entità.
+
+Tra gli scheduler forniti da Hadoop, i seguenti sono i più utilizzati:
+
+\begin{itemize}
+\item
+  Lo scheduler \textbf{FIFO} esegue i job sequenzialmente in ordine di
+  arrivo, e ogni job può potenzialmente utilizzare tutte le risorse del
+  risorse del cluster.
+\item
+  Il \textbf{Fair Scheduler} esegue i job concorrentemente, fornendo una
+  parte delle risorse del cluster a ogni job. I job possono avere una
+  \emph{priorità}, ovvero un peso che determina la frazione di risorse
+  che ricevono. Mano a mano che nuovi job arrivano, le risorse
+  rilasciate dai job già in esecuzione vengono riassegnate al nuovo job
+  per bilanciare la distribuzione delle risorse in base ai
+  pesi{[}@yarn-fair-scheduler{]}. È anche possibile configurare lo
+  scheduler in modo che le risorse siano distribuite in base agli utenti
+  che richiedono l'esecuzione dei job.
+\item
+  Il \textbf{Capacity Scheduler} è il più adatto per condividere cluster
+  tra organizzazioni. Lo scheduler viene configurato per avere diverse
+  \emph{code gerarchiche} di job, ognuna dedicata a un ente che fa uso
+  del cluster. Per ogni coda è specificata una quantità minima di
+  risorse del cluster che devono essere disponibili per l'uso in ogni
+  momento, di cui lo scheduler garantisce la disponibilità.
+\end{itemize}
+
+Gli scheduler sono implementati in classi, e lo scheduler da istanziare
+viene scelto dal ResourceManager cercando, tramite reflection Java, la
+classe con il nome indicato in
+\lstinline!yarn.resourcemanager.scheduler.class!. L'utente è libero di
+implementare un proprio scheduler e di specificarne l'identificatore in
+questa proprietà.
 
 \chapter{Batch Processing}\label{batch-processing}
 
@@ -1426,89 +1556,129 @@ peggio in HDFS.
 YARN è stato creato proprio per questo motivo: permettere che altri
 modelli di computazione diversi da MapReduce potessero essere eseguiti
 sfruttando HDFS. Le nuove versioni di MapReduce sono implementate al di
-sopra di YARN invece che direttamente in Hadoop, a testimoniare
-l'effettiva capacità di YARN di generalizzare i modelli di esecuzione
-nei cluster.
+sopra di YARN invece che direttamente in Hadoop come in passato, a
+testimoniare l'effettiva capacità di YARN di generalizzare i modelli di
+esecuzione nei cluster.
 
 La sua alternativa più popolare, Apache Spark, ha API più espressive e
-funzionali rispetto a MapReduce, e prestazioni molto più elevate in
-molti
-algoritmi{[}\protect\hyperlink{ref-mapreduce-spark-performance}{9}{]}.
-Tramite astrazioni che offrono un controllo più preciso sul
-comportamento dei risultati dell'elaborazione, Spark trova moltissime
-applicazioni pratiche sia negli ambiti , tra cui il machine learning
+funzionali rispetto a MapReduce, ed è più performante in molti tipi di
+algoritmi{[}@mapreduce-spark-performance{]}. Tramite astrazioni che
+offrono un controllo più preciso sul comportamento dei risultati
+dell'elaborazione, Spark trova applicazioni pratiche in vari ambiti, tra
+cui machine learning{[}@spark-mllib{]}, graph
+processing{[}@spark-graphx{]} e elaborazione SQL{[}@spark-sql{]}.
 
 In questa sezione si esaminano MapReduce e Spark, quali sono le
-limitazioni di MapReduce che hanno richiesto la necessità di un nuovo
-modello computazionale, e quale soluzioni sono offerte da Spark.
+limitazioni di MapReduce che hanno fatto sentire la necessità di un
+nuovo modello computazionale, e quali sono le soluzioni offerte da
+Spark. Si accenneranno anche ad alcune astrazioni fatte al di sopra di
+MapReduce, come Pig e Hive, che forniscono dei modelli computazionali
+che vengono tradotti in job MapReduce.
 
 \section{MapReduce}\label{mapreduce}
 
 Il modello computazionale di MapReduce è composto, nella sostanza, da
-due componenti, che sono intuitivamente il Mapper e il Reducer.
+due componenti, il Mapper e il Reducer. Questi componenti sono
+specificati dall'utilizzatore del framework, e possono essere descritti
+come due funzioni.
 
-Il Mapper è una classe contenente una funzione \texttt{map}, che riceve
-in input una coppia composta da chiave e valore, e che restituisce a sua
-volta zero, uno, o più coppie di chiavi e valori\footnote{Dato che Java
-  non permette la restituzione di valori multipli da una funzione, per
-  ``restituire'' i valori si usa il metodo \texttt{Context.write}
-  dell'oggetto \texttt{Context} ricevuto in input da \texttt{map} e
-  \texttt{reduce}. È comunque intuitivo pensare ai Mapper e ai Reducer
-  come entità che eseguono associazioni da valore a valore.}. Le chiavi
-e i valori ricevuti in input dal Mapper sono derivati direttamente
-dall'elemento letto in HDFS. Nel caso dei file di testo, ad esempio, la
-chiave è un intero che rappresenta la riga del file letto, e il valore è
-la riga di testo. È possibile configurare quali chiavi e valori vengano
-derivati dalla sorgente e come, creando una classe che implementa
-l'interfaccia \texttt{InputMapper} fornita nella libreria di Hadoop.
+\[Map(K_1, V_1) \mapsto Sequence[(K_2, V_2)]\]
+
+La funzione \(Map\) è eseguita nello stadio iniziale della computazione
+su valori di input esterni. L'input della funzione \(Map\) è una coppia
+chiave-valore \(K_1\) e \(V_1\), i cui valori dipendono dal tipo di
+input letto. Ad esempio, nei file di testo, \(K_1\) rappresenta il
+numero di riga di un file e \(V_1\) la riga di testo corrispondente.
+
+A partire da ogni coppia, \(Map\) elabora e restituisce una sequenza di
+nuove coppie chiave-valore di tipo \(K_2\) e \(V_2\). Queste coppie
+vengono poi rielaborate trasparentemente dal framework, che esegue due
+operazioni:
+
+\begin{enumerate}
+\tightlist
+\item
+  \textbf{ordina} tutte le coppie in base alla chiave;
+\item
+  \textbf{aggrega} le coppie che condividono la stessa chiave in una
+  nuova coppia \((K_2, Sequence[V_2])\).
+\end{enumerate}
+
+\[Reduce(K_2, Sequence[V_2]) \mapsto (K_2, V_3)\]
+
+Ognuna delle coppie aggregate dal framework viene poi fornita in input
+alla funzione \(Reduce\), che ha quindi a disposizione una chiave
+\(K_2\) e tutti i valori restituiti da \(Map\) che hanno la stessa
+chiave \(K_2\). \(Reduce\) esegue una computazione sui valori di input e
+restituisce \((K_2, V_3)\), che andrà a far parte dell'output finale
+dell'applicazione assieme al risultato delle altre invocazioni di
+\(Reduce\), una per ogni chiave distinta restituita da \(Map\).
+
+Sintetizzando, MapReduce permette di categorizzare l'input in diverse
+parti e di elaborare un risultato per ognuna di queste.
+
+MapReduce è quindi un paradigma \emph{funzionale}, dato che il framework
+richiede di ricevere in input le funzioni utili all'elaborazione dei
+dati. Per esprimere questo tipo di paradigma in Java si ricorre a classi
+che incapsulano le funzioni richieste dal framework, che vengono quindi
+chiamate Mapper e Reducer.
+
+Il Mapper in un'applicazione MapReduce è una classe contenente un metodo
+\lstinline!void map!, che riceve in input una chiave e un valore, e un
+oggetto \lstinline!Context!, il cui ruolo più importante è fornire il
+metodo \lstinline!Context.write(K, V)!, che viene utilizzato per
+scrivere i valori di output del Mapper.
 
 Le applicazioni MapReduce specificano un proprio Mapper estendendo la
-classe \texttt{Mapper} nella libreria di Hadoop, e specificando i tipi
-dei parametri generici opportunamente. La firma di \texttt{Mapper} è la
-seguente:
+classe \lstinline!Mapper! nella libreria di Hadoop, e compilando i tipi
+dei parametri generici opportunamente. La firma di \lstinline!Mapper! è
+la seguente:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> }\KeywordTok{extends} \BuiltInTok{Object}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=Java]
+public class Mapper<KEYIN, VALUEIN, KEYOUT, VALUEOUT> extends Object
+\end{lstlisting}
 
-I tipi di \texttt{KEYIN} e \texttt{VALUEIN} sono gli input della
-funzione \texttt{map} del Mapper, e devono corrispondere ai tipi che
-l'\texttt{InputFormat} di riferimento restituisce. \texttt{KEYOUT} e
-\texttt{VALUEOUT} sono invece i tipi che il Mapper restituisce
-rielaborando le chiavi e i valori in input. \texttt{map} ha la seguente
-signature:
+Le chiavi e i valori ricevuti in input dal Mapper sono derivati
+direttamente dall'elemento letto in HDFS. È possibile configurare quali
+chiavi e valori vengano derivati dalla sorgente e come, creando una
+classe che implementa l'interfaccia \lstinline!InputMapper! fornita
+nella libreria di Hadoop. Nella libreria, Hadoop fornisce diversi
+\lstinline!InputMapper! che corrispondono a comportamenti di lettura
+desiderabili per diversi tipi di file e sorgenti, come file con formati
+colonnari, o contenti coppie chiave-valore divise da marcatori.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{protected} \DataTypeTok{void} \FunctionTok{map}\NormalTok{(KEYIN key, VALUEIN value, }\BuiltInTok{Context}\NormalTok{ context) }
-    \KeywordTok{throws} \BuiltInTok{IOException}\NormalTok{, }\BuiltInTok{InterruptedException}
-\end{Highlighting}
-\end{Shaded}
+I tipi ricevuti in input dal Mapper sono specificati nei parametri
+generici \lstinline!KEYIN! e \lstinline!VALUEIN!, e devono corrispondere
+ai tipi che l'\lstinline!InputFormat! di riferimento restituisce.
+\lstinline!KEYOUT! e \lstinline!VALUEOUT! sono invece i tipi che il
+Mapper restituisce rielaborando le chiavi e i valori in input.
+\lstinline!map! ha la seguente signature:
+
+\begin{lstlisting}[language=Java]
+protected void map(KEYIN key, VALUEIN value, Context context) 
+    throws IOException, InterruptedException
+\end{lstlisting}
 
 Una volta restituiti dal Mapper, le coppie vengono date in input a una
-classe \texttt{Reducer}, che ha una signature simile:
+classe \lstinline!Reducer!, che ha una signature simile a quella del
+\lstinline!Mapper!:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ Reducer<KEYIN,VALUEIN,KEYOUT,VALUEOUT>}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=Java]
+public class Reducer<KEYIN,VALUEIN,KEYOUT,VALUEOUT> extends Object
+\end{lstlisting}
 
-Una classe che estende \texttt{Reducer} ha un metodo \texttt{reduce},
-che diversamente dal metodo \texttt{map} riceve in input una chiave, e
-un iterabile di tutti i valori che hanno quella stessa chiave:
+Una classe che estende \lstinline!Reducer! ha un metodo
+\lstinline!reduce!, che riceve in input una chiave, e un iterabile di
+tutti i valori restituiti dai Mapper che hanno quella stessa chiave:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{protected} \DataTypeTok{void} \FunctionTok{reduce}\NormalTok{(KEYIN key, }\BuiltInTok{Iterable}\NormalTok{<VALUEIN> values, }\BuiltInTok{Context}\NormalTok{ context) }
-    \KeywordTok{throws} \BuiltInTok{IOException}\NormalTok{, }\BuiltInTok{InterruptedException}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=Java]
+protected void reduce(KEYIN key, Iterable<VALUEIN> values, Context context) 
+    throws IOException, InterruptedException
+\end{lstlisting}
 
-Nella fase di reduce, quindi, i valori sono \textbf{aggregati} in base
-alla chiave. I valori a questo punto possono essere combinati a seconda
+Nella fase di reduce, quindi, i valori sono aggregati in base alla
+chiave e resi disponibili tramite l'interfaccia \lstinline!Iterable! di
+Java. I valori a questo punto possono essere combinati a seconda
 dell'esigenza dell'utente per restituire un risultato finale.
 
 \subsection{Esempio di un programma
@@ -1516,26 +1686,25 @@ MapReduce}\label{esempio-di-un-programma-mapreduce}
 
 Come esempio di programma per MapReduce, si prende in considerazione
 l'analisi di log di un web server. Il dataset su cui si esegue
-l'elaborazione è fornito liberamente dalla
-NASA{[}\protect\hyperlink{ref-nasa-weblog}{10}{]}, e corrisponde ai log
-di accesso al server HTTP del NASA Kennedy Space Center dal 1/07/1995 al
-31/07/1995. Il log è un file di testo con codifica ASCII, dove ogni riga
-corrisponde a una richiesta e ognuna di queste contiene le seguenti
+l'elaborazione è fornito liberamente dalla NASA{[}@nasa-weblog{]}, e
+corrisponde ai log di accesso al server HTTP del Kennedy Space Center
+dal 1/07/1995 al 31/07/1995. Il log è un file di testo con codifica
+ASCII, dove ogni riga corrisponde a una richiesta e contiene le seguenti
 informazioni:
 
 \begin{enumerate}
 \tightlist
 \item
-  L'host che esegue la richiesta, sottoforma di hostname quando
-  disponibile o indirizzo IP altrimenti
+  L'host che esegue la richiesta, sotto forma di hostname quando
+  disponibile o indirizzo IP altrimenti;
 \item
   Timestamp della richiesta, in formato
-  ``\texttt{WEEKDAY\ MONTH\ DAY\ HH:MM:SS\ YYYY}'' e fuso orario, con
-  valore fisso \texttt{-0400}.
+  ``\lstinline!WEEKDAY MONTH DAY HH:MM:SS YYYY!'' e fuso orario, con
+  valore fisso \lstinline!-0400!;
 \item
-  La Request-Line HTTP tra virgolette
+  La Request-Line HTTP tra virgolette;
 \item
-  Il codice HTTP di risposta
+  Il codice HTTP di risposta;
 \item
   La dimensione in byte della risposta.
 \end{enumerate}
@@ -1544,14 +1713,13 @@ informazioni:
 
 \caption{Campione di due righe dal log da analizzare}
 
-\hypertarget{lst:log-sample}{\label{lst:log-sample}}
-\begin{verbatim}
+\begin{lstlisting}[label=lst:log-sample]
 ntp.almaden.ibm.com - - [24/Jul/1995:12:40:12 -0400] 
     "GET /history/apollo/apollo.html HTTP/1.0" 200 3260
 
 fsd028.osc.state.nc.us - - [24/Jul/1995:12:40:12 -0400]
     "GET /shuttle/missions/missions.html HTTP/1.0" 200 8678
-\end{verbatim}
+\end{lstlisting}
 
 \end{codelisting}
 
@@ -1572,249 +1740,533 @@ numero di richieste finale per l'URI chiave.
 \caption{Implementazione del Mapper utilizzato per analizzare il file di
 log.}
 
-\hypertarget{lst:log-mapper}{\label{lst:log-mapper}}
-\begin{Shaded}
-\begin{Highlighting}[numbers=left,,]
-\KeywordTok{import}\ImportTok{ java.io.IOException;}
-\KeywordTok{import}\ImportTok{ java.util.regex.Matcher;}
-\KeywordTok{import}\ImportTok{ java.util.regex.Pattern;}
+\begin{lstlisting}[language=Java, label=lst:log-mapper]
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.mapreduce.Mapper;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.LongWritable;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.Text;}
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ LogMapper }\KeywordTok{extends}\NormalTok{ Mapper<LongWritable, }\BuiltInTok{Text}\NormalTok{, }\BuiltInTok{Text}\NormalTok{, LongWritable> \{}
+public class LogMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
 
-    \KeywordTok{private} \DataTypeTok{final} \DataTypeTok{static} \BuiltInTok{Pattern}\NormalTok{ logPattern = }\BuiltInTok{Pattern}\NormalTok{.}\FunctionTok{compile}\NormalTok{(}
-        \StringTok{".*}\SpecialCharTok{\textbackslash{}"}\StringTok{[A-Z]+ (.*) HTTP.*"}
-\NormalTok{    );}
+    private final static Pattern logPattern = Pattern.compile(
+        ".*\"[A-Z]+ (.*) HTTP.*"
+    );
 
-    \KeywordTok{private} \DataTypeTok{final} \DataTypeTok{static}\NormalTok{ LongWritable one = }\KeywordTok{new} \FunctionTok{LongWritable}\NormalTok{(}\DecValTok{1}\NormalTok{);}
+    private final static LongWritable one = new LongWritable(1);
 
-    \AttributeTok{@Override}
-    \KeywordTok{protected} \DataTypeTok{void} \FunctionTok{map}\NormalTok{(LongWritable key, }\BuiltInTok{Text}\NormalTok{ value, }\BuiltInTok{Context}\NormalTok{ context)}
-            \KeywordTok{throws} \BuiltInTok{IOException}\NormalTok{, }\BuiltInTok{InterruptedException}\NormalTok{ \{}
+    @Override
+    protected void map(LongWritable key, Text value, Context context)
+            throws IOException, InterruptedException {
 
-        \DataTypeTok{final} \BuiltInTok{String}\NormalTok{ request = value.}\FunctionTok{toString}\NormalTok{();}
-        \DataTypeTok{final} \BuiltInTok{Matcher}\NormalTok{ requestMatcher = logPattern.}\FunctionTok{matcher}\NormalTok{(request);}
+        final String request = value.toString();
+        final Matcher requestMatcher = logPattern.matcher(request);
 
-        \KeywordTok{if}\NormalTok{(requestMatcher.}\FunctionTok{matches}\NormalTok{()) \{}
-\NormalTok{            context.}\FunctionTok{write}\NormalTok{(}
-                \KeywordTok{new} \BuiltInTok{Text}\NormalTok{(requestMatcher.}\FunctionTok{group}\NormalTok{(}\DecValTok{1}\NormalTok{)),}
-\NormalTok{                one}
-\NormalTok{            );}
-\NormalTok{        \}}
-\NormalTok{    \}}
+        if(requestMatcher.matches()) {
+            context.write(
+                new Text(requestMatcher.group(1)),
+                one
+            );
+        }
+    }
 
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+}
+\end{lstlisting}
 
 \end{codelisting}
 
 Come si può osservere da lst.~\ref{lst:log-mapper}, i tipi utilizzati
 dal Mapper non sono tipi standard Java, ma sono forniti dalla libreria.
 Hadoop utilizza un suo formato di serializzazione per lo storage e per
-la trasmissione dei dati in rete, le cui funzionalità sono accessibili
-tramite l'interfaccia \texttt{hadoop.io.Writable}. Le classi
-\texttt{LongWritable} e \texttt{Text} sono dei wrapper sui tipi
-\texttt{long} e \texttt{String} che forniscono i metodi richiesti
-dall'interfaccia di serializzazione, e i valori contenuti in questi tipi
-possono essere ottenuti rispettivamente con \texttt{LongWritable.get()}
-e \texttt{Text.toString()}.
+la trasmissione dei dati in rete, diverso dalla serializzazione
+integrata in Java. In questo modo il framework ha controllo preciso
+sulla fase di serializzazione, un fattore importante data la crucialità
+in termini di efficienza che questa può avere.
 
-Per il resto, le operazioni del Mapper sono intuitive: si utilizza
-l'espressione regolare per ottenere il token contenente l'URI della
-richiesta, e tramite \texttt{context.write} il Mapper invia la coppia
-URI e 1.
+Le funzionalità di serializzazione di Hadoop sono rese accessibili dagli
+oggetti serializzabili tramite l'interfaccia
+\lstinline!hadoop.io.Writable!. Le classi \lstinline!LongWritable! e
+\lstinline!Text! sono dei wrapper sui tipi \lstinline!long! e
+\lstinline!String! che implementano l'interfaccia \lstinline!Writable!,
+e i valori contenuti in questi tipi possono essere ottenuti
+rispettivamente con \lstinline!LongWritable.get()! e
+\lstinline!Text.toString()!\footnote{Le classi definite dagli utenti
+  possono implementare a loro volta l'interfaccia \lstinline!Writable!
+  per essere supportate come tipi di chiavi e valori nei Mapper e nei
+  Reducer.}.
+
+Nel Mapper, si utilizza l'espressione regolare
+\lstinline!/.*"[A-Z]+ (.*) HTTP.*/! per ottenere il token contenente
+l'URI della richiesta, e tramite \lstinline!context.write! si
+restituisce la coppia URI e 1.
 
 \begin{codelisting}
 
 \caption{Implementazione del Reducer per il programma di analisi dei
 log.}
 
-\hypertarget{lst:log-reducer}{\label{lst:log-reducer}}
-\begin{Shaded}
-\begin{Highlighting}[]
+\begin{lstlisting}[language=Java, label=lst:log-reducer]
 
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.LongWritable;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.Text;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.mapreduce.Reducer;}
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
 
-\KeywordTok{import}\ImportTok{ java.io.IOException;}
+import java.io.IOException;
 
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ LogReducer }\KeywordTok{extends}\NormalTok{ Reducer<}\BuiltInTok{Text}\NormalTok{, LongWritable, }\BuiltInTok{Text}\NormalTok{, LongWritable> \{}
-    \AttributeTok{@Override}
-    \KeywordTok{protected} \DataTypeTok{void} \FunctionTok{reduce}\NormalTok{(}\BuiltInTok{Text}\NormalTok{ key, }\BuiltInTok{Iterable}\NormalTok{<LongWritable> values, }\BuiltInTok{Context}\NormalTok{ context)}
-            \KeywordTok{throws} \BuiltInTok{IOException}\NormalTok{, }\BuiltInTok{InterruptedException}\NormalTok{ \{}
+public class LogReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
+    @Override
+    protected void reduce(Text key, Iterable<LongWritable> values, Context context)
+            throws IOException, InterruptedException {
 
-        \DataTypeTok{long}\NormalTok{ accumulator = }\DecValTok{0}\NormalTok{;}
+        long accumulator = 0;
 
-        \KeywordTok{for}\NormalTok{(LongWritable value: values) \{}
-\NormalTok{            accumulator += value.}\FunctionTok{get}\NormalTok{();}
-\NormalTok{        \}}
+        for(LongWritable value: values) {
+            accumulator += value.get();
+        }
 
-\NormalTok{        context.}\FunctionTok{write}\NormalTok{(key, }\KeywordTok{new} \FunctionTok{LongWritable}\NormalTok{(accumulator));}
+        context.write(key, new LongWritable(accumulator));
 
-\NormalTok{    \}}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+    }
+}
+\end{lstlisting}
 
 \end{codelisting}
 
 Il Reducer, mostrato in lst.~\ref{lst:log-reducer}, prende in input nel
-suo metodo \texttt{reduce} i valori aggregati in base alla chiave. Una
-volta sommati in una variabile accumulatore, questi vengono scritti in
-output in una coppia URI-accumulatore. L'insieme di tutti i valori
-restituiti dal Reducer costituiscono l'output finale del programma.
+suo metodo \lstinline!reduce! i valori aggregati in base alla chiave.
+Una volta sommati in una variabile accumulatore, questi vengono scritti
+in output in una coppia URI-accumulatore. L'insieme di tutte le coppie
+restituite dal Reducer costituiscono l'output finale del programma, che
+vengono scritte in un file di testo separando le chiavi dai valori con
+caratteri di tabulazioni, e ogni valore di restituzione con un nuova
+riga.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.75000\textwidth]{img/mapreduce_diagram.png}
+\caption{Diagramma di funzionamento di MapReduce{[}@mapred-diagram{]}}
+\end{figure}
 
 Prima di poter eseguire l'applicazione, è necessario creare un
-esecutore, ovvero una classe contenente un punto d'entrata \texttt{main}
-che utilizzi le API di Hadoop per eseguire il programma, analogamente a
-come descritto in
+esecutore, ovvero una classe contenente un punto d'entrata
+\lstinline!main! che utilizzi le API di Hadoop per eseguire il
+programma, analogamente a come descritto in
 \protect\hyperlink{esecuzione-di-software-in-hadoop}{Esecuzione di
 software in Hadoop}. I lavori MapReduce sono configurati tramite
-l'oggetto \texttt{hadoop.mapreduce.Job}, che richiede di specificare le
-classi da utilizzare come Mapper e Reducer, assieme ai percorsi dei file
-da elaborare. L'esecutore dell'analizzatore di log è mostrato in
+l'oggetto \lstinline!hadoop.mapreduce.Job!, che richiede di specificare
+le classi da utilizzare come Mapper e Reducer, assieme ai percorsi dei
+file da elaborare. L'esecutore dell'analizzatore di log è mostrato in
 lst.~\ref{lst:log-executor}.
 
 \begin{codelisting}
 
 \caption{Esecutore dell'analizzatore di log.}
 
-\hypertarget{lst:log-executor}{\label{lst:log-executor}}
-\begin{Shaded}
-\begin{Highlighting}[numbers=left,,]
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.fs.Path;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.LongWritable;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.io.Text;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.mapreduce.Job;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.mapreduce.lib.input.FileInputFormat;}
-\KeywordTok{import}\ImportTok{ org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;}
+\begin{lstlisting}[language=Java, label=lst:log-executor]
 
-\KeywordTok{public} \KeywordTok{class}\NormalTok{ LogAnalyzer \{}
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-    \KeywordTok{public} \DataTypeTok{static} \DataTypeTok{void} \FunctionTok{main}\NormalTok{(}\BuiltInTok{String}\NormalTok{ args[]) }\KeywordTok{throws} \BuiltInTok{Exception}\NormalTok{ \{}
-        \KeywordTok{if}\NormalTok{(args.}\FunctionTok{length}\NormalTok{ != }\DecValTok{2}\NormalTok{) \{}
-            \BuiltInTok{System}\NormalTok{.}\FunctionTok{err}\NormalTok{.}\FunctionTok{println}\NormalTok{(}\StringTok{"Usage: LogAnalyzer <input path> <output path>"}\NormalTok{);}
-\NormalTok{        \}}
+public class LogAnalyzer {
 
-\NormalTok{        Job job = Job.}\FunctionTok{getInstance}\NormalTok{();}
-\NormalTok{        job.}\FunctionTok{setJarByClass}\NormalTok{(LogAnalyzer.}\FunctionTok{class}\NormalTok{);}
-\NormalTok{        job.}\FunctionTok{setJobName}\NormalTok{(}\StringTok{"LogAnalyzer"}\NormalTok{);}
+    public static void main(String args[]) throws Exception {
+        if(args.length != 2) {
+            System.err.println("Usage: LogAnalyzer <input path> <output path>");
+        }
 
-\NormalTok{        FileInputFormat.}\FunctionTok{addInputPath}\NormalTok{(job, }\KeywordTok{new} \FunctionTok{Path}\NormalTok{(args[}\DecValTok{0}\NormalTok{]));}
-\NormalTok{        FileOutputFormat.}\FunctionTok{setOutputPath}\NormalTok{(job, }\KeywordTok{new} \FunctionTok{Path}\NormalTok{(args[}\DecValTok{1}\NormalTok{]));}
+        Job job = Job.getInstance();
+        job.setJarByClass(LogAnalyzer.class);
+        job.setJobName("LogAnalyzer");
 
-\NormalTok{        job.}\FunctionTok{setMapperClass}\NormalTok{(LogMapper.}\FunctionTok{class}\NormalTok{);}
-\NormalTok{        job.}\FunctionTok{setReducerClass}\NormalTok{(LogReducer.}\FunctionTok{class}\NormalTok{);}
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-\NormalTok{        job.}\FunctionTok{setOutputKeyClass}\NormalTok{(}\BuiltInTok{Text}\NormalTok{.}\FunctionTok{class}\NormalTok{);}
-\NormalTok{        job.}\FunctionTok{setOutputValueClass}\NormalTok{(LongWritable.}\FunctionTok{class}\NormalTok{);}
+        job.setMapperClass(LogMapper.class);
+        job.setReducerClass(LogReducer.class);
 
-        \BuiltInTok{System}\NormalTok{.}\FunctionTok{exit}\NormalTok{(job.}\FunctionTok{waitForCompletion}\NormalTok{(}\KeywordTok{true}\NormalTok{) ? }\DecValTok{0}\NormalTok{ : }\DecValTok{1}\NormalTok{);}
-\NormalTok{    \}}
-\NormalTok{\}}
-\end{Highlighting}
-\end{Shaded}
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(LongWritable.class);
+
+        System.exit(job.waitForCompletion(true) ? 0 : 1);
+    }
+}
+\end{lstlisting}
 
 \end{codelisting}
 
-L'oggetto \texttt{job} è il centro della configurazione del programma
-MapReduce. Tramite questo si specificano il \texttt{jar} contenente le
-classi dell'applicazione, il nome del Job, utilizzato per mostrare
+L'oggetto \lstinline!job! è il centro della configurazione del programma
+MapReduce. Tramite questo si specificano il \lstinline!jar! contenente
+le classi dell'applicazione, il nome del Job, utilizzato per mostrare
 descrittivamente nei log e nell'interfaccia web lo stato di
 completamente di questo, le classi Mapper e Reducer e i tipi dei valori
 di output del Reducer. Vengono impostati anche i path del file di input
 e dei file di output, utilizzando i valori ricevuti come parametri in
-\texttt{args}. Il job viene effettivamente eseguito alla chiamata di
-\texttt{job.waitForCompletion(bool\ verbose)}, che restituisce
-\texttt{true} quando questo va a buon fine.
+\lstinline!args!. Il job viene effettivamente eseguito alla chiamata di
+\lstinline!job.waitForCompletion(bool verbose)!, che restituisce
+\lstinline!true! quando questo va a buon fine.
 
 Al termine della compilazione e pacchettizzazione, il programma può
-essere eseguito con il comando \texttt{hadoop}:
+essere eseguito con il comando \lstinline!hadoop!:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{$ }\ExtensionTok{hadoop}\NormalTok{ LogAnalyzer /example/NASA_access_log_Jul95 /example/LogAnalyzerOutput}
+\begin{lstlisting}[language=sh]
+$ hadoop LogAnalyzer /example/NASA_access_log_Jul95 /example/LogAnalyzerOutput
+\end{lstlisting}
 
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:47 INFO Configuration.deprecation: session.id is deprecated.}
-    \ExtensionTok{Instead}\NormalTok{, use dfs.metrics.session-id}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:47 INFO jvm.JvmMetrics: Initializing JVM Metrics with }
-    \VariableTok{processName=}\NormalTok{JobTracker, }\VariableTok{sessionId=}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:47 WARN mapreduce.JobResourceUploader: Hadoop command-line }
-    \ExtensionTok{option}\NormalTok{ parsing not performed. Implement the Tool interface and execute}
-    \ExtensionTok{your}\NormalTok{ application with ToolRunner to remedy this.}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO input.FileInputFormat: Total input files to process : 1}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO mapreduce.JobSubmitter: number of splits:2}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO mapreduce.JobSubmitter: Submitting tokens for }
-    \ExtensionTok{job}\NormalTok{: job_local954245035_0001}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO mapreduce.Job: The url to track the job: http://localhost:8080/}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO mapreduce.Job: Running job: job_local954245035_0001}
-\ExtensionTok{17/07/03}\NormalTok{ 18:17:48 INFO mapred.LocalJobRunner: OutputCommitter set in config null}
-\ExtensionTok{...}
-\end{Highlighting}
-\end{Shaded}
+Il metodo \lstinline!job.waitForCompletion! è stato invocato con il
+parametro \lstinline!verbose! impostato a \lstinline!true!, per cui
+l'esecuzione stampa in output un log sul job in esecuzione. Lo stato di
+esecuzione dei job è anche consultabile tramite un'interfaccia web
+fornita dal framework.
 
-Il metodo \texttt{job.waitForCompletion} è stato invocato con il
-parametro \texttt{verbose} impostato a \texttt{true}, per cui
-l'esecuzione stampa in output un log sul job in esecuzione. È anche
-possibile verificare lo stato di esecuzione dei job tramite
-un'interfaccia web fornita dal framework.
+\begin{lstlisting}[language=sh]
+17/07/03 18:17:47 INFO Configuration.deprecation: session.id is deprecated.
+    Instead, use dfs.metrics.session-id
+17/07/03 18:17:47 INFO jvm.JvmMetrics: Initializing JVM Metrics with 
+    processName=JobTracker, sessionId=
+17/07/03 18:17:47 WARN mapreduce.JobResourceUploader: Hadoop command-line 
+    option parsing not performed. Implement the Tool interface and execute
+    your application with ToolRunner to remedy this.
+17/07/03 18:17:48 INFO input.FileInputFormat: Total input files to process : 1
+17/07/03 18:17:48 INFO mapreduce.JobSubmitter: number of splits:2
+17/07/03 18:17:48 INFO mapreduce.JobSubmitter: Submitting tokens for 
+    job: job_local954245035_0001
+17/07/03 18:17:48 INFO mapreduce.Job: The url to track the job: http://localhost:8080/
+17/07/03 18:17:48 INFO mapreduce.Job: Running job: job_local954245035_0001
+17/07/03 18:17:48 INFO mapred.LocalJobRunner: OutputCommitter set in config null
+...
+\end{lstlisting}
 
 Al termine dell'esecuzione, i risultati sono disponibili in HDFS nella
-cartella \texttt{/example/LogAnalyzerOutput}, come specificato nei
+cartella \lstinline!/example/LogAnalyzerOutput!, come specificato nei
 parametri d'esecuzione. I risultati si trovano in una cartella perché
-questi sono composti da più file, uno per ogni Reducer eseguito
-parallelamente dal framework. In questo caso, il job è stato eseguito da
-un solo reducer, per cui i risultati si trovano in un unico file. È
-possibile scegliere la quanitità di Reducer da eseguire parallelamente
-nel framework, mentre i Mapper, come si vedrà, sono stabiliti in base
-all'input.
+possono essere composti da più file, uno per ogni Reducer eseguito
+parallelamente dal framework. Questa limitazione è dovuta ad HDFS, che
+restringe rigidamente l'accesso in scrittura ai file a un solo
+utilizzatore. In questo caso, il job è stato eseguito da un solo
+reducer, per cui i risultati si trovano in un unico file. L'output dei
+reducer è salvato in file testuali con il nome \lstinline!part-r-!
+seguito da un numero sequenziale che identifica l'istanza del Reducer
+che lo ha prodotto.
 
-Eseguendo \texttt{ls} nella cartella di output si può effettivamente
+Eseguendo \lstinline!ls! nella cartella di output si può effettivamente
 verificare la presenza del file prodotto dal Reducer.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{$ }\ExtensionTok{hadoop}\NormalTok{ fs -ls /example/LogAnalyzerOutput}
-\ExtensionTok{Found}\NormalTok{ 2 items}
-\ExtensionTok{-rw-r--r--}\NormalTok{   3 heygent hdfs          0 2017-07-03 18:17 /example/.../_SUCCESS}
-\ExtensionTok{-rw-r--r--}\NormalTok{   3 heygent hdfs     804597 2017-07-03 18:17 /example/.../part-r-0000}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+$ hadoop fs -ls /example/LogAnalyzerOutput
+Found 2 items
+-rw-r--r--   3 heygent hdfs          0 2017-07-03 18:17 /example/.../_SUCCESS
+-rw-r--r--   3 heygent hdfs     804597 2017-07-03 18:17 /example/.../part-r-0000
+\end{lstlisting}
 
 Assieme al risultato della computazione, MapReduce salva un file vuoto
-chiamato \texttt{\_SUCCESS}, di cui si può verificare la presenza in
-HDFS per capire se il job è andato a buon fine. Consultando il file, si
-può osservare il risultato della computazione eseguita.
+chiamato \lstinline!_SUCCESS!, utilizzabile per verificare
+programmaticamente se il job è andato a buon fine. Consultando il file,
+si può osservare il risultato della computazione eseguita.
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\ExtensionTok{...}
-\ExtensionTok{/elv/DELTA/del181.gif}\NormalTok{   71}
-\ExtensionTok{/elv/DELTA/del181s.gif}\NormalTok{  390}
-\ExtensionTok{/elv/DELTA/deline.gif}\NormalTok{   84}
-\ExtensionTok{/elv/DELTA/delseps.jpg}\NormalTok{  90}
-\ExtensionTok{/elv/DELTA/delta.gif}\NormalTok{    1492}
-\ExtensionTok{/elv/DELTA/delta.htm}\NormalTok{    267}
-\ExtensionTok{/elv/DELTA/deprev.htm}\NormalTok{   71}
-\ExtensionTok{/elv/DELTA/dsolids.jpg}\NormalTok{  84}
-\ExtensionTok{/elv/DELTA/dsolidss.jpg}\NormalTok{ 369}
-\ExtensionTok{/elv/DELTA/euve.jpg}\NormalTok{     36}
-\ExtensionTok{/elv/DELTA/euves.jpg}\NormalTok{    357}
-\ExtensionTok{/elv/DELTA/rosat.jpg}\NormalTok{    38}
-\ExtensionTok{/elv/DELTA/rosats.jpg}\NormalTok{   366}
-\ExtensionTok{/elv/DELTA/uncons.htm}\NormalTok{   163}
-\ExtensionTok{...}
-\end{Highlighting}
-\end{Shaded}
+\begin{lstlisting}[language=sh]
+...
+/elv/DELTA/del181.gif   71
+/elv/DELTA/del181s.gif  390
+/elv/DELTA/deline.gif   84
+/elv/DELTA/delseps.jpg  90
+/elv/DELTA/delta.gif    1492
+/elv/DELTA/delta.htm    267
+/elv/DELTA/deprev.htm   71
+/elv/DELTA/dsolids.jpg  84
+/elv/DELTA/dsolidss.jpg 369
+/elv/DELTA/euve.jpg     36
+/elv/DELTA/euves.jpg    357
+/elv/DELTA/rosat.jpg    38
+/elv/DELTA/rosats.jpg   366
+/elv/DELTA/uncons.htm   163
+...
+\end{lstlisting}
 
-\subsection{Astrazioni su MapReduce}\label{astrazioni-su-mapreduce}
+\clearpage
+
+\subsection{Modello di esecuzione di
+MapReduce}\label{modello-di-esecuzione-di-mapreduce}
+
+Il modello di programmazione di MapReduce è progettato per essere
+altamente parallelizzabile e in modo che sia possibile processare
+diverse parti dell'input indipendentemente. Questo dato si riflette nel
+design del Mapper, che riceve come input piccole porzioni del file
+letto, permettendo al framework di assegnare l'elaborazione delle
+operazioni di Map a diversi processi indipendenti.
+
+MapReduce è implementato in YARN, e utilizza le sue astrazioni per
+avvantaggiarsi della località dei dati, eseguendo i processi che
+riguardano una certa porzione di input nei nodi che contengono i
+corrispondenti blocchi HDFS. L'esecuzione dei lavori MapReduce avviene
+secondo i seguenti step:
+
+\begin{enumerate}
+\item
+  I file vengono partizionati da MapReduce in frammenti chiamati
+  \emph{split}, e per ognuno di questi MapReduce esegue un \emph{map
+  task} in un determinato nodo del cluster. Ogni map task può eseguire
+  uno o più processi nel nodo in cui si trova, a seconda delle risorse
+  assegnate da YARN.
+
+  La dimensione degli split è configurabile, e non corrisponde
+  necessariamente alla dimensione di un blocco HDFS, pur essendo questa
+  l'opzione di default (128 MB). Con split della stessa dimensione dei
+  blocchi, la maggior parte dei dati può essere processata dai nodi che
+  contengono il blocco nel loro storage locale. È possibile configurare
+  MapReduce per utilizzare split più grandi, ma se una parte dello split
+  non si trova nel nodo in cui viene eseguito il map task, questa deve
+  essere ricevuta tramite rete da un altro nodo nel cluster che la
+  contiene, riducendo quindi la \emph{data locality}.
+\item
+  In ogni \emph{map task}, lo split corrispondente viene diviso in più
+  \emph{record}, che corrispondono alle coppie ricevute in input dal
+  Mapper. Il map task esegue il Mapper in uno o più processi del nodo in
+  cui si trova, per poi salvare il loro output nello storage locale del
+  nodo che esegue il map task. Lo storage locale è più efficiente per la
+  scrittura, ma non offre fault-tolerance, per cui in caso di fallimento
+  del nodo che contiene i risultati di un \emph{map task}, l'application
+  master dell'applicazione MapReduce deve schedulare la sua
+  riesecuzione.
+
+  Oltre all'esecuzione dei Mapper, i nodi in questa fase ordinano la
+  parte di output in loro possesso in base alla chiave. Questo permette
+  di eseguire parallelamente buona parte del sorting dell'input dei
+  Reducer.
+\item
+  Quando non ci sono più \emph{map task} da eseguire sull'input,
+  l'application master inizia ad avviare i \emph{reduce task}. I
+  \emph{reduce task} ricevono in input i risultati ordinati prodotti dai
+  \emph{map task} mano a mano che questi sono disponibili. Ogni
+  \emph{map task} può inviare coppie chiave-valore a ogni \emph{reduce
+  task}, a condizione che coppie con la stessa chiave finiscano sempre
+  nello stesso reducer.
+
+  Per fare questo, i nodi che eseguono \emph{map task} dividono il loro
+  output in partizioni, una per ogni Reducer. Ogni chiave delle coppie
+  di output viene associata univocamente a una partizione, utilizzando
+  la seguente funzione:
+
+  \[partitionId(K_i) = hashCode(K_i) \bmod partitionCount\]
+
+  In questo modo, la stessa chiave è sempre associata alla stessa
+  partizione in ogni nodo.
+\item
+  I nodi che eseguono i Reducer ricevono dai nodi Mapper diversi insiemi
+  ordinati di coppie chiave-valore. Questi gruppi vengono uniti tramite
+  un'operazione di \emph{merge}, analoga alla stessa operazione nel
+  contesto del \emph{mergesort}. Una volta ricevuti tutti i valori, il
+  \emph{reduce task} esegue i Reducer che computano l'output finale
+  dell'applicazione.
+\end{enumerate}
 
 \section{Spark}\label{spark}
+
+Le astrazioni fornite dal paradigma computazionale di MapReduce tolgono
+dall'utente l'onere di pensare al dataset in elaborazione, astraendo
+l'applicazione a una serie di elaborazioni su chiavi e valori. Questa
+astrazione ha tuttavia un costo: l'utente non ha il controllo sulla
+gestione del flusso dei dati, che è affidata interamente dal framework.
+
+Il costo della semplificazione diventa evidente quando si cerca di
+utilizzare MapReduce per eseguire operazioni che richiedono la
+rielaborazione di risultati. Al termine di ogni job MapReduce, l'output
+viene salvato in HDFS, ed è quindi necessario rileggerlo dal filesystem
+per poterlo utilizzare.
+
+Di per sé, MapReduce non contiene un meccanismo che permetta la
+schedulazione consecutiva di job che ricevono in input l'output di un
+altro job, e per eseguire elaborazioni che richiedono più fasi è
+necessario utilizzare tool esterni. Inoltre, l'overhead della lettura e
+scrittura in HDFS è alto, e MapReduce non fornisce metodi per
+rielaborare i dati direttamente nella memoria centrale.
+
+Il creatore di Spark, Matei Zaharia{[}@rdd-conf{]}, ha posto questo
+problema come dovuto alla mancanza di \emph{primitive efficienti per la
+condivisione di dati} in MapReduce. Per come le interfacce di MapReduce
+sono poste, sarebbe anche difficile crearne di nuove, data la mancanza
+di un'API che sia rappresentativa del dataset invece che delle singole
+chiavi e valori.
+
+Infine, la scrittura dei risultati delle computazioni in HDFS è
+necessaria per fornire fault-tolerance su di questi, che andrebbero
+persi nel caso di un fallimento di un nodo che mantiene i risultati
+nella memoria centrale. Un sistema di elaborazione che agisca sulla
+memoria centrale deve necessariamente avere un meccanismo di recupero da
+fault, per evitare che il fallimento di uno dei singoli nodi coinvolti
+nella computazione renda necessario rieseguire completamente
+l'applicazione.
+
+Spark si propone come alternativa a MapReduce, con l'intenzione di dare
+una soluzione a questi problemi. Le soluzioni derivano da un approccio
+funzionale, sfruttando strutture con semantica di immutabilibità per
+rappresentare i dataset e API che utilizzano funzioni di ordine
+superiore per esprimere concisamente le computazioni. L'astrazione
+principale del modello di Spark è il Resilient Distributed Dataset, o
+RDD, che rappresenta una collezione immutabile e distribuita di record
+di cui è composto un dataset o una sua rielaborazione.
+
+Spark è scritto in Scala, e la sua esecuzione su Hadoop è gestita da
+YARN. YARN non è l'unico motore di esecuzione di Spark, che può essere
+eseguito anche su Apache Mesos o in modalità standalone, sia su cluster
+che su macchine singole. Le API client di Spark sono canonicamente
+disponibili in Scala, Java, R e Python.
+
+Spark dispone anche di una modalità interattiva, in cui l'utente
+interagisce con il framework tramite una shell REPL Scala o Python.
+Questa modalità permette la prototipazione rapida di applicazioni, e
+abilita l'utilizzo di paradigmi come l'\textbf{interactive data mining},
+che consiste nell'eseguire analisi sui dataset in via esploratoria,
+scegliendo quali operazioni intraprendere mano a mano che si riceve il
+risultato delle elaborazioni precedenti.
+
+\subsection{Interfaccia di Spark}\label{interfaccia-di-spark}
+
+I Resilient Distributed Dataset sono degli oggetti che rappresentano un
+dataset partizionato e distribuito, su cui è possibile eseguire
+operazioni parallelamente.
+
+Gli RDD sono immutabili, e ogni computazione richiesta su di questi
+restituisce un valore o un nuovo RDD. Le computazioni sono eseguite
+tramite metodi chiamati sugli oggetti RDD, e si dividono in due
+categorie: \textbf{azioni} e \textbf{trasformazioni}.
+
+Le trasformazioni creano un nuovo RDD, basato su delle operazioni
+deterministiche sull'RDD di origine. L'elaborazione del nuovo RDD è
+lazy, e non viene eseguita finché non viene richiesta l'esecuzione di
+un'azione.
+
+Alcuni esempi di trasformazioni sono \lstinline!map!, che associa a ogni
+valore del dataset un nuovo valore, e \lstinline!filter!, che scarta dei
+valori nel dataset in base a un predicato. Spesso, per descrivere le
+computazioni, le trasformazioni richiedono in input funzioni pure (prive
+di side-effect).
+
+Le azioni fanno scattare la valutazione dell'RDD, che porta quindi
+all'esecuzione di tutte le trasformazioni da cui questo è derivato.
+Alcuni esempi di azioni sono \lstinline!foreach!, che esegue una
+funzione specificata dall'utente per ogni input del dataset,
+\lstinline!reduce!, che riceve in input una funzione per aggregare i
+valori del dataset, e \lstinline!saveAsTextFile!, che permette il
+salvataggio di un RDD in un file testuale.
+
+Ogni sessione interattiva e programma Spark utilizza un oggetto
+\lstinline!SparkContext! per creare gli RDD iniziali. Lo
+\lstinline!SparkContext! contiene le impostazioni principali sul
+programma, come il master di esecuzione (\lstinline!local!,
+\lstinline!yarn!, \lstinline!mesos!) e l'identificativo con cui
+tracciare il job in esecuzione. Le sessioni interattive forniscono lo
+\lstinline!SparkContext! automaticamente, in una variabile globale
+chiamata \lstinline!sc!.
+
+Le sessioni interattive Spark possono essere avviate tramite i comandi
+\lstinline!spark-shell!, che mette a disposizione una shell REPL Scala,
+o \lstinline!pyspark!, che ne mette a disposizione una Python. Tramite
+gli argomenti dell'eseguibile si può specificare il master (di default
+\lstinline!local!).
+
+\begin{figure}
+\centering
+\includegraphics{img/spark-shell.png}
+\caption{Avvio di una sessione interattiva Spark.}
+\end{figure}
+
+Tramite l'oggetto \lstinline!sc!, si può creare un nuovo RDD a partire
+da diversi fonti:
+
+\begin{enumerate}
+\def\labelenumi{(\arabic{enumi})}
+\setcounter{enumi}{2}
+\item
+  Creazione di un RDD a partire da un iterabile:
+
+\begin{lstlisting}[language=Scala]
+scala> val range = sc.parallelize(1 to 50)
+range: org.apache.spark.rdd.RDD[Int] = 
+   ParallelCollectionRDD[0] at parallelize at <console>:24
+\end{lstlisting}
+
+  L'espressione \lstinline!1 to 50! rappresenta un range Scala, analogo
+  allo stesso concetto in python
+\end{enumerate}
+
+Se non vengono fatte specificazioni, la computazione delle
+trasformazioni avviene ogni volta che viene chiamata un'azione su di un
+RDD. Per evitare ricomputazioni costose, è possibile specificare quali
+RDD persistere nella memoria dei nodi, in modo che i risultati computati
+possano essere riutilizzati. Per segnalare un RDD come da persistere, è
+sufficiente chiamare il suo metodo \lstinline!persist!.
+
+Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è
+originato, utilizzando un grafo che viene definito \textbf{lineage}.
+Tramite questa struttura, Spark è in grado di fornire fault-tolerance:
+nell'eventualità in cui un nodo che esegue una computazione su una
+partizione dell'RDD dovesse fallire, Spark può retrocedere agli RDD
+genitori sul grafo di lineage, fino a trovare un RDD salvato in memoria.
+A partire da questo, si può ricavare la partizione del dataset da cui
+l'input del nodo fallito è ricavato, e rischedulare la serie di
+operazioni per cui la partizione è passata, fino alla rielaborazione
+dell'operazione fallita.
+
+Quante più operazioni possibili vengono eseguite nello stesso nodo.
+Cambiare i n odi della computazione si rende necessario in certe
+operazioni, come l'aggregazione. In questi casi
+
+\begin{longtable}[]{@{}ll@{}}
+\caption{Alcune trasformazioni supportate da Spark}\tabularnewline
+\toprule
+\begin{minipage}[b]{0.34\columnwidth}\raggedright\strut
+Trasformazione\strut
+\end{minipage} & \begin{minipage}[b]{0.57\columnwidth}\raggedright\strut
+Risultato\strut
+\end{minipage}\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+\begin{minipage}[b]{0.34\columnwidth}\raggedright\strut
+Trasformazione\strut
+\end{minipage} & \begin{minipage}[b]{0.57\columnwidth}\raggedright\strut
+Risultato\strut
+\end{minipage}\tabularnewline
+\midrule
+\endhead
+\begin{minipage}[t]{0.34\columnwidth}\raggedright\strut
+\lstinline!map(fun)!\strut
+\end{minipage} & \begin{minipage}[t]{0.57\columnwidth}\raggedright\strut
+Restituisce un nuovo RDD passando ogni elemento della sorgente a
+\lstinline!fun!.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.34\columnwidth}\raggedright\strut
+\lstinline!filter(fun)!\strut
+\end{minipage} & \begin{minipage}[t]{0.57\columnwidth}\raggedright\strut
+Restituisce un RDD formato dagli elementi che \lstinline!fun! mappa in
+\lstinline!true!.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.34\columnwidth}\raggedright\strut
+\lstinline!union(dataset)!\strut
+\end{minipage} & \begin{minipage}[t]{0.57\columnwidth}\raggedright\strut
+Restituisce un RDD che contiene gli elementi della sorgente uniti con
+quelli di \lstinline!dataset!.\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.34\columnwidth}\raggedright\strut
+\lstinline!intersection(dataset)!\strut
+\end{minipage} & \begin{minipage}[t]{0.57\columnwidth}\raggedright\strut
+Restitusce un RDD contente gli elementi comuni alla sorgente e a
+\lstinline!dataset!\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.34\columnwidth}\raggedright\strut
+\lstinline!distinct([numTasks]))!\strut
+\end{minipage} & \begin{minipage}[t]{0.57\columnwidth}\raggedright\strut
+Restituisce un RDD contentente gli elementi del dataset senza
+ripetizioni\strut
+\end{minipage}\tabularnewline
+\bottomrule
+\end{longtable}
 
 \chapter{Stream Processing}\label{stream-processing}
 
@@ -1824,54 +2276,6 @@ può osservare il risultato della computazione eseguita.
 
 \section{Storm}\label{storm}
 
-\chapter{NoSQL e Big Data}\label{nosql-e-big-data}
-
-\section{Scalabilità e CAP Theorem}\label{scalabilituxe0-e-cap-theorem}
-
-\section{HBase}\label{hbase}
-
-\subsection{Query MapReduce su HBase}\label{query-mapreduce-su-hbase}
-
-\chapter*{Bibliografia}\label{bibliografia}
-\addcontentsline{toc}{chapter}{Bibliografia}
-
-\hypertarget{refs}{}
-\hypertarget{ref-hadoop-adoption-survey}{}
-1. Gartner Survey Highlights Challenges to Hadoop Adoption,
-\url{http://www.gartner.com/newsroom/id/3051717}
-
-\hypertarget{ref-hadoop-market-analysis}{}
-2. Hadoop Market Forecast 2017-2022,
-\url{https://www.marketanalysis.com/?p=279}
-
-\hypertarget{ref-digital-univ}{}
-3. The Digital Universe of Opportunities: Rich Data and the Increasing
-Value of the Internet of Things,
-\url{https://www.emc.com/leadership/digital-universe/2014iview/executive-summary.htm}
-
-\hypertarget{ref-hadoop-doc-main}{}
-4. Apache Hadoop Documentation, \url{https://hadoop.apache.org/}
-
-\hypertarget{ref-hadoop-ppa}{}
-5. Hadoop Ubuntu Packagers PPA,
-\url{https://launchpad.net/~hadoop-ubuntu/+archive/ubuntu/stable}
-
-\hypertarget{ref-hadoop-aur}{}
-6. AUR - Hadoop, \url{https://aur.archlinux.org/packages/hadoop/}
-
-\hypertarget{ref-mapr-fs}{}
-7. MapR-FS Overview, \url{https://mapr.com/products/mapr-fs/}
-
-\hypertarget{ref-hadoop-guide-hdfs-file-read}{}
-8. White, T.: Hadoop: The Definitive Guide. (2015)
-
-\hypertarget{ref-mapreduce-spark-performance}{}
-9. Shi, J., Qiu, Y., Farooq Minhas, U., Jiao, L., Wang, C., Reinwald,
-B., Ozcan, F.: Clash of the Titans: MapReduce vs.~Spark for Large Scale
-Data Analytics, \url{http://www.vldb.org/pvldb/vol8/p2110-shi.pdf}
-
-\hypertarget{ref-nasa-weblog}{}
-10. HTTP Logs from the KSC-NASA,
-\url{http://ita.ee.lbl.gov/html/contrib/NASA-HTTP.html}
+\chapter{Bibliografia}\label{bibliografia}
 
 \end{document}

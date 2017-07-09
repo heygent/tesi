@@ -118,6 +118,7 @@ references:
   - id: hadoop-guide-hdfs-file-read
     type: book
     title: "Hadoop: The Definitive Guide"
+    ISBN: 978-1-491-90163-2
     author:
         - family: White
           given: Tom
@@ -125,6 +126,16 @@ references:
         date-parts:
             - - 2015
               - 4
-    page: 69
+  - id: learning-apache-spark
+    type: book
+    title: Learning Apache Spark 2
+    author:
+        - given:  Muhammad 
+        - family: Asif Abbasi
+    ISBN: 9781785885136
+    issued:
+        date-parts:
+            - - 2017
+              - 3
 urlcolor: NavyBlue
 ---

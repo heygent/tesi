@@ -128,7 +128,7 @@ resi disponibili tramite l'interfaccia `Iterable` di Java.
 I valori a questo punto possono essere combinati a seconda dell'esigenza
 dell'utente per restituire un risultato finale.
 
-### Esempio di un programma MapReduce
+### Esempio di un programma MapReduce {#mapred-example}
 
 Come esempio di programma per MapReduce, si prende in considerazione l'analisi
 di log di un web server. Il dataset su cui si esegue l'elaborazione è fornito
@@ -448,7 +448,7 @@ L'esecuzione dei lavori MapReduce avviene secondo i seguenti step:
     partizioni, una per ogni Reducer. Ogni chiave delle coppie di output viene
     associata univocamente a una partizione, utilizzando la seguente funzione:
 
-    $$partitionId(K_i) = hashCode(K_i) \bmod partitionCount$$
+    $$partitionId(K_i) = hash(K_i) \bmod partitionCount$$
 
     In questo modo, la stessa chiave è sempre associata alla stessa partizione
     in ogni nodo.
@@ -486,23 +486,24 @@ difficile crearne di nuove, data la mancanza di un'API che sia rappresentativa
 del dataset invece che delle singole chiavi e valori.
 
 Infine, la scrittura dei risultati delle computazioni in HDFS è necessaria per
-fornire fault-tolerance sui risultati delle computazioni, che andrebbero persi
-nel caso di un fallimento di un nodo che mantiene i risultati nella memoria
-centrale. Per poter avere 
+fornire fault-tolerance su di questi, che andrebbero persi nel caso di un
+fallimento di un nodo che mantiene i risultati nella memoria centrale. Un
+sistema di elaborazione che agisca sulla memoria centrale deve necessariamente
+avere un meccanismo di recupero da fault, per evitare che il fallimento di uno
+dei singoli nodi coinvolti nella computazione renda necessario rieseguire
+completamente l'applicazione.
 
 Spark si propone come alternativa a MapReduce, con l'intenzione di dare una
-soluzione a questi problemi. Le soluzioni derivano da un approccio funzionale
-alla computazione, sfruttando strutture con semantica di immutabilibità per
-rappresentare i dataset e API che utilizzano funzioni di ordine superiore per
-esprimere concisamente le computazioni. L'astrazione principale del modello
-di Spark è il Resilient Distributed Dataset, o RDD, che rappresenta una
-collezione immutabile di record di cui è composto un dataset distribuito o una
-sua rielaborazione.
+soluzione a questi problemi. Le soluzioni derivano da un approccio funzionale,
+sfruttando strutture con semantica di immutabilibità per rappresentare i
+dataset e API che utilizzano funzioni di ordine superiore per esprimere
+concisamente le computazioni. L'astrazione principale del modello di Spark è il
+Resilient Distributed Dataset, o RDD, che rappresenta una collezione immutabile
+e distribuita di record di cui è composto un dataset o una sua rielaborazione.
 
-Spark è scritto in Scala, e la sua esecuzione su Hadoop è gestita da YARN.
-YARN non è l'unico motore di esecuzione di Spark, che può essere eseguito anche
-su Apache Mesos o in modalità standalone, sia su cluster che su macchine
-singole.
+Spark è scritto in Scala, e la sua esecuzione su Hadoop è gestita da YARN. YARN
+non è l'unico motore di esecuzione di Spark, che può essere eseguito anche su
+Apache Mesos o in modalità standalone, sia su cluster che su macchine singole.
 Le API client di Spark sono canonicamente disponibili in Scala, Java, R e
 Python.
 
@@ -514,7 +515,7 @@ analisi sui dataset in via esploratoria, scegliendo quali operazioni
 intraprendere mano a mano che si riceve il risultato delle elaborazioni
 precedenti.
 
-### Interfaccia di Spark
+### RDD API
 
 I Resilient Distributed Dataset sono degli oggetti che rappresentano un dataset
 partizionato e distribuito, su cui è possibile eseguire operazioni
@@ -527,41 +528,12 @@ sugli oggetti RDD, e si dividono in due categorie: **azioni** e
 
 Le trasformazioni creano un nuovo RDD, basato su delle operazioni
 deterministiche sull'RDD di origine. L'elaborazione del nuovo RDD è lazy, e
-non viene eseguita nessuna operazione finché non viene richiesta l'esecuzione
-di un'azione. 
+non viene eseguita finché non viene richiesta l'esecuzione di un'azione. 
 
 Alcuni esempi di trasformazioni sono `map`, che associa a ogni valore del
 dataset un nuovo valore, e `filter`, che scarta dei valori nel dataset in base
 a un predicato. Spesso, per descrivere le computazioni, le trasformazioni
 richiedono in input funzioni pure (prive di side-effect).
-
-Le azioni fanno scattare la valutazione dell'RDD, che porta quindi
-all'esecuzione di tutte le trasformazioni da cui questo è derivato. Alcuni
-esempi di azioni sono `foreach`, che esegue una funzione specificata
-dall'utente per ogni input del dataset, `reduce`, che riceve in input una
-funzione per aggregare i valori del dataset, e `saveAsTextFile`, che permette
-il salvataggio di un RDD in un file testuale.
-
-Se non vengono fatte specificazioni, la computazione delle trasformazioni
-avviene ogni volta che viene chiamata un'azione su di un RDD. Per evitare
-ricomputazioni costose, è possibile specificare quali RDD persistere nella
-memoria dei nodi, in modo che i risultati computati possano essere
-riutilizzati. Per segnalare un RDD come da persistere, è sufficiente chiamare
-il suo metodo `persist`.
-
-Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
-utilizzando un grafo che viene definito **lineage**. Tramite questa struttura,
-Spark è in grado di fornire fault-tolerance: nell'eventualità in cui un nodo
-che esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
-può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare un RDD
-salvato in memoria. A partire da questo, si può ricavare la partizione del
-dataset da cui l'input del nodo fallito è ricavato, e rischedulare la serie di
-operazioni per cui la partizione è passata, fino alla rielaborazione
-dell'operazione fallita.
-
-Quante più operazioni possibili vengono eseguite nello stesso nodo. Cambiare i
-nodi della computazione si rende necessario in certe operazioni, come
-l'aggregazione. In questi casi 
 
 +-------------------------+-------------------------------------------+
 | Trasformazione          | Risultato                                 |
@@ -584,3 +556,483 @@ l'aggregazione. In questi casi
 +-------------------------+-------------------------------------------+
 
 : Alcune trasformazioni supportate da Spark
+
+Le azioni fanno scattare la valutazione dell'RDD, che porta quindi
+all'esecuzione di tutte le trasformazioni da cui questo è derivato. Alcuni
+esempi di azioni sono `foreach`, che esegue una funzione specificata
+dall'utente per ogni input del dataset, `reduce`, che utilizza una funzione di
+input per aggregare i valori del dataset, e `saveAsTextFile`, che permette il
+salvataggio di un RDD in un file testuale.
+
+Ogni sessione interattiva e programma Spark utilizza un oggetto `SparkContext`
+per creare gli RDD iniziali. Lo `SparkContext` contiene le impostazioni
+principali sul programma, come il master di esecuzione (`local`, `yarn`,
+`mesos`) e l'identificativo con cui tracciare il job in esecuzione. Le sessioni
+interattive forniscono lo `SparkContext` automaticamente, in una variabile
+globale chiamata `sc`.
+
+Le sessioni interattive Spark possono essere avviate tramite i comandi
+`spark-shell`, che mette a disposizione una shell REPL Scala, o `pyspark`, che
+ne mette a disposizione una Python. Tramite gli argomenti dell'eseguibile si
+può specificare il master (di default `local`).
+
+![Avvio di una sessione interattiva Spark.](img/spark-shell.png)
+
+Tramite l'oggetto `sc`, si può creare un nuovo RDD a partire da diversi fonti.
+Il seguente codice crea un RDD partendo da un range inclusivo Scala, analogo
+allo stesso concetto in Python.
+
+```scala
+scala> val range = sc.parallelize(1 to 50)
+range: org.apache.spark.rdd.RDD[Int] = 
+  ParallelCollectionRDD[0] at parallelize at <console>:24
+```
+
+Per creare un RDD a partire da un percorso, `SparkContext` fornisce metodi come
+`textFile(path: String)`, che permette la lettura di file di testo da storage
+locali e distribuiti, avvantaggiandosi della *data locality* quando possibile,
+o `hadoopRDD(job: JobConf)`, che permette l'utilizzo di qualunque `InputFormat`
+Hadoop per creare il dataset.
+Nel seguente esempio si crea un RDD a partire dalla versione testuale inglese
+del libro *Le metamorfosi* di Franz Kafka, offerto gratuitamente dal Progetto
+Gutenberg.
+
+```scala
+scala> val book = sc.textFile("/books/kafka-metamorphosis.txt")
+book: org.apache.spark.rdd.RDD[String] = 
+    /books/kafka-metamorphosis.txt MapPartitionsRDD[28] at textFile 
+    at <console>:24
+```
+
+Una volta ottenuto l'RDD, è possibile iniziare a eseguirvi trasformazioni. È
+importante tenere in conto che ogni trasformazione restituisce un nuovo RDD, di 
+cui è necessario salvare un riferimento per poterlo utilizzare in seguito.
+Nelle sessioni interattive Scala i risultati di tutte le espressioni valutate
+nella shell sono disponibili in variabili con il nome `res` seguito da un
+identificativo numerico sequenziale, che è possibile utilizzare per tenere
+traccia degli RDD valutati.
+
+```scala
+scala> val words = book.flatMap(_.split(' ')).filter(_ != "")
+words: org.apache.spark.rdd.RDD[String] = 
+    MapPartitionsRDD[30] at filter at <console>:26
+```
+
+La trasformazione `flatMap` riceve in input una funzione[^scalafn] che
+restituisce un iterabile di elementi. La funzione viene chiamata su tutti gli
+elementi dell'RDD, e i valori contenuti negli iterabili restituiti sono
+raggruppati nell'RDD restituito. Con la funzione `_.split(' ')` si separano le
+parole in ogni riga del libro. Viene poi eseguita la trasformazione `filter`
+con il predicato `_ != ""`, per scartare le stringhe vuote che possono
+risultare dalla trasformazione precedente[^simple].
+
+[^scalafn]: Scala supporta una sintassi concisa per la creazione di funzioni
+anonime, definibili con espressioni che utilizzano l'identificativo `_` come
+valori. A ogni utilizzo di `_` corrisponde un parametro della funzione, che
+viene sostituito nella rispettiva posizione alla chiamata della funzione.
+
+[^simple]: Per semplificare l'esempio, si ignora il casing e la punteggiatura
+delle parole, che andrebbero altrimenti normalizzate per ottenere un risultato
+corretto sul conteggio delle parole.
+
+Se non vengono fatte specificazioni, l'esecuzione delle trasformazioni avviene
+ogni volta che viene chiamata un'azione su di un RDD. Per evitare
+ricomputazioni costose, è possibile specificare quali RDD persistere nella
+memoria dei nodi, in modo che i risultati computati possano essere riutilizzati
+in operazioni successive. Per richiedere al framework di salvare i valori
+computati di un RDD, è sufficiente chiamare il suo metodo `persist`.
+
+```scala
+scala> words.persist()
+res10: words.type = MapPartitionsRDD[30] at filter at <console>:26
+```
+
+Se il dataset da salvare è molto grande le partizioni potrebbero non entrare
+completamente in memoria. Il comportamento di default di Spark in questo caso
+consiste nel mettere in cache solo parte della partizione, e ricomputare la
+parte restante quando viene richiesta. Spark può anche eseguire azioni
+alternative, come serializzare gli oggetti in modo che occupino meno spazio o
+eseguire parte del caching su disco. Nel gergo di Spark il comportamento da
+attuare in questi casi è definito **livello di persistenza**, ed è
+specificabile come argomento del metodo `persist`.
+
++------------------------+-----------------------------------------------------------------------------+
+| Livello di persistenza | Effetto                                                                     |
++========================+=============================================================================+
+| `MEMORY_ONLY`          |                                                                             |
+|                        | Salva l'RDD sotto forma di oggetti deserializzati nella JVM. Se l'RDD non   |
+|                        | entra in memoria, alcune partizioni non vengono persistite e vengono        |
+|                        | ricomputate al volo ogni volta che sono richieste. (default)                |
++------------------------+-----------------------------------------------------------------------------+
+| `MEMORY_AND_DISK`      |                                                                             |
+|                        | Salva l'RDD sotto forma di oggetti deserializzati nella JVM. Se l'RDD non   |
+|                        | entra in memoria, alcune partizioni vengono scritte su disco e lette quando |
+|                        | sono richieste.                                                             |
++------------------------+-----------------------------------------------------------------------------+
+| `MEMORY_ONLY_SER`      |                                                                             |
+| (solo Java e Scala)    | Salva l'RDD come oggetti Java serializzati. Questa opzione è più efficiente |
+|                        | in termini di spazio degli oggetti deserializzati, ma più                   |
+|                        | computazionalmente intensiva.                                               |
++------------------------+-----------------------------------------------------------------------------+
+| `MEMORY_AND_DISK_SR`   |                                                                             |
+|                        | Come `MEMORY_ONLY_SER`, ma le partizioni che non entrano in memoria sono    |
+|                        | salvate su disco invece di essere ricomputate.                              |
++------------------------+-----------------------------------------------------------------------------+
+| `DISK_ONLY`            | Salva le partizioni solo su disco.                                          |
++------------------------+-----------------------------------------------------------------------------+
+
+: Alcuni livelli di persistenza forniti da Spark.
+
+Per avviare l'esecuzione delle trasformazioni, è necessario eseguire un'azione.
+Nel seguente esempio, l'azione eseguita è `take(n: Int)`, che restituisce i
+primi `n` elementi dell'RDD in un array Scala.
+
+```scala
+scala> words.take(20)
+res19: Array[String] = Array(One, morning,, when, Gregor, Samsa, woke,
+    from, troubled, dreams,, he, found, himself, transformed, in, his,
+    bed, into, a, horrible, vermin.)
+```
+
+Il file di origine è stato diviso in parole, come specificato nelle
+trasformazioni. Dato che è stato chiamato `persist` sull'RDD `words`, i valori
+rielaborati si trovano ancora nella memoria dei nodi, ed è possibile
+riutilizzarli semplicemente eseguendo operazioni sull'RDD.
+
+Tramite le interfacce di Spark si può facilmente rappresentare il modello
+computazionale di MapReduce. A partire da `words`, si può eseguire il conto
+delle parole all'interno del libro mappando il dataset a coppie chiave-valore,
+dove la chiave è la parola e il valore è 1. Per eseguire il conto, gli RDD
+forniscono il metodo `reduceByKey`, che esegue la stessa operazione effettuata
+dai Reducer nel modello MapReduce: aggrega i valori delle coppie con la stessa
+chiave.
+
+Diversamente da MapReduce, in `reduceByKey` non con un Reducer che
+riceve un iterabile dei valori, ma con una funzione che prende in input un
+accumulatore e uno degli elementi aggregati. Per ogni gruppo di valori
+aggregati a una chiave, la funzione viene chiamata per ogni valore del gruppo,
+ricevendolo in input assieme a un accumulatore. Il suo valore di restituzione
+viene utilizzato come accumulatore di input per l'invocazione sul valore
+successivo.
+
+$$reducer(A_i, V_i) = A_{i + 1}$$ 
+
+Le coppie chiave-valore possono essere rappresentate con tuple Scala. La
+funzione di riduzione da utilizzare in questo caso è la somma.
+
+```scala
+scala> val wordCount = words.map(w => (w, 1)).reduceByKey(_ + _)
+wordCount: org.apache.spark.rdd.RDD[(String, Int)] =
+    ShuffledRDD[61] at reduceByKey at <console>:28
+
+scala> wordCount.take(20)
+res21: Array[(String, Int)] = Array(
+    (swishing,,1), (pitifully,1), (someone,5), (better.,2), (propped,1),
+    (nonetheless,3), (bone,1), (movements.,2), (order,7), (drink,,1),
+    (experience,,1), (behind,15), (Father,,1), (wasn't,5), (been,99),'
+    (they,,1), (Father.,1), (introduction,,1), ("Gregor,,3), (she's,1)
+    )
+```
+
+Al termine della computazione, si rende utile salvare i valori in un mezzo di
+storage. Questa operazione è eseguibile tramite diverse azioni, come
+`saveAsTextFile(path: String)`, che salva i risultati come testo, o
+`saveAsObjectFile(path: String)`, che serializza efficientemente i valori,
+permettendone un rapido accesso programmatico.
+
+```scala
+scala> wordCount.saveAsTextFile("file:///home/heygent/results")
+```
+
+Come per MapReduce, i risultati possono essere sparsi per diversi file, a
+seconda di quanti task paralleli sono stati coinvolti nell'operazione di
+riduzione. 
+
+```sh
+$ cd results 
+$ ls
+part-00000  part-00001  _SUCCESS
+$ head part-00000
+(swishing,,1)
+(pitifully,1)
+(someone,5)
+(better.,2)
+(propped,1)
+(nonetheless,3)
+(bone,1)
+(movements.,2)
+(order,7)
+(drink,,1)
+```
+
+#### Sviluppo ed esecuzione di un Job
+
+Le applicazioni Spark vengono sviluppate ed eseguite in modo simile a
+MapReduce. Ogni applicazione ha un punto di entrata `main`, dove viene inserito
+il codice relativo all'esecuzione del job. Le API sono simili 
+
+Riprendendo l'esempio dell'[analizzatore di log](#mapred-example), questo è
+rappresentabile in maniera molto più succinta tramite le interfacce fornite da
+Scala e Spark. La prima operazione da eseguire è creare un oggetto di
+configurazione, come mostrato in [@lst:log-analyzer-spark], righe 9-11. In
+questo caso, si specifica il nome del job come "Log Analyzer" e `yarn` come
+master di esecuzione. Nella riga 13 si crea uno `SparkContext` utilizzando la
+configurazione, che viene poi utilizzato per aprire un file HDFS il cui
+percorso è preso in input dagli argomenti del programma.
+
+L'RDD ottenuto viene utilizzato per mappare ogni riga di richiesta alla risorsa
+corrispondente. Le righe vengono filtrate per scartare risultati non validi,
+che l'espressione di pattern matching Scala associa a `null`, per poi infine
+eseguire `reduceByKey`, sommando il numero delle richieste per ogni risorsa.
+
+Prima di salvare il file, il risultato viene mappato a una stringa, la cui
+formattazione permette all'output di essere un valido file TSV (Tab Separated
+Values).
+
+```{#lst:log-analyzer-spark .scala .numberLines}
+import org.apache.spark._
+
+object LogAnalyzer {
+
+  private val logURIRegex = """.*"[A-Z]+\s(.*)\sHTTP.*""".r
+
+  def main(args: Array[String]) {
+
+    val conf = new SparkConf()
+      .setAppName("Log Analyzer")
+      .setMaster("yarn")
+
+    val sc = new SparkContext(conf)
+
+    val logs = sc.textFile(args(0))
+
+    val counts = logs
+      .map {
+        case logURIRegex(uri) => (uri, 1)
+        case _ => null
+      }
+      .filter(_ != null)
+      .reduceByKey(_ + _)
+
+    counts.map { case (k, v) => s"$k\t$v" }.saveAsTextFile(args(1))
+
+  }
+}
+```
+
+: Analizzatore di log reimplementato in Scala e Spark.
+
+Per essere eseguito, il file deve essere compilato e impacchettato in un file
+`jar`. La richiesta di esecuzione di un job può essere fatta tramite
+l'eseguibile `spark-submit`, distribuito con Spark. Come per l'eseguibile
+`hadoop`, è possibile specificare gli argomenti che si vogliono passare al
+programma.
+
+```sh
+$ spark-submit sparkdemo-assembly-1.0.jar /example/NASA_access_log_Jul95
+    /tmp/results
+```
+
+Una volta inviato, lo stato di un Job, come per MapReduce, può essere
+consultato tramite un'interfaccia web. L'interfaccia mostra la fase di
+esecuzione del Job, e può fornire visualizzazioni in forma di grafo diretto
+aciclico degli stage richiesti per la sua esecuzione.
+
+![Interfaccia web di Spark, tracciamento dell'esecuzione dei
+job.](img/spark-web-ui.png)
+
+![Interfaccia web di Spark, visualizzazione DAG delle
+operazioni.](img/spark-dag-view.png)
+
+I risultati possono essere quindi consultati nella cartella `/tmp/results`
+dell'istanza HDFS del cluster.
+
+```sh
+[root@sandbox ~]# hadoop fs -cat /tmp/results/part-00001 | head
+/cgi-bin/imagemap/countdown?112,206	2
+/shuttle/missions/41-b/images/	19
+/cgi-bin/imagemap/countdown?292,205	2
+/cgi-bin/imagemap/countdown70?248,269	1
+/history/apollo/apollo-13.apollo-13.html	1
+/cgi-bin/imagemap/countdown?220,280	1
+/news/sci.space.shuttle/archive/sci-space-shuttle-7-feb-1994-87.txt	1
+/htbin/wais.pl?current+position	1
+/cgi-bin/imagemap/countdown?105,213	2
+/cgi-bin/imagemap/fr?280,27	1
+```
+
+### DataFrame API
+
+Spark fornisce un'altra API per l'elaborazione dei dati, basata sull'astrazione
+del DataFrame. Un DataFrame rappresenta dati strutturati o semistrutturati,
+come documenti JSON o CSV, ed è internamente consapevole della loro struttura.
+Utilizzando i DataFrame Spark è in grado di eseguire ottimizzazioni e di
+fornire operazioni aggiuntive all'utente. Una delle funzioni più notevoli
+dell'API DataFrame è la possibilità di eseguire query SQL sui dataset,
+utilizzando anche funzioni di aggregazione come `sum`, `avg` e `max`.
+
+Le API DataFrame sono disponibili nelle sessioni interattive Spark tramite un
+oggetto di `SparkSession`, fornito nella variabile `spark`. In modo analogo
+agli RDD, le azioni eseguibili sui DataFrame possono essere azioni e
+trasformazioni.
+
+La creazione di DataFrame è simile alla creazione degli RDD, e avviene
+utilizzando l'oggetto `spark` per caricare i dati da una sorgente. I dati di
+questo esempio sono forniti da Population.io, un servizio che fornisce dati
+aggiornati sulla popolazione mondiale. Il dataset che viene caricato è un file
+JSON contenente i dati sulla popolazione degli Stati Uniti nell'anno 2017,
+strutturato come un array di oggetti con i seguenti campi:
+
+* `age`: Fascia di età a cui l'oggetto si riferisce
+* `females`: Numero di donne
+* `males`: Numero di uomini
+* `total`: Totale di donne e uomini
+* `country`: Nazione di riferimento (in questo caso sempre Stati Uniti)
+* `year`: Anno di riferimento (2017)
+
+Il seguente codice carica il DataFrame in memoria:
+
+```scala
+scala> val population = spark.read.json("us_population.json")
+population: org.apache.spark.sql.DataFrame = 
+    [age: bigint, country: string ... 4 more fields]
+```
+
+La stringa rappresentativa dell'oggetto visualizzata in risposta dà qualche
+indizio sulla struttura rilevata. Si può richiedere al DataFrame di
+visualizzare la sua intera struttura:
+
+```scala
+scala> population.printSchema()
+root
+ |-- age: long (nullable = true)
+ |-- country: string (nullable = true)
+ |-- females: long (nullable = true)
+ |-- males: long (nullable = true)
+ |-- total: long (nullable = true)
+ |-- year: long (nullable = true)
+```
+
+Spark ha interpretato correntamente il file, distinguendo tra i campi numerici
+e stringa. Si può stampare il DataFrame utilizzando il metodo `show`:
+
+```scala
+scala> population.show(10)
++---+-------------+-------+-------+-------+----+
+|age|      country|females|  males|  total|year|
++---+-------------+-------+-------+-------+----+
+|  0|United States|1953000|2044000|3997000|2017|
+|  1|United States|1950000|2041000|3991000|2017|
+|  2|United States|1889000|1977000|3866000|2017|
+|  3|United States|1918000|2006000|3925000|2017|
+|  4|United States|1946000|2034000|3980000|2017|
+|  5|United States|1972000|2060000|4032000|2017|
+|  6|United States|1996000|2083000|4079000|2017|
+|  7|United States|2018000|2104000|4123000|2017|
+|  8|United States|2040000|2125000|4165000|2017|
+|  9|United States|2055000|2139000|4194000|2017|
++---+-------------+-------+-------+-------+----+
+only showing top 10 rows
+```
+
+I DataFrame sono implementati tramite RDD, il cui accesso è disponibile anche
+agli utenti. Gli RDD dei DataFrame sono composti da oggetti di `spark.sql.row`,
+che possono essere indirizzati in modo analogo agli array Scala. Il seguente
+esempio utilizza l'RDD del DataFrame per ottenere la terza colonna,
+corrispondente alla popolazione femminile, dei primi 10 elementi del DataFrame.
+
+```scala
+scala> population.rdd.take(10).map(_(2))
+res30: Array[Any] = Array(1953000, 1950000, 1889000, 1918000,
+    1946000, 1972000, 1996000, 2018000, 2040000, 2055000)
+```
+
+Il modo più idiomatico per accedere ai dati del DataFrame è utilizzare i metodi
+da esso forniti. I DataFrame espongono un DSL ispirato a SQL come metodo di
+accesso ai dati, che nel seguente esempio viene utilizzato per selezionare la
+popolazione di adulti maschi di età compresa tra i 20 e i 30 anni.
+
+```scala
+scala> val adult_males = population.select($"males")
+    .filter($"age" >= 20 && $"age" <= 30)
+
+adult_males: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] =
+    [males: bigint]
+
+scala> adult_males.show
++-------+
+|  males|
++-------+
+|2175000|
+|2262000|
+|2344000|
+|2432000|
+|2479000|
+|2460000|
+|2400000|
+|2344000|
+|2280000|
+|2238000|
+|2235000|
++-------+
+```
+
+I numeri così ottenuti possono infine essere sommati per ottenere il numero
+totale di adulti in questa fascia d'età.
+
+```scala
+scala> adult_males.agg(sum("males")).first.get(0)
+res46: Any = 25649000
+```
+
+Oltre al DSL fornito dal DataFrame, Spark supporta l'esecuzione diretta di
+query SQL specificate tramite stringhe. Le query vengono eseguite su degli
+oggetti definiti view, che vengono mantenuti globalmente in memoria da Spark
+fino alla fine della sessione[^hive].
+
+Per creare una view, si può chiamare `createOrReplaceTempView(name: String)`
+sul DataFrame di interesse. Una volta creata, la view è accessibile nelle query
+SQL con il nome specificato in `name`. 
+
+Le query possono essere eseguite chiamando il metodo `spark.sql(query:
+String)`, che ne restituisce il risultato sotto forma di DataFrame. Le query
+possono essere utilizzate per eseguire computazioni di vario tipo, utilizzando
+le funzioni di aggregazione fornite. Il seguente codice esegue e mostra il
+risultato di una query, che richiede la somme delle popolazioni maschile e
+femminile di età compresa tra i 40 e i 60 anni.
+
+```scala
+scala> population.createOrReplaceTempView("population")
+
+scala> spark.sql("""
+     | SELECT SUM(males), SUM(females) FROM population
+     | WHERE age >= 40 AND age <= 60
+     | """).show
++----------+------------+
+|sum(males)|sum(females)|
++----------+------------+
+|  44632000|    45014000|
++----------+------------+
+```
+
+
+[^hive]: Spark supporta anche l'integrazione con Hive, un engine SQL progettato
+per Hadoop, che può essere utilizzato per creare e mantenere tabelle
+persistenti.
+
+### Modello di esecuzione
+
+Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
+utilizzando un grafo che viene definito **lineage**. Tramite questa struttura,
+Spark è in grado di fornire fault-tolerance: nell'eventualità in cui un nodo
+che esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
+può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare un RDD
+salvato in memoria. A partire da questo, si può ricavare la partizione del
+dataset da cui l'input del nodo fallito è ricavato, e rischedulare la serie di
+operazioni per cui la partizione è passata, fino alla rielaborazione
+dell'operazione fallita.
+
+Quante più operazioni possibili vengono eseguite nello stesso nodo. Cambiare i
+nodi della computazione si rende necessario in certe operazioni, come
+l'aggregazione. In questi casi 
+
