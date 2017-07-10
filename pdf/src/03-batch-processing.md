@@ -781,9 +781,12 @@ configurazione, che viene poi utilizzato per aprire un file HDFS il cui
 percorso è preso in input dagli argomenti del programma.
 
 L'RDD ottenuto viene utilizzato per mappare ogni riga di richiesta alla risorsa
-corrispondente. Le righe vengono filtrate per scartare risultati non validi,
-che l'espressione di pattern matching Scala associa a `null`, per poi infine
-eseguire `reduceByKey`, sommando il numero delle richieste per ogni risorsa.
+corrispondente. La trasformazione `collect` riceve in input una funzione
+parziale Scala, che in questo caso tenta di eseguire il match delle righe con
+l'espressione regolare e di estrarre il valore corrispondente al gruppo di
+cattura. Sulle righe in cui il match è valido, la funzione restituisce una
+coppia URI-1. Per eseguire il calcolo finale, si utilizza l'azione
+`reduceByKey`.
 
 Prima di salvare il file, il risultato viene mappato a una stringa, la cui
 formattazione permette all'output di essere un valido file TSV (Tab Separated
@@ -807,11 +810,9 @@ object LogAnalyzer {
     val logs = sc.textFile(args(0))
 
     val counts = logs
-      .map {
+      .collect {
         case logURIRegex(uri) => (uri, 1)
-        case _ => null
       }
-      .filter(_ != null)
       .reduceByKey(_ + _)
 
     counts.map { case (k, v) => s"$k\t$v" }.saveAsTextFile(args(1))
@@ -826,7 +827,7 @@ Per essere eseguito, il file deve essere compilato e impacchettato in un file
 `jar`. La richiesta di esecuzione di un job può essere fatta tramite
 l'eseguibile `spark-submit`, distribuito con Spark. Come per l'eseguibile
 `hadoop`, è possibile specificare gli argomenti che si vogliono passare al
-programma.
+programma. 
 
 ```sh
 $ spark-submit sparkdemo-assembly-1.0.jar /example/NASA_access_log_Jul95
@@ -1022,17 +1023,19 @@ persistenti.
 
 ### Modello di esecuzione
 
-Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
-utilizzando un grafo che viene definito **lineage**. Tramite questa struttura,
-Spark è in grado di fornire fault-tolerance: nell'eventualità in cui un nodo
-che esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
-può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare un RDD
-salvato in memoria. A partire da questo, si può ricavare la partizione del
-dataset da cui l'input del nodo fallito è ricavato, e rischedulare la serie di
-operazioni per cui la partizione è passata, fino alla rielaborazione
-dell'operazione fallita.
+Il punto
 
-Quante più operazioni possibili vengono eseguite nello stesso nodo. Cambiare i
-nodi della computazione si rende necessario in certe operazioni, come
-l'aggregazione. In questi casi 
+
+Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
+utilizzando un grafo che viene definito **lineage**. Spark utilizza questa
+struttura per fornire fault-tolerance: nell'eventualità in cui un nodo che
+esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
+può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare degli
+RDD candidati da cui si può ricavare la partizione non più disponibile. Dal
+grafo si possono ricavare quali sono le operazioni che hanno prodotto la
+partizione dell'RDD in elaborazione dal nodo in stato di fault, che vengono
+quindi rischedulate per riottenere la partizione persa. Gli RDD di cui è stato
+eseguito il caching sono buoni candidati per ricavare la partizione non più
+disponibile.
+
 

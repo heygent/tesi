@@ -9,6 +9,10 @@ link-citations: true
 codeBlockCaptions: true
 thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
+  - title: Project Gutenberg - Metamorphosis by Franz Kafka
+    id: kafka-metamorphosis
+    URL: https://www.gutenberg.org/ebooks/5200
+    type: webpage
   - title: YARN Container Configuration
     id: yarn-container
     URL: https://hadoop.apache.org/docs/stable/hadoop-yarn/hadoop-yarn-site/SecureContainer.html
@@ -63,11 +67,14 @@ references:
         raw: 2017-5-4
   - id: hadoop-adoption-survey
     type: webpage
-    title: Gartner Survey Highlights Challenges to Hadoop Adoption
-    URL: http://www.gartner.com/newsroom/id/3051717
-    container-title: Gartner
+    title: Big Data, Governance, and Hadoop Adoption Rates
+    URL: http://www.dataversity.net/big-data-governance-and-hadoop-adoption-rates/
+    container-title: Dataversity
     issued:
-        raw: 2015-5-13
+        raw: 2015-9-24
+    author:
+        - family: Guess
+          givern: A. R.
   - id: hadoop-node-scale
     type: webpage
     title: 
