@@ -5,7 +5,7 @@ programmazione per Hadoop, MapReduce, è stato l'unico per molte release, e
 ha avuto il grande merito di astrarre la complessità della
 computazione batch in ambiente distribuito in funzioni che associano chiavi e
 valori a risultati, una grande semplificazione rispetto ai programmi che
-gestiscono granularmente l'intricatezza di ambienti distribuiti.
+gestiscono granularmente l'intricatezza degli ambienti distribuiti.
 
 Pur essendo popolare, MapReduce è soggetto a molte limitazioni, che riguardano
 soprattutto la necessità di esprimere i programmi da eseguire con un modello
@@ -32,9 +32,8 @@ SQL[@spark-sql].
 
 In questa sezione si esaminano MapReduce e Spark, quali sono le limitazioni di
 MapReduce che hanno fatto sentire la necessità di un nuovo modello
-computazionale, e quali sono le soluzioni offerte da Spark. Si accenneranno
-anche ad alcune astrazioni fatte al di sopra di MapReduce, come Pig e Hive, che
-forniscono dei modelli computazionali che vengono tradotti in job MapReduce. 
+computazionale, e alcune delle soluzioni e interfacce di programmazione offerte
+da Spark. 
 
 ## MapReduce
 
@@ -62,7 +61,7 @@ $$Reduce(K_2, Sequence[V_2]) \mapsto (K_2, V_3)$$
 
 Ognuna delle coppie aggregate dal framework viene poi fornita in input alla
 funzione $Reduce$, che ha quindi a disposizione una chiave $K_2$ e tutti i valori
-restituiti da $Map$ che hanno la stessa chiave $K_2$. $Reduce$ esegue una
+restituiti da $Map$ che hanno la stessa chiave. $Reduce$ esegue una
 computazione sui valori di input e restituisce $(K_2, V_3)$, che andrà a far
 parte dell'output finale dell'applicazione assieme al risultato delle altre
 invocazioni di $Reduce$, una per ogni chiave distinta restituita da $Map$.
@@ -70,7 +69,7 @@ invocazioni di $Reduce$, una per ogni chiave distinta restituita da $Map$.
 Sintetizzando, MapReduce permette di categorizzare l'input in diverse parti e
 di elaborare un risultato per ognuna di queste.
 
-MapReduce è quindi un paradigma *funzionale*, dato che il framework richiede di
+MapReduce è un paradigma *funzionale*, dato che il framework richiede di
 ricevere in input le funzioni utili all'elaborazione dei dati. Per esprimere
 questo tipo di paradigma in Java si ricorre a classi che incapsulano le
 funzioni richieste dal framework, che vengono quindi chiamate Mapper e Reducer.
@@ -123,10 +122,8 @@ protected void reduce(KEYIN key, Iterable<VALUEIN> values, Context context)
     throws IOException, InterruptedException
 ```
 
-Nella fase di reduce, quindi, i valori sono aggregati in base alla chiave e
-resi disponibili tramite l'interfaccia `Iterable` di Java.
-I valori a questo punto possono essere combinati a seconda dell'esigenza
-dell'utente per restituire un risultato finale.
+I valori possono quindi essere combinati a seconda dell'esigenza dell'utente
+per restituire un risultato finale.
 
 ### Esempio di un programma MapReduce {#mapred-example}
 
@@ -398,7 +395,7 @@ computazione eseguita.
 ### Modello di esecuzione di MapReduce
 
 Il modello di programmazione di MapReduce è progettato per essere altamente
-parallelizzabile e in modo che sia possibile processare diverse parti
+parallelizzabile, e in modo che sia possibile processare diverse parti
 dell'input indipendentemente. Questo dato si riflette nel design del Mapper,
 che riceve come input piccole porzioni del file letto, permettendo al framework
 di assegnare l'elaborazione delle operazioni di Map a diversi processi
@@ -427,8 +424,8 @@ L'esecuzione dei lavori MapReduce avviene secondo i seguenti step:
  #. In ogni *map task*, lo split corrispondente viene diviso in più *record*, che
     corrispondono alle coppie ricevute in input dal Mapper. Il map task esegue
     il Mapper in uno o più processi del nodo in cui si trova, per poi salvare il
-    loro output nello storage locale del nodo che esegue il map task. Lo storage
-    locale è più efficiente per la scrittura, ma non offre fault-tolerance, per cui
+    loro output nello storage locale del nodo. Lo storage
+    locale è più efficiente per la scrittura rispetto ad HDFS, ma non offre fault-tolerance, per cui
     in caso di fallimento del nodo che contiene i risultati di un *map task*,
     l'application master dell'applicazione MapReduce deve schedulare la sua
     riesecuzione.
@@ -446,7 +443,8 @@ L'esecuzione dei lavori MapReduce avviene secondo i seguenti step:
     
     Per fare questo, i nodi che eseguono *map task* dividono il loro output in
     partizioni, una per ogni Reducer. Ogni chiave delle coppie di output viene
-    associata univocamente a una partizione, utilizzando la seguente funzione:
+    associata univocamente a una partizione, utilizzando la seguente
+    funzione[@mapred-partition-function]:
 
     $$partitionId(K_i) = hash(K_i) \bmod partitionCount$$
 
@@ -493,8 +491,8 @@ avere un meccanismo di recupero da fault, per evitare che il fallimento di uno
 dei singoli nodi coinvolti nella computazione renda necessario rieseguire
 completamente l'applicazione.
 
-Spark si propone come alternativa a MapReduce, con l'intenzione di dare una
-soluzione a questi problemi. Le soluzioni derivano da un approccio funzionale,
+Spark si propone come alternativa a MapReduce, con l'intenzione di offrire
+soluzioni a questi problemi. Le soluzioni derivano da un approccio funzionale,
 sfruttando strutture con semantica di immutabilibità per rappresentare i
 dataset e API che utilizzano funzioni di ordine superiore per esprimere
 concisamente le computazioni. L'astrazione principale del modello di Spark è il
@@ -595,7 +593,7 @@ o `hadoopRDD(job: JobConf)`, che permette l'utilizzo di qualunque `InputFormat`
 Hadoop per creare il dataset.
 Nel seguente esempio si crea un RDD a partire dalla versione testuale inglese
 del libro *Le metamorfosi* di Franz Kafka, offerto gratuitamente dal Progetto
-Gutenberg.
+Gutenberg[@kafka-metamorphosis].
 
 ```scala
 scala> val book = sc.textFile("/books/kafka-metamorphosis.txt")
@@ -609,8 +607,8 @@ importante tenere in conto che ogni trasformazione restituisce un nuovo RDD, di
 cui è necessario salvare un riferimento per poterlo utilizzare in seguito.
 Nelle sessioni interattive Scala i risultati di tutte le espressioni valutate
 nella shell sono disponibili in variabili con il nome `res` seguito da un
-identificativo numerico sequenziale, che è possibile utilizzare per tenere
-traccia degli RDD valutati.
+identificativo numerico sequenziale, utilizzabili per tenere traccia degli RDD
+valutati.
 
 ```scala
 scala> val words = book.flatMap(_.split(' ')).filter(_ != "")
@@ -707,13 +705,12 @@ forniscono il metodo `reduceByKey`, che esegue la stessa operazione effettuata
 dai Reducer nel modello MapReduce: aggrega i valori delle coppie con la stessa
 chiave.
 
-Diversamente da MapReduce, in `reduceByKey` non con un Reducer che
-riceve un iterabile dei valori, ma con una funzione che prende in input un
-accumulatore e uno degli elementi aggregati. Per ogni gruppo di valori
-aggregati a una chiave, la funzione viene chiamata per ogni valore del gruppo,
-ricevendolo in input assieme a un accumulatore. Il suo valore di restituzione
-viene utilizzato come accumulatore di input per l'invocazione sul valore
-successivo.
+Diversamente da MapReduce, in `reduceByKey` la funzione che rappresnta il
+Reducer non riceve un iterabile dei valori, ma un accumulatore e uno degli
+elementi aggregati. Per ogni gruppo di valori aggregati a una chiave, la
+funzione viene chiamata per ogni valore del gruppo, ricevendolo in input
+assieme all'accumulatore. Il suo valore di restituzione viene utilizzato come
+accumulatore di input per l'invocazione sul valore successivo.
 
 $$reducer(A_i, V_i) = A_{i + 1}$$ 
 
@@ -741,7 +738,7 @@ storage. Questa operazione è eseguibile tramite diverse azioni, come
 permettendone un rapido accesso programmatico.
 
 ```scala
-scala> wordCount.saveAsTextFile("file:///home/heygent/results")
+scala> wordCount.saveAsTextFile("/tmp/results")
 ```
 
 Come per MapReduce, i risultati possono essere sparsi per diversi file, a
@@ -749,7 +746,7 @@ seconda di quanti task paralleli sono stati coinvolti nell'operazione di
 riduzione. 
 
 ```sh
-$ cd results 
+$ cd /tmp/results 
 $ ls
 part-00000  part-00001  _SUCCESS
 $ head part-00000
@@ -834,8 +831,8 @@ $ spark-submit sparkdemo-assembly-1.0.jar /example/NASA_access_log_Jul95
     /tmp/results
 ```
 
-Una volta inviato, lo stato di un Job, come per MapReduce, può essere
-consultato tramite un'interfaccia web. L'interfaccia mostra la fase di
+Una volta inviato, lo stato di un Job può essere consultato tramite
+un'interfaccia web, come in MapReduce. L'interfaccia mostra la fase di
 esecuzione del Job, e può fornire visualizzazioni in forma di grafo diretto
 aciclico degli stage richiesti per la sua esecuzione.
 
@@ -843,7 +840,7 @@ aciclico degli stage richiesti per la sua esecuzione.
 job.](img/spark-web-ui.png)
 
 ![Interfaccia web di Spark, visualizzazione DAG delle
-operazioni.](img/spark-dag-view.png)
+operazioni.](img/spark-dag-view.png){#fig:dag-visualization}
 
 I risultati possono essere quindi consultati nella cartella `/tmp/results`
 dell'istanza HDFS del cluster.
@@ -866,9 +863,9 @@ dell'istanza HDFS del cluster.
 
 Spark fornisce un'altra API per l'elaborazione dei dati, basata sull'astrazione
 del DataFrame. Un DataFrame rappresenta dati strutturati o semistrutturati,
-come documenti JSON o CSV, ed è internamente consapevole della loro struttura.
-Utilizzando i DataFrame Spark è in grado di eseguire ottimizzazioni e di
-fornire operazioni aggiuntive all'utente. Una delle funzioni più notevoli
+come documenti JSON o CSV, di cui Spark è internamente consapevole della struttura.
+Utilizzando i DataFrame, Spark è in grado di eseguire ottimizzazioni e di
+fornire operazioni aggiuntive all'utente. Una delle funzioni notevoli
 dell'API DataFrame è la possibilità di eseguire query SQL sui dataset,
 utilizzando anche funzioni di aggregazione come `sum`, `avg` e `max`.
 
@@ -880,9 +877,9 @@ trasformazioni.
 La creazione di DataFrame è simile alla creazione degli RDD, e avviene
 utilizzando l'oggetto `spark` per caricare i dati da una sorgente. I dati di
 questo esempio sono forniti da Population.io, un servizio che fornisce dati
-aggiornati sulla popolazione mondiale. Il dataset che viene caricato è un file
-JSON contenente i dati sulla popolazione degli Stati Uniti nell'anno 2017,
-strutturato come un array di oggetti con i seguenti campi:
+aggiornati sulla popolazione mondiale[@population-io]. Il dataset che viene
+caricato è un file JSON contenente i dati sulla popolazione degli Stati Uniti
+nell'anno 2017, strutturato come un array di oggetti con i seguenti campi:
 
 * `age`: Fascia di età a cui l'oggetto si riferisce
 * `females`: Numero di donne
@@ -899,7 +896,7 @@ population: org.apache.spark.sql.DataFrame =
     [age: bigint, country: string ... 4 more fields]
 ```
 
-La stringa rappresentativa dell'oggetto visualizzata in risposta dà qualche
+La stringa rappresentativa del dataframe visualizzata in risposta dà qualche
 indizio sulla struttura rilevata. Si può richiedere al DataFrame di
 visualizzare la sua intera struttura:
 
@@ -936,8 +933,8 @@ scala> population.show(10)
 only showing top 10 rows
 ```
 
-I DataFrame sono implementati tramite RDD, il cui accesso è disponibile anche
-agli utenti. Gli RDD dei DataFrame sono composti da oggetti di `spark.sql.row`,
+I DataFrame sono implementati tramite RDD, il cui accesso è reso disponibile
+agli utenti. Gli RDD dei DataFrame sono composti da oggetti di tipo `spark.sql.Row`,
 che possono essere indirizzati in modo analogo agli array Scala. Il seguente
 esempio utilizza l'RDD del DataFrame per ottenere la terza colonna,
 corrispondente alla popolazione femminile, dei primi 10 elementi del DataFrame.
@@ -948,7 +945,7 @@ res30: Array[Any] = Array(1953000, 1950000, 1889000, 1918000,
     1946000, 1972000, 1996000, 2018000, 2040000, 2055000)
 ```
 
-Il modo più idiomatico per accedere ai dati del DataFrame è utilizzare i metodi
+Un modo più idiomatico per accedere ai dati del DataFrame è utilizzare i metodi
 da esso forniti. I DataFrame espongono un DSL ispirato a SQL come metodo di
 accesso ai dati, che nel seguente esempio viene utilizzato per selezionare la
 popolazione di adulti maschi di età compresa tra i 20 e i 30 anni.
@@ -978,8 +975,8 @@ scala> adult_males.show
 +-------+
 ```
 
-I numeri così ottenuti possono infine essere sommati per ottenere il numero
-totale di adulti in questa fascia d'età.
+I numeri così ottenuti possono essere sommati per ottenere il numero totale di
+adulti in questa fascia d'età.
 
 ```scala
 scala> adult_males.agg(sum("males")).first.get(0)
@@ -996,7 +993,7 @@ sul DataFrame di interesse. Una volta creata, la view è accessibile nelle query
 SQL con il nome specificato in `name`. 
 
 Le query possono essere eseguite chiamando il metodo `spark.sql(query:
-String)`, che ne restituisce il risultato sotto forma di DataFrame. Le query
+String)`, che restituisce il loro risultato sotto forma di DataFrame. Le query
 possono essere utilizzate per eseguire computazioni di vario tipo, utilizzando
 le funzioni di aggregazione fornite. Il seguente codice esegue e mostra il
 risultato di una query, che richiede la somme delle popolazioni maschile e
@@ -1023,19 +1020,57 @@ persistenti.
 
 ### Modello di esecuzione
 
-Il punto
+Spark utilizza diversi componenti nella sua esecuzione[@learning-apache-spark]:
+
+![Diagramma del modello di esecuzione di Apache
+Spark[@spark-cluster].](img/spark-execution.png)
+
+* Il **driver** è il programma principale delle applicazioni, ed è definito
+  dagli utenti tramite le interfacce della libreria client di Spark. Il driver
+  coordina, tramite l'oggetto `SparkContext`, i processi in esecuzione nel
+  cluster, comunicando con il *cluster manager* in utilizzo.
+
+* Il **cluster manager** è l'entità che esegue allocazioni di risorse nel
+  cluster, che può essere YARN, Mesos, o il cluster manager integrato in Spark.
+
+* I **worker node** sono processi avviati nelle macchine coinvolte nella
+  computazione distribuita nel cluster e che ne gestiscono le risorse.
+
+* Gli **executor** sono processi allocati all'interno delle macchine worker per
+  eseguire i task assegnati dal driver. Le applicazioni Spark eseguono gli
+  *executor* al loro avvio, e li terminano a fine computazione.
+
+* I **task** sono le unità di lavoro eseguite dai singoli worker, che vengono
+  inviati sotto forma di funzioni serializzate. Gli *executor* deserializzano i
+  *task*, per poi eseguirli su partizioni di dataset.
 
 
-Per ogni RDD Spark è in grado di tracciare tutti gli RDD da cui è originato,
-utilizzando un grafo che viene definito **lineage**. Spark utilizza questa
-struttura per fornire fault-tolerance: nell'eventualità in cui un nodo che
-esegue una computazione su una partizione dell'RDD dovesse fallire, Spark
-può retrocedere agli RDD genitori sul grafo di lineage, fino a trovare degli
-RDD candidati da cui si può ricavare la partizione non più disponibile. Dal
-grafo si possono ricavare quali sono le operazioni che hanno prodotto la
-partizione dell'RDD in elaborazione dal nodo in stato di fault, che vengono
-quindi rischedulate per riottenere la partizione persa. Gli RDD di cui è stato
-eseguito il caching sono buoni candidati per ricavare la partizione non più
-disponibile.
+Le computazioni sono definite tramite le funzioni passate come parametro ad
+azioni e trasformazioni. Spark tiene traccia di queste tramite un grafo,
+definito **lineage**. Tramite il grafo di *lineage*, Spark crea un *execution
+plan*, per determinare come l'esecuzione debba essere organizzata nei nodi.
+Il criterio utilizzato è di eseguire quante più computazioni possibili in
+uno stesso nodo, per ridurre gli spostamenti che richiederebbero banda di rete.
+Alcune operazioni, come `reduce`, richiedono necessariamente lo spostamento dei
+dati in rete, dato che devono trovarsi nello stesso nodo per poter essere aggregati.
+Questo step è definito *shuffle*, ed è simile all'operazione eseguita da
+MapReduce per partizionare i risultati dei Mapper.
 
+Per ogni job, Spark esegue una divisione logica sulle operazioni da eseguire,
+che vengono raggruppate in un grafo aciclico, i cui nodi sono *execution
+phases*. Ogni fase di esecuzione raggruppa quante più operazioni possibili, e
+le fasi sono separate l'una dall'altra solo da operazioni che richiedono
+l'esecuzione di uno *shuffle*. Il grafo delle fasi di esecuzione dei job è
+visibile nell'interfaccia web di monitoraggio dei job, come mostrato in
+[@fig:dag-visualization] per l'analizzatore di log.
+
+Spark utilizza il grafo di lineage anche per fornire fault-tolerance:
+nell'eventualità in cui un nodo contenente una partizione di un RDD
+dovesse fallire, Spark può retrocedere agli RDD genitori sul grafo di lineage,
+fino a trovare degli RDD candidati da cui si può ricavare la partizione non più
+disponibile. Dal grafo si possono ricavare quali sono le operazioni che hanno
+prodotto la partizione dell'RDD nella memoria del nodo in stato di fault, che
+possono quindi essere rischedulate per riottenere la partizione persa. Gli RDD
+di cui è stato eseguito il caching sono buoni candidati per ricavare la
+partizione non più disponibile.
 

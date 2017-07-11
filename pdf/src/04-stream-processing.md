@@ -1,36 +1,26 @@
 # Stream Processing
 
 Ci sono molte differenze semantiche da considerare tra il batch processing e lo
-stream processing. I tool orientati allo stream processing devono tenere in
-conto della natura fluente dei dati, e di come questo comporti necessariamente
-un cambiamento di approccio alla fault tolerance. Il fault in sistemi di batch
-processing può portare a una perdita dei risultati della computazione, per cui
-c'è sempre la possibilità, anche se potenzialmente costosa, di rieseguire
-l'elaborazione. Nello stream processing, i dati ricevuti possono essere
-effimeri e non necessariamente recuperabili, per cui un fault può significare
-un'effettiva perdita di informazione. Le soluzioni offerte dai tool che
-adottano l'approccio dell'elaborazione stream sono spesso il riflesso della
-gestione dell'affidabilità in protocolli come TCP, riutilizzando concetti come
-*sliding windows* e *acknowledgements*.
-
-Oltre alla fault tolerance, un aspetto importante da considerare è la
-differenza concettuale tra *data in motion* e *data at rest*, e di come le
-astrazioni che rappresentano i dati di input debbano cambiare per rispecchiare
-questa differenza. Fortunatamente, alcuni paradigmi computazionali sono invece
-riutilizzabili, come quello di Spark, che è abbastanza generale da poter
-supportare lo stream processing con qualche aggiunta. Spark fornisce delle API
-apposite per lo stream processing, parte del progetto *Spark Streaming*.
+stream processing. Dato che gli stream non hanno necessariamente un limite di
+dimensione, o un termine della computazione, i tool orientati allo stream
+processing devono fornire astrazioni che tengano in conto della dimensione
+temporale dei flussi, in modo da fornire una misura diversa dal volume dei
+dati.  In particolare, è necessario che le API permettano di stabilire
+degli intervalli per l'esecuzione e la raccolta dei risultati, o che forniscano
+un meccanismo di reazione a fronte di eventi di ricezione. Inoltre, è utile che
+i flussi mettano a disposizione meccanismi per il mantenimento di stato.
 
 Gli approcci alla stream computation principali sono due: (near) **real-time**
-e **microbatching**. Il real-time, come il nome suggerisce, esegue le
-computazioni su ogni dato in input non appena questo è disponibile, mentre il
-microbatching raccoglie un certo numero di input in un buffer, che vengono poi
-processati in gruppo. Il primo approccio favorisce una latenza minore, mentre
-il secondo un throughput più alto.
+e **microbatching**. L'approccio real-time esegue le computazioni su ogni
+record in input non appena questo è disponibile, mentre il microbatching
+raccoglie un numero di input in un buffer in un certo intervallo di tempo, che
+vengono poi processati in gruppo. Il primo approccio favorisce una latenza
+minore, mentre il secondo un throughput più alto.
 
-In questa sezione si osservano Spark Streaming, che adotta il microbatching, e
-Apache Storm, che utilizza l'approccio real-time.
-
+In questa sezione si osserva Spark Streaming, un modulo di Apache Spark
+dedicato allo stream processing orientato al microbatching, che riutilizza
+molte delle sue strutture e dei suoi concetti, permettendo di riapplicare le
+conoscenze già acquisite sull'elaborazione batch allo stream processing.
 
 ## Spark Streaming
 
@@ -42,10 +32,10 @@ essere rielaborati utilizzando l'engine di esecuzione di Spark.
 
 L'astrazione utilizzata sui flussi è chiamata DStream, che sta per Discretized
 Stream. I DStream permettono l'esecuzione di azioni e trasformazioni come per
-gli RDD, aggiungendo alcune operazioni particolari dedicate agli stream, e sono
-rappresentati internamente come sequenze di RDD. Gli RDD interni corrispondenti
-ai microbatch sono anche accessibili all'utente, per eseguire trasformazioni
-con le API specifiche di questi.
+gli RDD, aggiungendo alcune operazioni particolari dedicate agli stream.
+Internamente, i DStream sono rappresentati come sequenze di RDD. Gli RDD
+interni corrispondenti ai microbatch sono resi accessibili all'utente, per
+eseguire trasformazioni con le API specifiche degli RDD.
 
 I risultati dell'elaborazione possono essere salvati in diversi mezzi, come
 database, HDFS e filesystem locali, o dashboard per analytics in real-time.
@@ -57,9 +47,9 @@ formato epoca UNIX che indica il momento della computazione.
 
 Gli stream possono essere creati con l'analogo dello `SparkContext` per Spark
 Streaming, ovvero uno `StreamingContext`. Nell'istanziazione di uno
-SparkContext, si specifica un oggetto `SparkConf`, dello stesso tipo utilizzato
-per gli `SparkContext`, e un intervallo di batch, utilizzato per stabilire ogni
-quanto tempo i dati raccolti debbano essere elaborati.
+StreamingContext, si specifica un oggetto `SparkConf`, dello stesso tipo
+utilizzato per gli `SparkContext`, e un intervallo di batch, utilizzato per
+stabilire ogni quanto tempo i dati raccolti debbano essere elaborati.
 
 ```scala
 val conf = new SparkConf()
@@ -69,7 +59,7 @@ val conf = new SparkConf()
 val ssc = new StreamingContext(conf, Seconds(1))
 ```
 
-Le fonti creabili dai DStream si dividono in due categorie:
+Le fonti da cui è possibile ricavare DStream si dividono in due categorie:
 
 * Le sorgenti base possono essere create direttamente dallo `StreamingContext`,
   e rappresentano primitive semplici, come socket e file di testo.
@@ -88,31 +78,32 @@ val tweets = TwitterUtils.createStream(ssc, None)
 sorgente avanzata, uno stream di tweet.
 
 In [@lst:spark-streaming-tweet-location] viene mostrato un programma Spark
-Streaming che utilizza un flusso di tweet come input. La trasformazione
-`flatMap` viene utilizzata per mappare ogni tweet al paese da cui è stato
-inviato, e scartare i tweet di cui non si conosce la provenienza. Il valore è
-restituito in una coppia composta dal paese e il valore 1. Con `reduceByKey`,
-si aggregano le coppie per paese sommando i rispettivi valori.
+Streaming che utilizza un flusso di tweet come input. Nella riga 13 la
+trasformazione `flatMap` viene utilizzata per mappare ogni tweet al paese da
+cui è stato inviato, e scartare i tweet di cui non si conosce la provenienza.
+Il valore è restituito in una coppia composta dal paese e il valore 1. Con
+`reduceByKey`, si aggregano le coppie per paese e si sommano i valore delle
+coppie.
 
-`tranform` è un metodo che riceve in input una funzione, che come parametro
+`tranform`, rr. 15, è un metodo che riceve in input una funzione, che come parametro
 ottiene un RDD rappresentativo del microbatch. La funzione viene utilizzata per
 accedere al metodo `sortBy` dell'RDD, che ne ordina i valori in base a una
 funzione che restituisce una chiave di comparazione. La chiave utilizzata è il
-numero di tweet, e l'ordinamento è specificato come decrescente. In questo
+numero di tweet, e l'ordinamento viene specificato come decrescente. In questo
 modo, il risultato finale è ordinato in base al numero di tweet, creando una
 classifica dei paesi che hanno inviato più tweet. Infine, si richiede al
 framework di stampare nello standard output i primi cinque risultati.
 
-Per avviare l'elaborazione in Spark Streamng, sono necessarie due chiamate
+Per avviare l'elaborazione in Spark Streaming, sono necessarie due chiamate
 finali a metodi dello `StreamingContext`: `ssc.start()`, che avvia la
 computazione, e `ssc.awaitTermination()`, una chiamata a funzione bloccante che
-fa sì che il programma non termini fino al termine del lavoro. Il termine del
-lavoro può essere segnalato al framework chiamando il metodo `ssc.stop()`. Dato
+fa sì che il programma non termini fino al termine del lavoro. La fine del
+lavoro può essere segnalata al framework chiamando il metodo `ssc.stop()`. Dato
 che nel programma questo metodo non viene chiamato, il job resta in esecuzione
 fino a quando non viene terminato dall'utente.
 
 
-```{#lst:spark-streaming-tweet-location .scala}
+```{#lst:spark-streaming-tweet-location .numberLines .scala}
 object Main {
 
   def main(args: Array[String]) {
@@ -141,8 +132,8 @@ object Main {
 nell'arco di 60 secondi, quanti ne sono stati inviati da ogni paese.
 
 Il programma stampa un output ogni 60 secondi, nella forma mostrata in
-[@lst:spark-streaming-tweet-location-output]. Per ogni output, viene anche
-stampato il momento di elaborazione sotto forma di UNIX epoch.
+[@lst:spark-streaming-tweet-location-output]. Per ogni output, il framework
+stampa automaticamente il momento di elaborazione sotto forma di UNIX epoch.
 
 ```{#lst:spark-streaming-tweet-location-output}
 -------------------------------------------
@@ -173,7 +164,7 @@ In molti contesti, è desiderabile essere in grado di mantenere uno stato
 relativo al flusso, in modo che i risultati delle elaborazioni possano
 riguardare periodi di tempo più estesi rispetto all'intervallo di batch. A
 questo scopo, i DStream forniscono un metodo `updateStateByKey`, che permette
-di mantenere uno stato arbitrario su una serie di chiavi. Il metodo rappresenta
+di mantenere uno stato arbitrario su una serie di chiavi. Il metodo riflette
 un meccanismo analogo a `reduceByKey`, dove coppie chiave-valore vengono
 raggruppate in base alla chiave e un'operazione specificata dall'utente aggrega
 i valori di ogni gruppo. In `updateStateByKey`, l'operazione coinvolge anche
@@ -183,8 +174,8 @@ aggregazione corrente per ottenere un nuovo stato, che verrà a sua volta
 passato nell'operazione di aggregazione successiva.
 
 L'operazione di aggregazione viene specificata come una funzione, che prende in
-input una sequenza di valori aggregati in base alla chiave del microbatch
-corrente, e lo stato precedente. Riprendendo l'esempio della classifica del
+input una sequenza di valori del microbatch aggregati in base alla chiave, e
+lo stato precedente. Riprendendo l'esempio della classifica del
 numero di tweet per paese, `updateStateByKey` può essere utilizzato per
 eseguire il conto totale dei tweet a partire dall'esecuzione del job. La
 funzione di input di `updateStateByKey` è la seguente:
@@ -247,7 +238,79 @@ l'operazione stateful con un intervallo di batch di cinque secondi.
 ### Operazioni su Finestre
 
 Le operazioni su finestre sono trasformazioni che permettono di eseguire
-computazioni sugli input ricevuti entro un certo lasso di tempo. L'immagine ...
-mostra visivamente il concetto.
+computazioni sugli input ricevuti entro un certo lasso di tempo. Il concetto è
+mostrato visivamente in [@fig:sliding-window].
 
+![Schema rappresentante l'operazione su finestre di Spark
+Streaming[@spark-sliding-window]](img/streaming-window.png){#fig:sliding-window}
 
+I *windowed DStream* vengono creati a partire da un DStream tramite una
+trasformazione, e hanno due parametri fondamentali:
+
+* la *window duration*, che rappresenta l'arco di tempo antecedente al
+  microbatch di cui si vogliono considerare gli input;
+
+* la *sliding duration*, che indica ogni quanto tempo la finestra si sposta in
+  avanti.
+
+Entrambi questi parametri devono essere multipli dell'intervallo di microbatch.
+A ogni intervallo di tempo di durata *sliding duration*, i DStream emettono i
+valori di input ricevuti nel periodo di tempo che va dall'attimo che antecede
+il momento attuale di un tempo uguale alla *window duration*, fino al momento
+attuale. I valori ottenuti possono poi essere rielaborati come un normale
+DStream. In questo modo, si può ottenere una gestione dei tempi
+dell'elaborazione più flessibile rispetto alla sola configurazione
+dell'intervallo di batch, permettendo l'interleaving degli intervalli di
+elaborazione con quelli di ricezione dell'input.
+
+Il contatore di tweet può essere riadattato facilmente a questo paradigma. Per
+creare un *windowed DStream* a partire da un DStream, la trasformazione più
+generale è `window(windowDuration: Duration, slidingDuration: Duration)`.
+Esistono metodi più specifici per fare uso delle operazioni su finestre, come
+`reduceByKeyAndWindow`, che esegue un'operazione di `reduce` nell'arco di una
+finestra. Il metodo `reduceByKeyAndWindow` si adatta bene allo use case del
+contatore, e può essere utilizzato per fare una classifica dei paesi che hanno
+inviato più tweet nell'arco dell'ultimo minuto.
+
+```scala
+tweets
+  .flatMap(t => Try { (t.getPlace.getCountry, 1) }.toOption)
+  .reduceByKeyAndWindow(_ + _, Minutes(1))
+  .transform(_.sortBy(_._2, ascending = false))
+  .print(5)
+```
+
+```{#lst:sliding-window-output}
+-------------------------------------------
+Time: 1499737107000 ms
+-------------------------------------------
+(United States,21)
+(Brasil,9)
+(Argentina,2)
+(Peru,1)
+(Nigeria,1)
+...
+
+-------------------------------------------
+Time: 1499737108000 ms
+-------------------------------------------
+(United States,21)
+(Brasil,9)
+(Argentina,2)
+(Japan,2)
+(Peru,1)
+...
+
+-------------------------------------------
+Time: 1499737109000 ms
+-------------------------------------------
+(United States,22)
+(Brasil,9)
+(Argentina,2)
+(Japan,2)
+(Peru,1)
+...
+```
+
+: Campione dell'output del programma di classifica dei paesi che hanno inviato
+più tweet, configurato con una sliding window di un minuto.

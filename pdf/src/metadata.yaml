@@ -9,9 +9,45 @@ link-citations: true
 codeBlockCaptions: true
 thanks: Vorrei ringraziare Gorburger, per aver aperto il portale interdimensionale che mi ha permesso di intraprendere le fasi iniziali per la distruzione del pianeta Terra.
 references: 
+  - title: Data processing architectures - Lambda and Kappa | Ericsson Research Blog
+    id: ericsson-architecture
+    URL: https://www.ericsson.com/research-blog/data-processing-architectures-lambda-and-kappa/
+    type: webpage
+  - title: HortonWorks Sandbox
+    id: hortonworks-sandbox
+    URL: https://it.hortonworks.com/products/sandbox/ 
+    type: webpage
+  - title: Docker Container Executor
+    id: yarn-container-conf
+    URL: https://hadoop.apache.org/docs/r2.7.2/hadoop-yarn/hadoop-yarn-site/DockerContainerExecutor.html
+    type: webpage
+  - title: YARN Fair Scheduler
+    id: yarn-fair-scheduler
+    URL: https://hadoop.apache.org/docs/r2.7.3/hadoop-yarn/hadoop-yarn-site/FairScheduler.html
+    type: webpage
+  - title: hadoop/HashPartitioner.java at trunk - apache/hadoop
+    type: webpage
+    URL: https://github.com/apache/hadoop/blob/trunk/hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core/src/main/java/org/apache/hadoop/mapred/lib/HashPartitioner.java
+    id: mapred-partition-function
+  - title: Population.io by World Data Lab
+    type: webpage
+    URL: http://population.io/
+    id: population-io
+  - title: Spark Streaming - Spark 2.1.1 Documentation
+    type: webpage
+    URL: https://spark.apache.org/docs/latest/streaming-programming-guide.html
+    id: spark-sliding-window
+  - title: PoweredBy - Hadoop Wiki
+    id: yahoo
+    URL: https://wiki.apache.org/hadoop/PoweredBy#Y
+    type: webpage
   - title: Project Gutenberg - Metamorphosis by Franz Kafka
     id: kafka-metamorphosis
     URL: https://www.gutenberg.org/ebooks/5200
+    type: webpage
+  - id: spark-cluster
+    title: Cluster Mode Overview - Spark
+    URL: https://spark.apache.org/docs/latest/cluster-overview.html
     type: webpage
   - title: YARN Container Configuration
     id: yarn-container
@@ -22,7 +58,7 @@ references:
     id: default-partitioner
     type: webpage
   - id: rdd-conf
-    type: speech
+    type: webpage
     title: "Resilient Distributed Datasets: A Fault-Tolerant Abstraction for In-Memory Cluster Computing"
     URL: https://www.usenix.org/conference/nsdi12/technical-sessions/presentation/zaharia
     author:
@@ -33,7 +69,7 @@ references:
     title: HortonWorks - Apache Hadoop YARN
     URL: https://it.hortonworks.com/apache/yarn/
   - id: mapred-diagram
-    type: graphic
+    type: webpage
     title: How Hadoop Map/Reduce works 
     URI: https://dzone.com/articles/how-hadoop-mapreduce-works
     container-title: DZone
@@ -75,12 +111,10 @@ references:
     author:
         - family: Guess
           givern: A. R.
-  - id: hadoop-node-scale
-    type: webpage
-    title: 
   - id: digital-univ
     title: "The Digital Universe of Opportunities: Rich Data and the Increasing Value of the Internet of Things"
     URL: https://www.emc.com/leadership/digital-universe/2014iview/executive-summary.htm
+    type: webpage
     issued:
         rawgt: 2014-4-2
   - id: hadoop-doc-main

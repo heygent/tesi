@@ -9,8 +9,7 @@ dei dati da parte degli utenti, e delle primitive di livello più basso che
 consentono l'implementazione di altri framework basati sulla sua
 infrastruttura di base. Grazie a quest'ultima caratteristica, Hadoop è
 diventato un perno centrale nell'ambito dei Big Data, su cui si è costruito un
-ecosistema di tool e tecnologie che ne utilizzano l'infrastruttura o con cui
-viene fornita una stretta integrazione.
+ecosistema di tool e tecnologie strettamente integrazione.
 
 La documentazione ufficiale[@hadoop-doc-main] lo descrive come:
 
@@ -49,7 +48,7 @@ In questa definizione sono racchiusi dei punti importanti:
     spazio fornito da più dispositivi e di farne uso tramite un'unica
     interfaccia logica, e di replicare i dati in modo da poter tollerare guasti
     nei dispositivi. La distribuzione della computazione permette di
-    aumentare il grado di parallelizazione nell'esecuzione dei programmi.
+    aumentare il grado di parallelismo nell'esecuzione dei programmi.
 
     Hadoop unisce i due concetti utilizzando cluster di macchine che hanno sia
     lo scopo di mantenere lo storage, che quello di elaborare i dati.
@@ -93,10 +92,9 @@ In questa definizione sono racchiusi dei punti importanti:
 
     Hadoop è in grado di scalare linearmente in termini di velocità di
     computazione e storage, ed è in grado di sostenere cluster composti da un
-    gran numero di macchine. Il più grande cluster Hadoop conosciuto dal punto
-    di vista dello storage è gestito da Facebook, che secondo gli ultimi dati
-    disponibili nell'anno 2011 conteneva 21 petabyte di dati ed è composto da
-    più di 2000 nodi.|||
+    gran numero di macchine. Yahoo riporta di eseguire un cluster Hadoop
+    composto da circa 4500 nodi, utilizzato per il sistema pubblicitario e di
+    ricerca[@yahoo].
 
  *  **Hardware non necessariamente affidabile**
 
@@ -134,7 +132,8 @@ lo scopo di fornire un ambiente preconfigurato di prototipazione con Hadoop e
 vari componenti del suo ecosistema. I due ambienti più utilizzati di questo
 tipo sono Cloudera QuickStart e HortonWorks Sandbox, disponibili per
 VirtualBox, VMWare e Docker. Gli esempi di questo documento sono eseguiti
-prevalentemente da Arch Linux e dalla versione Docker di HortonWorks Sandbox.
+prevalentemente da Arch Linux e dalla versione Docker di HortonWorks
+Sandbox[@hortonworks-sandbox].
 
 Hadoop è configurabile tramite file XML, che si trovano rispetto alla cartella
 d'installazione in `etc/hadoop`. Ogni componente di Hadoop (HDFS, MapReduce,
@@ -155,7 +154,7 @@ tutti i componenti.
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://namenode/</value>
+        <value>hdfs://NameNode/</value>
     </property>
     <property>
         <name>mapreduce.framework.name</name>
@@ -170,13 +169,13 @@ tutti i componenti.
 
 : Esempio di file di configurazione personalizzato di Hadoop.
 
-È possibile selezionare un'altra cartella da cui prendere i file di
-configurazione, impostandola come valore della variabile d'ambiente
-`HADOOP_CONF_DIR`. Un approccio comune alla modifica dei file di configurazione
-consiste nel copiare il contenuto di `etc/hadoop` in un'altra posizione,
-specificare questa in `HADOOP_CONF_DIR` e fare le modifiche nella nuova
-cartella. In questo modo si evita di modificare l'albero d'installazione di
-Hadoop.
+È possibile far selezionare ad Hadoop una cartella diversa da `etc/hadoop` da
+cui leggere i file di configurazione, impostandola come valore della variabile
+d'ambiente `HADOOP_CONF_DIR`. Un approccio comune alla modifica dei file di
+configurazione consiste nel copiare il contenuto di `etc/hadoop` in un'altra
+posizione, specificare questa in `HADOOP_CONF_DIR` e fare le modifiche nella
+nuova cartella. In questo modo si evita di modificare l'albero d'installazione
+di Hadoop.
 
 Per molti degli eseguibili inclusi in Hadoop, è anche possibile specificare un
 file che contiene ulteriori opzioni di configurazione, che possono
@@ -187,8 +186,8 @@ sovrascrivere quelle in `HADOOP_CONF_DIR` tramite lo switch `-conf`.
 I programmi che sfruttano il runtime di Hadoop sono generalmente sviluppati in
 Java (o in un linguaggio che ha come target di compilazione la JVM), e vengono
 avviati tramite l'eseguibile `hadoop`. L'eseguibile richiede che siano
-specificati il classpath del programma, e una classe contente un metodo `main`
-che si desidera eseguire (analogo all'entry point dei programmi Java).
+specificati il classpath del programma, e il nome di una classe contente un
+metodo `main` che si desidera eseguire (un entry point dei programmi Java).
 
 Il classpath può essere specificato tramite la variabile d'ambiente
 `HADOOP_CLASSPATH`, che può essere il percorso di una directory o di un file
@@ -354,17 +353,19 @@ alla base della progettazione di HDFS:
     
     - Queste modifiche dovrebbero essere fatte in modo atomico, o richieste di
       lettura su una determinata replica di un blocco invece che in un'altra
-      potrebbe portare a risultati inconsistenti o non aggiornati.
+      potrebbe portare a risultati inconsistenti.
 
     Le limitazioni che Hadoop impone sono ragionevoli per lo use-case per cui
     HDFS è progettato, caratterizzato da grandi dataset che vengono copiati nel
-    filesystem e letti in blocco.
+    filesystem e letti in blocco. Il modello del filesystem di Hadoop è
+    definito **write once, read many**.
     
  *  **Dataset di grandi dimensioni**
 
     I filesystem distribuiti sono generalmente necessari per aumentare la
     capacità di storage disponibile oltre quella di una singola macchina. La
-    distribuzione di HDFS, assieme alla grande dimensione dei blocchi
+    distribuzione di HDFS, assieme alla grande dimensione dei blocchi, offre un
+    supporto privilegiato ai file molto grandi rispetto a quelli piccoli.
 
  *  **Accesso in streaming**
     
@@ -407,7 +408,7 @@ Per aumentare la fault-tolerance, HDFS salva un'ulteriore copia del blocco al
 di fuori del rack in cui ha memorizzato le prime due. Questa operazione
 salvaguardia l'accesso al blocco in caso di fallimento dello switch di rete del
 rack che contiene le prime due copie, che renderebbe inaccessibili tutte le
-macchine che contieneche contiene.
+macchine contenenti il blocco.
 
 Il numero di repliche create da HDFS per ogni blocco è definito *replication
 factor*, ed è configurabile tramite l'opzione `dfs.replication`. Quando il
@@ -416,8 +417,8 @@ numero di repliche di un certo file scende sotto la soglia di questa proprietà
 trasparentemente la replicazione dei blocchi per raggiungere la soglia definita
 nella configurazione.
 
-L'integrità dei blocchi è verificata trasparentemente da HDFS alla loro lettura
-e scrittura, utilizzando checksum CRC-32|||
+Inoltre, l'integrità dei blocchi è verificata trasparentemente da HDFS alla
+loro lettura e scrittura, utilizzando checksum CRC-32.
 
 ### Comunicare con HDFS
 
@@ -448,7 +449,7 @@ si opera e il filesystem.
 
 I comandi richiedono l'URI che identifica l'entità su cui si vuole operare. Per
 riferirsi a una risorsa all'interno di un'istanza di HDFS, si usa l'URI del
-namenode, con schema `hdfs`[^2], e con il path corrispondente al percorso della
+NameNode, con schema `hdfs`[^2], e con il path corrispondente al percorso della
 risorsa nel filesystem. Ad esempio, è possibile creare una cartella `foo`
 all'interno della radice del filesystem con il seguente comando:
 
@@ -534,8 +535,7 @@ esperti di lavorare con il filesystem.
 
 Un altro importante modo di interfacciarsi ad HDFS è l'API `FileSystem` di
 Hadoop, che permette un accesso programmatico da linguaggi per JVM alle
-funzioni del filesystem. L'API fornisce interfacce Java generali che possono
-utilizzata con filesystem diversi da HDFS, permettendo
+funzioni del filesystem. 
 
 Per linguaggi che non supportano interfacce Java, esiste un'implementazione in
 C chiamata `libhdfs`, che si appoggia sulla Java Native Interface per esporre
@@ -543,7 +543,7 @@ l'API di Hadoop.
 
 Esistono poi progetti che permettono il montaggio di HDFS in un filesystem
 locale. Alcune di queste implementazioni sono basate su FUSE, mentre altre su
-NFS Gateway. Questo metodo di accesso permette l'utilizzo di utilità native del
+NFS Gateway. Questi strumenti permettono l'utilizzo di utilità native del
 sistema in uso in HDFS.
 
 ### NameNode in dettaglio
@@ -691,7 +691,7 @@ public class MyCat {
 La reimplementazione del programma `cat` utilizza il primo parametro della
 linea di comando per ricevere l'URI del file che si vuole stampare nello
 standard output. L'URI deve contenere il percorso di rete del filesystem HDFS,
-ed essere quindi del formato `hdfs://[indirizzo o hostname del namenode]/[path
+ed essere quindi del formato `hdfs://[indirizzo o hostname del NameNode]/[path
 del file]`.
 Di seguito vengono spiegati i passi eseguiti dal programma. Quando non
 qualificato, l'identificativo `hadoop` si riferisce al package Java
@@ -743,8 +743,8 @@ diverso (ad esempio `file://` per filesystem locali), l'istanza concreta di
 supportato).
 
 Dietro le quinte, `FSDataInputStream`, restituito da `FileSystem.open(...)`,
-utilizza chiamate a procedure remote sul namenode per ottenere le posizioni dei
-primi blocchi del file. Per ogni blocco, il namenode restituisce gli indirizzi
+utilizza chiamate a procedure remote sul NameNode per ottenere le posizioni dei
+primi blocchi del file. Per ogni blocco, il NameNode restituisce gli indirizzi
 dei datanode che lo contengono, ordinati in base alla prossimità del client. Se
 il client stesso è uno dei datanode che contiene un blocco da leggere, il
 blocco viene letto localmente.
@@ -803,8 +803,8 @@ I container in YARN possono essere rappresentativi di diverse modalità di
 esecuzione di un processo. Queste sono configurabili dall'utente tramite la
 proprietà `yarn.nodemanager.container-executor.class`, il cui valore identifica
 una classe che stabilisce come i processi debbano essere eseguiti. Di default,
-l'esecuzione utilizza normali processi UNIX, ma la configurazione permette
-l'uso di container di virtualizzazione OS-level, come lxc e Docker.
+La configurazione permette l'uso di diversi container di virtualizzazione
+OS-level, come lxc e Docker[@yarn-container-conf].
 
 L'esecuzione di applicazioni distribuite in YARN è richiesta dai client al
 ResourceManager. Quando il ResourceManager decide di avviare un'applicazione,
@@ -835,7 +835,7 @@ Il ResourceManager è in grado di gestire più job contemporaneamente utilizzand
 diverse politiche di scheduling. L'esecuzione dei job può essere richiesta da
 diversi utenti ed entità che hanno accesso al cluster, e la scelta di una
 politica di scheduling adeguata permette di stabilire priorità di accesso
-diverse per ognuna delle entità.
+diverse per ognuna delle entità coinvolte.
 
 Tra gli scheduler forniti da Hadoop, i seguenti sono i più utilizzati:
 

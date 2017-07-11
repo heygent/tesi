@@ -9,16 +9,16 @@ che riescono a ricavare valore da grandi dataset in tempi eccezionalmente brevi
 rispetto al passato.
 
 L'innovazione che rende possibili questi risultati è stata guidata dal software
-molto più che dall'hardware. Sono stati i cambiamenti nel modo di pensare alla
-computazione e all'organizzazione dei suoi processi che hanno portato a
-risultati notevoli nell'efficienza di elaborazione di grandi quantità di dati.
+molto più che dall'hardware. Nuove idee sulla computazione distribuita
+e sull'organizzazione dei suoi processi hanno permesso un notevole progresso
+nell'efficienza di elaborazione di grandi quantità di dati.
 
 Uno dei fattori più importanti ad aver dato slancio a questo fenomeno è stato
 lo sviluppo di Hadoop, un framework open source progettato per la computazione
 batch di dataset di grandi dimensioni. Utilizzando un'architettura ben
 congeniata, Hadoop ha permesso l'analisi in tempi molto rapidi di interi
 dataset di dimensioni nell'ordine dei terabyte, fornendo una capacità di
-sfruttamento di questi, e conseguentemente un valore molto più alti.
+sfruttamento di questi, e conseguentemente un valore, molto più alti.
 
 Una delle conseguenze più importanti di Hadoop è stata una democratizzazione
 delle capacità di analisi dei dati:
@@ -52,13 +52,17 @@ di grandi opportunità.
 
 In questo documento si analizzano le varie tecniche che sono a disposizione per
 l'utilizzo effettivo dei Big Data, come queste differiscono tra di loro, e
-quali strumenti le mettono a disposizione. Si parlerà inoltre di come gli
-strumenti possano essere integrati in sistemi di produzione esistenti, le
-possibili architetture di un sistema di questo tipo e come ...
+quali strumenti le mettono a disposizione. Nella prima parte si analizzano i
+vari tipi di paradigmi di processing e di come differiscono tra loro, e le
+architetture software basate su di questi. Nella seconda parte si affronta
+Hadoop, il framework per la computazione distribuita più popolare per l'analisi
+di Big Data. Nella terza parte e quarta parte si osservano i paradigmi di
+elaborazione *batch* e *stream*, e due tool che li mettono a disposizione,
+MapReduce e Spark, e degli esempi pratici per illustrare il loro fuzionamento.
 
 La gestione di sistemi per l'elaborazione di Big Data richiede una
 configurazione accurata per ottenere affidabilità e fault-tolerance. Pur
 sottolineando che l'importanza di questi aspetti non è da sottovalutare, questa
-tesi si concentrerà più sul modello computazionale e di programmazione che gli
-strumenti offrono.
+tesi si concentrerà più sul modello computazionale e sulle interfacce di
+programmazione che gli strumenti offrono.
 

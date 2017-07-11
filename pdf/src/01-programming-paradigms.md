@@ -3,7 +3,7 @@
 Per Big Data si intendono collezioni di dati con caratteristiche tali da
 richiedere strumenti innovativi per poterli gestire e analizzare.
 Uno dei modelli tradizionali e più popolari per descrivere le
-caratteristiche dei Big Data si chiama **modello delle 3V**. Il modello
+caratteristiche dei Big Data si chiama **modello delle 3V**, che
 identifica i Big Data come collezioni di informazione che presentano
 grande abbondanza in una o più delle seguenti caratteristiche:
 
@@ -31,8 +31,7 @@ andando avanti nel tempo, in particolare:
 
 * Si possono fare le stesse considerazioni fatte per il volume dei dati per
   quanto riguarda la velocità. I flussi di dati vengono generati dai
-  dispositivi e dagli utenti, che li producono a ritmi molto più incalzanti
-  rispetto agli operatori.
+  dispositivi e dagli utenti a ritmi sempre più incalzanti.
 
 Per l'elaborazione di dataset con queste caratteristiche sono stati sviluppati
 molti strumenti, che usano diversi pattern di elaborazione a seconda delle
@@ -52,7 +51,7 @@ bassa latenza. Tuttavia, questo approccio ha dei limiti.
 
 * Le fasi del batch processing richiedono la schedulazione dei lavori da parte
   dell'utente, con un conseguente overhead dovuto alla schedulazione in sé o
-  alla configurazione di strumenti automatizzati che se ne occupino;
+  alla configurazione di strumenti per automatizzare il processo;
 
 * Non è possibile accedere ai risultati prima del termine del job, che può
   avere una durata eccessiva rispetto alle esigenze dell'applicazione o
@@ -62,11 +61,11 @@ Per use case in cui questi fattori sono rilevanti, lo **stream processing** si
 presta come più adatto. In questo paradigma, i dati da elaborare vengono
 ricevuti da *stream*, che rappresentano flussi di dati contigui provenienti da
 origini non necessariamente controllate. Gli stream forniscono nuovi dati in
-modo *asincrono*, e la loro elaborazione avviene a ogni nuovo evento di
-ricezione. I job in streaming molto spesso non hanno un termine prestabilito,
-ma vengono terminati dall'utente, e i risultati dell'elaborazione possono
-essere disponibili mano a mano che l'elaborazione procede, permettendo quindi
-un feedback più rapido rispetto ai lavori batch.
+modo *asincrono*, e il loro arrivo fa scattare eventi di ricezione a cui il
+software può reagire. I job in streaming molto spesso non hanno un termine
+prestabilito, ma vengono terminati dall'utente, e i risultati dell'elaborazione
+sono resi disponibili mano a mano che l'elaborazione procede, permettendo
+quindi un feedback più rapido rispetto ai lavori batch.
 
 ### *Data at Rest* e *Data in Motion*
 
@@ -74,8 +73,8 @@ I due paradigmi si differenziano anche per il modo in cui i dati sono
 disponibili. Il processing batch richiede che l'informazione sia *data at
 rest*, ovvero informazioni completamente accessibili a priori dal programma.
 I dati di input in una computazione batch sono determinati al suo inizio, e non
-possono cambiare durante il suo corso. Questo significa che se si rende
-desiderabile dare in input una nuova informazione in un lavoro batch, l'unico
+possono cambiare durante il suo corso. Questo significa che se si rendesse
+desiderabile fornire in input una nuova informazione a un lavoro batch, l'unico
 modo per farlo è rieseguire interamente il lavoro.
 
 Lo **stream processing**, invece, è progettato per *data in motion*, dati in
@@ -84,11 +83,10 @@ dell'elaborazione. Esempi di data in motion possono essere rappresentati dai
 dati ricevuti in un socket TCP inviati da reti di sensori IOT, o dall'ascolto
 di servizi di social media.
 
-È possibile utilizzare strumenti di processing in streaming anche per *data at
-rest*, rappresentando il dataset come uno stream. Questa proprietà è
-desiderabile, perché permette di utilizzare le stesse applicazioni per
-elaborazioni che riguardano dataset disponibili a priori e stream di cui non si
-ha completo controllo.
+L'astrazione dello stream è abbastanza geneale da poter rappresentare anche
+*data at rest*. Questa proprietà è desiderabile, perché permette l'uso di tool
+di elaborazione in streaming per processare *data at rest*.
+
 
 +----------------------+-----------------+-----------------------------------+
 | Caratteristiche      | Batch           | Streaming                         |
@@ -106,10 +104,10 @@ ha completo controllo.
 : Differenze tra elaborazione batch e streaming
 
 Un esempio di *data at rest* sono i resoconti delle vendite di un'azienda, su
-cui si possono cercare pattern per identificare quali prodotti sono in trend
-nelle vendite. Per *data in motion* si può considerare l'invio di dati da parte
-di sensori IoT o le pubblicazioni degli utenti nei social media, che sono
-continui e senza una fine determinata.
+cui si possono cercare pattern per identificare quali prodotti hanno un trend
+positivo nelle vendite. Per *data in motion* si può considerare l'invio di dati
+da parte di sensori IoT o le pubblicazioni degli utenti nei social media, che
+sono continui e senza una fine determinata.
 
 ### Architetture di sistemi Big Data
 
@@ -119,7 +117,7 @@ astrazioni, nei tool e nelle API utilizzate. Il loro utilizzo è condizionat
 Ad oggi, le architetture dei sistemi che sfruttano i Big Data si basano
 principalmente su due modelli, la **lambda** e la **kappa** architecture.
 
-![Diagramma della Lambda Architecture](img/lambda_architecture.png){width=75%}
+![Diagramma della Lambda Architecture[@ericsson-architecture].](img/lambda_architecture.png){width=75%}
 
 La lambda architecture utilizza tre unità logiche, il **batch layer**, lo
 **speed layer** e il **serving layer**. Il serving layer è un servizio o un
@@ -143,7 +141,8 @@ linguaggi diversi, anche per applicazioni che eseguono le stesse funzioni.
 I sistemi che implementano architetture lambda sono i più onerosi nello
 sviluppo e nella manutenzione.
 
-![Diagramma della Kappa Architecture](img/kappa_architecture.png){width=75%}
+![Diagramma della Kappa
+Architecture[@ericsson-architecture]](img/kappa_architecture.png){width=75%}
 
 In contrapposizione, la kappa architecture non utilizza un batch layer, e la
 totalità delle computazioni viene eseguita dallo speed layer. Per eseguire
@@ -152,12 +151,10 @@ che viene dato in ingestione allo speed layer. In questo modo gli strumenti e
 le basi di codice possono essere unificate, semplificando l'architettura e
 rendendo la gestione del sistema meno impegnativa.
 
-Le differenze tra i due approcci sono più visibili quando si mettono a
-confronto i framework di elaborazione batch e streaming per osservare le
-differenze nell'uso. Come regola generale, si può definire preferibile la
-lambda architecture per l'efficienza delle computazioni, superiore nei sistemi
-di elaborazione batch. La lambda architecture è preferibile quando le
-elaborazioni che si vogliono eseguire sui dati storici e quelli in arrivo sono
-identiche o molto simili, o si vuole ottenere un sistema architetturalmente più
-semplice. Spesso la scelta dipende da un tradeoff tra questi due fattori.
+Come regola generale, si può definire preferibile la lambda architecture per
+l'efficienza delle computazioni, superiore nei sistemi di elaborazione batch.
+La lambda architecture è preferibile quando le elaborazioni che si vogliono
+eseguire sui dati storici e quelli in arrivo sono identiche o molto simili, o
+si vuole ottenere un sistema architetturalmente più semplice. Spesso la scelta
+dipende da un tradeoff tra questi due fattori.
 
