@@ -22,7 +22,7 @@ Le nuove versioni di MapReduce sono implementate al di sopra di YARN invece che
 direttamente in Hadoop come in passato, a testimoniare l'effettiva capacità di
 YARN di generalizzare i modelli di esecuzione nei cluster.
 
-La sua alternativa più popolare, Apache Spark, ha API più espressive e
+L'alternativa più popolare a MapReduce, Apache Spark, ha API più espressive e
 funzionali rispetto a MapReduce, ed è più performante in molti tipi di
 algoritmi[@mapreduce-spark-performance]. Tramite astrazioni che offrono un
 controllo più preciso sul comportamento dei risultati dell'elaborazione, Spark
@@ -32,7 +32,7 @@ SQL[@spark-sql].
 
 In questa sezione si esaminano MapReduce e Spark, quali sono le limitazioni di
 MapReduce che hanno fatto sentire la necessità di un nuovo modello
-computazionale, e alcune delle soluzioni e interfacce di programmazione offerte
+computazionale, e alcune delle soluzioni e modelli di programmazione offerti
 da Spark. 
 
 ## MapReduce
@@ -66,8 +66,8 @@ computazione sui valori di input e restituisce $(K_2, V_3)$, che andrà a far
 parte dell'output finale dell'applicazione assieme al risultato delle altre
 invocazioni di $Reduce$, una per ogni chiave distinta restituita da $Map$.
 
-Sintetizzando, MapReduce permette di categorizzare l'input in diverse parti e
-di elaborare un risultato per ognuna di queste.
+Sintetizzando, MapReduce permette di dividere e categorizzare l'input in
+diverse parti, e di elaborare un risultato per ognuna di queste.
 
 MapReduce è un paradigma *funzionale*, dato che il framework richiede di
 ricevere in input le funzioni utili all'elaborazione dei dati. Per esprimere
@@ -98,8 +98,8 @@ colonnari, o contenti coppie chiave-valore divise da marcatori.
 I tipi ricevuti in input dal Mapper sono specificati nei parametri generici
 `KEYIN` e `VALUEIN`, e devono corrispondere ai tipi che l'`InputFormat` di
 riferimento restituisce. `KEYOUT` e `VALUEOUT` sono invece i tipi che il Mapper
-restituisce rielaborando le chiavi e i valori in input. `map` ha la seguente
-signature:
+restituisce rielaborando le chiavi e i valori in input. La signature della
+funzione `map` nella libreria di Hadoop è la seguente:
 
 ```java
 protected void map(KEYIN key, VALUEIN value, Context context) 
@@ -216,7 +216,12 @@ possono essere ottenuti rispettivamente con `LongWritable.get()` e
 
 [^6]: Le classi definite dagli utenti possono implementare a loro volta
 l'interfaccia `Writable` per essere supportate come tipi di chiavi e valori nei
-Mapper e nei Reducer. 
+Mapper e nei Reducer. Inoltre, è possibile configurare Hadoop per utilizzare
+formati di serializzazione alternativi a quello fornito. Un'alternativa
+popolare è Apache Avro, un formato e una libreria di serializzazione che mira
+agli stessi obiettivi di efficienza della serializzazione Hadoop, e che
+fornisce una maggiore estensibilità e interoperabilità in linguaggi diversi da
+Java.
 
 Nel Mapper, si utilizza l'espressione regolare `/.*"[A-Z]+ (.*) HTTP.*/` per
 ottenere il token contenente l'URI della richiesta, e tramite `context.write`
@@ -307,10 +312,10 @@ public class LogAnalyzer {
 L'oggetto `job` è il centro della configurazione del programma MapReduce.
 Tramite questo si specificano il `jar` contenente le classi dell'applicazione,
 il nome del Job, utilizzato per mostrare descrittivamente nei log e
-nell'interfaccia web lo stato di completamente di questo, le classi Mapper e
-Reducer e i tipi dei valori di output del Reducer. Vengono impostati anche i
-path del file di input e dei file di output, utilizzando i valori ricevuti come
-parametri in `args`. Il job viene effettivamente eseguito alla chiamata di
+nell'interfaccia web lo stato di completamento, le classi Mapper e Reducer e i
+tipi dei valori di output del Reducer. Vengono impostati anche i path del file
+di input e dei file di output, utilizzando i valori ricevuti come parametri in
+`args`. Il job viene effettivamente eseguito alla chiamata di
 `job.waitForCompletion(bool verbose)`, che restituisce `true` quando questo va
 a buon fine.
 
@@ -368,8 +373,8 @@ Found 2 items
 
 Assieme al risultato della computazione, MapReduce salva un file vuoto chiamato
 `_SUCCESS`, utilizzabile per verificare programmaticamente se il job è andato a
-buon fine. Consultando il file, si può osservare il risultato della
-computazione eseguita.
+buon fine. Consultando il file `part-r-0000`, si può osservare il risultato
+della computazione eseguita.
 
 ```sh
 ...
@@ -419,7 +424,14 @@ L'esecuzione dei lavori MapReduce avviene secondo i seguenti step:
     utilizzare split più grandi, ma se una parte dello split non si trova nel nodo
     in cui viene eseguito il map task, questa deve essere ricevuta tramite rete da
     un altro nodo nel cluster che la contiene, riducendo quindi la *data
-    locality*.
+    locality*. 
+    
+    Configurando MapReduce per utilizzare split più piccoli del blocco, si può
+    ottenere un load balancing migliore, dato che macchine più veloci possono
+    eseguire più task mentre le altre finiscono i precedenti. In questo
+    scenario, bisogna considerare se l'overhead dovuto alla gestione di una
+    quantità maggiore di task possa superare il guadagno ottenuto nei tempi
+    di elaborazione.
 
  #. In ogni *map task*, lo split corrispondente viene diviso in più *record*, che
     corrispondono alle coppie ricevute in input dal Mapper. Il map task esegue
@@ -708,14 +720,14 @@ chiave.
 Diversamente da MapReduce, in `reduceByKey` la funzione che rappresnta il
 Reducer non riceve un iterabile dei valori, ma un accumulatore e uno degli
 elementi aggregati. Per ogni gruppo di valori aggregati a una chiave, la
-funzione viene chiamata per ogni valore del gruppo, ricevendolo in input
-assieme all'accumulatore. Il suo valore di restituzione viene utilizzato come
-accumulatore di input per l'invocazione sul valore successivo.
+funzione viene chiamata una volta per ogni valore del gruppo, ricevendo in input
+il valore e l'accumulatore corrente. Il valore di restituzione viene utilizzato
+come accumulatore di input per l'invocazione sul valore successivo.
 
 $$reducer(A_i, V_i) = A_{i + 1}$$ 
 
-Le coppie chiave-valore possono essere rappresentate con tuple Scala. La
-funzione di riduzione da utilizzare in questo caso è la somma.
+Le coppie chiave-valore sono rappresentate da tuple Scala. La funzione di
+riduzione da utilizzare in questo caso è la somma.
 
 ```scala
 scala> val wordCount = words.map(w => (w, 1)).reduceByKey(_ + _)
@@ -765,17 +777,18 @@ $ head part-00000
 #### Sviluppo ed esecuzione di un Job
 
 Le applicazioni Spark vengono sviluppate ed eseguite in modo simile a
-MapReduce. Ogni applicazione ha un punto di entrata `main`, dove viene inserito
-il codice relativo all'esecuzione del job. Le API sono simili 
+MapReduce, in cui ogni applicazione ha un punto di entrata `main` dove i job
+vengono configurati e avviati.
 
-Riprendendo l'esempio dell'[analizzatore di log](#mapred-example), questo è
-rappresentabile in maniera molto più succinta tramite le interfacce fornite da
-Scala e Spark. La prima operazione da eseguire è creare un oggetto di
-configurazione, come mostrato in [@lst:log-analyzer-spark], righe 9-11. In
-questo caso, si specifica il nome del job come "Log Analyzer" e `yarn` come
-master di esecuzione. Nella riga 13 si crea uno `SparkContext` utilizzando la
-configurazione, che viene poi utilizzato per aprire un file HDFS il cui
-percorso è preso in input dagli argomenti del programma.
+Riprendendo in considerazione l'esempio dell'[analizzatore di
+log](#mapred-example), questo è rappresentabile in maniera molto più succinta
+tramite le interfacce fornite da Scala e Spark. La prima operazione da eseguire
+è creare un oggetto di configurazione, come mostrato in
+[@lst:log-analyzer-spark], righe 9-11. In questo caso, si specifica il nome del
+job come "Log Analyzer" e `yarn` come master di esecuzione. Nella riga 13 si
+crea uno `SparkContext` utilizzando la configurazione, che viene poi utilizzato
+per aprire un file HDFS il cui percorso è preso in input dagli argomenti del
+programma.
 
 L'RDD ottenuto viene utilizzato per mappare ogni riga di richiesta alla risorsa
 corrispondente. La trasformazione `collect` riceve in input una funzione
@@ -839,8 +852,6 @@ aciclico degli stage richiesti per la sua esecuzione.
 ![Interfaccia web di Spark, tracciamento dell'esecuzione dei
 job.](img/spark-web-ui.png)
 
-![Interfaccia web di Spark, visualizzazione DAG delle
-operazioni.](img/spark-dag-view.png){#fig:dag-visualization}
 
 I risultati possono essere quindi consultati nella cartella `/tmp/results`
 dell'istanza HDFS del cluster.
@@ -896,7 +907,7 @@ population: org.apache.spark.sql.DataFrame =
     [age: bigint, country: string ... 4 more fields]
 ```
 
-La stringa rappresentativa del dataframe visualizzata in risposta dà qualche
+La stringa rappresentativa del DataFrame visualizzata in risposta dà qualche
 indizio sulla struttura rilevata. Si può richiedere al DataFrame di
 visualizzare la sua intera struttura:
 
@@ -995,9 +1006,9 @@ SQL con il nome specificato in `name`.
 Le query possono essere eseguite chiamando il metodo `spark.sql(query:
 String)`, che restituisce il loro risultato sotto forma di DataFrame. Le query
 possono essere utilizzate per eseguire computazioni di vario tipo, utilizzando
-le funzioni di aggregazione fornite. Il seguente codice esegue e mostra il
-risultato di una query, che richiede la somme delle popolazioni maschile e
-femminile di età compresa tra i 40 e i 60 anni.
+varie funzioni di aggregazione fornite dal framework. Il seguente codice esegue
+e mostra il risultato di una query, che richiede la somme delle popolazioni
+maschile e femminile di età compresa tra i 40 e i 60 anni.
 
 ```scala
 scala> population.createOrReplaceTempView("population")
@@ -1034,11 +1045,12 @@ Spark[@spark-cluster].](img/spark-execution.png)
   cluster, che può essere YARN, Mesos, o il cluster manager integrato in Spark.
 
 * I **worker node** sono processi avviati nelle macchine coinvolte nella
-  computazione distribuita nel cluster e che ne gestiscono le risorse.
+  computazione distribuita nel cluster. Ogni worker node gestisce i processi
+  della macchina in cui è eseguito.
 
 * Gli **executor** sono processi allocati all'interno delle macchine worker per
-  eseguire i task assegnati dal driver. Le applicazioni Spark eseguono gli
-  *executor* al loro avvio, e li terminano a fine computazione.
+  eseguire i task assegnati dal driver. Ogni applicazione Spark esegue gli
+  *executor* al proprio avvio, e li termina alla sua conclusione.
 
 * I **task** sono le unità di lavoro eseguite dai singoli worker, che vengono
   inviati sotto forma di funzioni serializzate. Gli *executor* deserializzano i
@@ -1047,24 +1059,34 @@ Spark[@spark-cluster].](img/spark-execution.png)
 
 Le computazioni sono definite tramite le funzioni passate come parametro ad
 azioni e trasformazioni. Spark tiene traccia di queste tramite un grafo,
-definito **lineage**. Tramite il grafo di *lineage*, Spark crea un *execution
-plan*, per determinare come l'esecuzione debba essere organizzata nei nodi.
-Il criterio utilizzato è di eseguire quante più computazioni possibili in
-uno stesso nodo, per ridurre gli spostamenti che richiederebbero banda di rete.
-Alcune operazioni, come `reduce`, richiedono necessariamente lo spostamento dei
-dati in rete, dato che devono trovarsi nello stesso nodo per poter essere aggregati.
-Questo step è definito *shuffle*, ed è simile all'operazione eseguita da
+definito **lineage**. Il grafo ha lo scopo di tracciare la provenienza di ogni
+RDD derivato da trasformazioni, rappresentando gli RDD come nodi e le
+trasformazioni come archi. Gli archi connettono gli RDD di origine a quelli
+derivati, tenendo anche traccia delle trasformazioni che li hanno prodotti.
+
+Tramite il grafo di *lineage*, Spark crea un altro grafo
+aciclico, definito *execution plan*, per determinare come l'esecuzione debba
+essere organizzata nei nodi. Il criterio utilizzato è di eseguire quante più
+computazioni possibili in uno stesso nodo, per ridurre gli spostamenti che
+richiederebbero banda di rete. Alcune operazioni, come `reduce`, richiedono
+necessariamente lo spostamento dei dati, visto che le operazioni di
+aggregazione richiedono che i dati da aggregare si trovino nello stesso nodo.
+L'operazione di spostare i dati degli RDD per eseguire operazioni di
+aggregazione è definita *shuffle*, ed è simile all'operazione eseguita da
 MapReduce per partizionare i risultati dei Mapper.
 
 Per ogni job, Spark esegue una divisione logica sulle operazioni da eseguire,
-che vengono raggruppate in un grafo aciclico, i cui nodi sono *execution
+che vengono raggruppate nell'*execution plan* in nodi definiti *execution
 phases*. Ogni fase di esecuzione raggruppa quante più operazioni possibili, e
 le fasi sono separate l'una dall'altra solo da operazioni che richiedono
-l'esecuzione di uno *shuffle*. Il grafo delle fasi di esecuzione dei job è
+l'esecuzione di uno *shuffle*. Il grafo delle fasi di esecuzione di ogni job è
 visibile nell'interfaccia web di monitoraggio dei job, come mostrato in
 [@fig:dag-visualization] per l'analizzatore di log.
 
-Spark utilizza il grafo di lineage anche per fornire fault-tolerance:
+![Interfaccia web di Spark, visualizzazione DAG delle
+operazioni.](img/spark-dag-view.png){#fig:dag-visualization}
+
+Per fornire fault-tolerance, Spark utilizza il grafo di *lineage*:
 nell'eventualità in cui un nodo contenente una partizione di un RDD
 dovesse fallire, Spark può retrocedere agli RDD genitori sul grafo di lineage,
 fino a trovare degli RDD candidati da cui si può ricavare la partizione non più

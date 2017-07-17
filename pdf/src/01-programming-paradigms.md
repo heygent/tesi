@@ -59,13 +59,13 @@ bassa latenza. Tuttavia, questo approccio ha dei limiti.
 
 Per use case in cui questi fattori sono rilevanti, lo **stream processing** si
 presta come più adatto. In questo paradigma, i dati da elaborare vengono
-ricevuti da *stream*, che rappresentano flussi di dati contigui provenienti da
-origini non necessariamente controllate. Gli stream forniscono nuovi dati in
-modo *asincrono*, e il loro arrivo fa scattare eventi di ricezione a cui il
-software può reagire. I job in streaming molto spesso non hanno un termine
-prestabilito, ma vengono terminati dall'utente, e i risultati dell'elaborazione
-sono resi disponibili mano a mano che l'elaborazione procede, permettendo
-quindi un feedback più rapido rispetto ai lavori batch.
+ricevuti da *stream*, che rappresentano flussi di dati contigui in arrivo nel
+corso del tempo. Gli stream forniscono nuovi dati in modo *asincrono*, e il
+loro arrivo fa scattare eventi di ricezione a cui il software può reagire. I
+job in streaming molto spesso non hanno un termine prestabilito, ma vengono
+terminati dall'utente, e i risultati dell'elaborazione sono resi disponibili
+mentre questa procede, permettendo quindi un feedback più rapido rispetto ai
+lavori batch.
 
 ### *Data at Rest* e *Data in Motion*
 
@@ -86,7 +86,6 @@ di servizi di social media.
 L'astrazione dello stream è abbastanza geneale da poter rappresentare anche
 *data at rest*. Questa proprietà è desiderabile, perché permette l'uso di tool
 di elaborazione in streaming per processare *data at rest*.
-
 
 +----------------------+-----------------+-----------------------------------+
 | Caratteristiche      | Batch           | Streaming                         |
@@ -111,15 +110,12 @@ sono continui e senza una fine determinata.
 
 ### Architetture di sistemi Big Data
 
-I paradigmi di Batch e Stream processing presentano differenze notevoli nelle
-astrazioni, nei tool e nelle API utilizzate. Il loro utilizzo è condizionat
-
 Ad oggi, le architetture dei sistemi che sfruttano i Big Data si basano
-principalmente su due modelli, la **lambda** e la **kappa** architecture.
+principalmente su due modelli, la **Lambda** e la **Kappa** architecture.
 
 ![Diagramma della Lambda Architecture[@ericsson-architecture].](img/lambda_architecture.png){width=75%}
 
-La lambda architecture utilizza tre unità logiche, il **batch layer**, lo
+La Lambda architecture utilizza tre unità logiche, il **batch layer**, lo
 **speed layer** e il **serving layer**. Il serving layer è un servizio o un
 insieme di servizi che permettono di eseguire query sui dati elaborati dagli
 altri due layer. Il batch layer esegue framework per computazioni batch, mentre
@@ -138,23 +134,23 @@ paradigmi e della totalità degli strumenti progettati per batch e stream
 processing. Tuttavia, i layer batch e speed richiedono una gestione separata,
 e il mantenimento di due basi di codice scritte con API e potenzialmente
 linguaggi diversi, anche per applicazioni che eseguono le stesse funzioni.
-I sistemi che implementano architetture lambda sono i più onerosi nello
+I sistemi che implementano architetture Lambda sono i più onerosi nello
 sviluppo e nella manutenzione.
 
 ![Diagramma della Kappa
 Architecture[@ericsson-architecture]](img/kappa_architecture.png){width=75%}
 
-In contrapposizione, la kappa architecture non utilizza un batch layer, e la
-totalità delle computazioni viene eseguita dallo speed layer. Per eseguire
+In contrapposizione, la Kappa architecture non utilizza un batch layer, e la
+tutte le computazioni vengono eseguite dallo speed layer. Per eseguire
 elaborazioni sui dati archiviati, questi vengono rappresentati come uno stream,
 che viene dato in ingestione allo speed layer. In questo modo gli strumenti e
 le basi di codice possono essere unificate, semplificando l'architettura e
 rendendo la gestione del sistema meno impegnativa.
 
-Come regola generale, si può definire preferibile la lambda architecture per
+Come regola generale, si può definire preferibile la Lambda architecture per
 l'efficienza delle computazioni, superiore nei sistemi di elaborazione batch.
-La lambda architecture è preferibile quando le elaborazioni che si vogliono
-eseguire sui dati storici e quelli in arrivo sono identiche o molto simili, o
-si vuole ottenere un sistema architetturalmente più semplice. Spesso la scelta
-dipende da un tradeoff tra questi due fattori.
+La Kappa architecture è invece preferibile quando le elaborazioni che si
+vogliono eseguire sui dati storici e quelli in arrivo sono identiche o molto
+simili, o si vuole ottenere un sistema architetturalmente più semplice. Spesso
+la scelta dipende da un tradeoff tra questi due fattori.
 

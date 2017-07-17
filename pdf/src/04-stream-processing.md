@@ -1,26 +1,49 @@
 # Stream Processing
 
-Ci sono molte differenze semantiche da considerare tra il batch processing e lo
-stream processing. Dato che gli stream non hanno necessariamente un limite di
-dimensione, o un termine della computazione, i tool orientati allo stream
-processing devono fornire astrazioni che tengano in conto della dimensione
-temporale dei flussi, in modo da fornire una misura diversa dal volume dei
-dati.  In particolare, è necessario che le API permettano di stabilire
-degli intervalli per l'esecuzione e la raccolta dei risultati, o che forniscano
-un meccanismo di reazione a fronte di eventi di ricezione. Inoltre, è utile che
-i flussi mettano a disposizione meccanismi per il mantenimento di stato.
+Il paradigma di elaborazione su stream permette di eseguire computazioni
+continuativamente su flussi di dati in arrivo nel corso del tempo, che non
+hanno limiti definiti di quantità. Nel batch processing, la dimensione dei dati
+da elaborare è il fattore che definisce il termine della computazione: dato il
+dataset da elaborare in batch, quando la totalità dei dati contenuti nel
+dataset sono stati processati l'elaborazione termina. Nello stream processing
+non si dispone di tale misura, dato che i flussi non definiscono
+necessariamente il loro termine.
 
-Gli approcci alla stream computation principali sono due: (near) **real-time**
-e **microbatching**. L'approccio real-time esegue le computazioni su ogni
-record in input non appena questo è disponibile, mentre il microbatching
-raccoglie un numero di input in un buffer in un certo intervallo di tempo, che
-vengono poi processati in gruppo. Il primo approccio favorisce una latenza
-minore, mentre il secondo un throughput più alto.
+Questa distinzione è importante, perché nel batch processing il termine della
+computazione corrisponde all'emissione definitiva dell'output
+dell'elaborazione. Dato che i flussi non hanno necessariamente una conclusione,
+i tool che gestiscono l'elaborazione su stream devono definire il tempo di
+emissione dell'output in termini diversi. Generalmente il tempo può essere
+configurato dall'utente, che deve comunque rispettare dei vincoli dovuti al
+modello di elaborazione utilizzato.
+
+Ci sono due modelli di elaborazione importanti e riconosciuti nella stream
+computation, da cui dipende la modalità di emissione dell'output:
+
+* L'approccio **real-time** esegue le computazioni su ogni record
+  continuativamente con il loro arrivo nello stream, e l'emissione di nuovi
+  output può essere fatta corrispondere al termine dell'elaborazione di
+  qualunque record in arrivo.
+
+* Il **microbatching** considera gli stream come una serie di piccoli batch,
+  e i dati di ogni batch vengono processati insieme. L'emissione di output deve
+  corrispondere al termine dell'elaborazione di un microbatch.
+
+Il primo approccio favorisce una latenza minore, mentre il secondo un
+throughput più alto.
+
+Lo stream processing può essere considerato come una *generalizzazione* del
+batch processing. Le elaborazioni batch possono essere considerate come
+elaborazioni su uno stream di record di un dataset, dove l'emissione
+dell'output viene fatta coincidere con il termine dell'elaborazione del suo
+ultimo record. I tool che eseguono stream processing possono eseguire
+computazioni batch seguendo questo modello, fornendo un paradigma di
+elaborazione unico per *data at rest* e *data in motion*. 
 
 In questa sezione si osserva Spark Streaming, un modulo di Apache Spark
-dedicato allo stream processing orientato al microbatching, che riutilizza
-molte delle sue strutture e dei suoi concetti, permettendo di riapplicare le
-conoscenze già acquisite sull'elaborazione batch allo stream processing.
+dedicato allo stream processing orientato al microbatching, che permette di
+riapplicare l'infrastruttura dedicata al batch processing di Spark su flussi di
+dati.
 
 ## Spark Streaming
 
@@ -33,9 +56,10 @@ essere rielaborati utilizzando l'engine di esecuzione di Spark.
 L'astrazione utilizzata sui flussi è chiamata DStream, che sta per Discretized
 Stream. I DStream permettono l'esecuzione di azioni e trasformazioni come per
 gli RDD, aggiungendo alcune operazioni particolari dedicate agli stream.
-Internamente, i DStream sono rappresentati come sequenze di RDD. Gli RDD
-interni corrispondenti ai microbatch sono resi accessibili all'utente, per
-eseguire trasformazioni con le API specifiche degli RDD.
+Internamente, i DStream sono rappresentati come sequenze di RDD, ciascuno
+corrispondente a un particolare microbatch. Gli RDD interni corrispondenti ai
+microbatch sono resi accessibili all'utente, per eseguire trasformazioni con le
+loro API specifiche.
 
 I risultati dell'elaborazione possono essere salvati in diversi mezzi, come
 database, HDFS e filesystem locali, o dashboard per analytics in real-time.
